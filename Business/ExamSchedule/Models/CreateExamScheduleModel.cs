@@ -1,0 +1,28 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Business.ExamSchedule.Models
+{
+    public class CreateExamScheduleModel
+    {
+        public string? Tittle { get; set; }
+        public DateTime Deadline { get; set; }
+
+        public string? ExamLink { get; set; }
+        public int TypeId { get; set; }
+
+    }
+    public class UpdateExamScheduleModel
+    {
+        [Required]
+        public string? Tittle { get; set; }
+        [Required]
+        public DateTime Deadline { get; set; }
+        [Required]
+        public string? ExamLink { get; set; }
+    }
+}
