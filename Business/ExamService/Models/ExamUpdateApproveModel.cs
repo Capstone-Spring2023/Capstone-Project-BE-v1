@@ -8,6 +8,6 @@ namespace Business.ExamService.Models
 {
     public class ExamUpdateApproveModel
     {
-        public bool IsApproved { get; set; }
+        public string Status { get; set; }
     }
 }

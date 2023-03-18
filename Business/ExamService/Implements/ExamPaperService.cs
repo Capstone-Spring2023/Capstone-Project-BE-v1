@@ -166,21 +166,20 @@ namespace Business.ExamPaperService.Implements
         {
             try
             {
-                if (!examUpdateModel.IsApproved)
+                var examPaper = await ExamPaperRepository.GetById(commentModel.ExamPaperId);
+                if (examUpdateModel.Status == "Reject")
                 {
+                    examPaper.Status = ExamPaperStatus.REJECTED;
                     var comment = mapper.Map<Comment>(commentModel);
                     await CommentRepository.Create(comment);
                 }
-                var examPaper = await ExamPaperRepository.GetById(commentModel.ExamPaperId);
-                if (examUpdateModel.IsApproved)
+                
+                if (examUpdateModel.Status == "Approve")
                 {
                     if (examPaper.ExamSchedule.TypeId == 1) examPaper.Status = ExamPaperStatus.APPROVED;
                     else examPaper.Status = ExamPaperStatus.APPROVED_MANUAL;
                 }
-                else
-                {
-                    examPaper.Status = ExamPaperStatus.REJECTED;
-                }
+
 
                 await ExamPaperRepository.Update(examPaper);
                 return new ObjectResult(examPaper)
