@@ -19,6 +19,15 @@ namespace Data.Repositories.implement
             _context = context;
         }
 
+        public async Task<List<AvailableSubject>> GetAllAvailableSubjectsHaveExamScheduleByLeaderId(int leaderId)
+        {
+            var listAvailableSubject = await _context
+                .AvailableSubjects
+                .Where(x => x.LeaderId == leaderId)
+                .ToListAsync();
+            listAvailableSubject = listAvailableSubject.Where(x => checkIfSubjectAlreadyHaveExamSchedule(x.SubjectId)).ToList();
+            return listAvailableSubject;
+        }
         public async Task<List<AvailableSubject>> GetAllAvailableSubjectsByLeaderId(int leaderId)
         {
             var listAvailableSubject = await _context

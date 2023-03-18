@@ -6,6 +6,7 @@ using Data.Models;
 using Data.Repositories.implement;
 using Data.Repositories.Interface;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,12 +34,47 @@ namespace Business.ExamSchedule.Implements
 
         public async Task<ResponseModel> GetAllExamScheduleByLeaderId(int leaderId)
         {
-            var listExamSchedule = await _examScheduleRepository.GetAllExamScheduleByLeaderId(leaderId);
-            
+            var listAvailableSubject = await _availableSubjectRepository.GetAllAvailableSubjectsHaveExamScheduleByLeaderId(leaderId);
+            if(listAvailableSubject == null)
+            {
+                return new()
+                {
+                    StatusCode = 404,
+                };
+            }
+            var listGroupExamSchedule = new List<ResponseGroupExamSchedule>();
+
+            foreach(var availableSubject in listAvailableSubject)
+            {
+                    var groupExamSchedule = new ResponseGroupExamSchedule();
+
+
+                    var examSchedules = await _examScheduleRepository.getExamScheduleBySubjectId(availableSubject.SubjectId);
+                    
+                    if (examSchedules != null)
+                    {
+                    var examSchedule = examSchedules.ElementAt(0);
+
+                    groupExamSchedule.SubjectId = examSchedule.SubjectId;
+                    groupExamSchedule.LeaderId = examSchedule.LeaderId;
+                    groupExamSchedule.Deadline = examSchedule.Deadline;
+                    groupExamSchedule.ExamLink = examSchedule.ExamLink;
+                    groupExamSchedule.Tittle = examSchedule.Tittle;
+                    listGroupExamSchedule.Add(groupExamSchedule);
+                    }
+                
+            }
+            if(!listGroupExamSchedule.Any())
+            {
+                return new()
+                {
+                    StatusCode = (int)Business.Constants.StatusCode.NOTFOUND
+                };
+            }
             return new()
             {
                 StatusCode = 200,
-                Data = listExamSchedule
+                Data = listGroupExamSchedule
             };
         }
         public async Task<ResponseModel> CreateExamSchedule(CreateExamScheduleModel createExamScheduleModel, int availableSubjectId)

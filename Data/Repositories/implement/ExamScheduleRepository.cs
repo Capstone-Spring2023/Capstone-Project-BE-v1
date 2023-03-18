@@ -73,5 +73,11 @@ namespace Data.Repositories.implement
             a.Status = false;
             await _context.SaveChangesAsync();
         }
+
+        public async Task<List<ExamSchedule>> getExamScheduleBySubjectId(int subjectId)
+        {
+            var listExamShedule = await _context.ExamSchedules.Where(x => x.SubjectId == subjectId && x.Status == true).ToListAsync();
+            return listExamShedule;
+        }
     }
 }

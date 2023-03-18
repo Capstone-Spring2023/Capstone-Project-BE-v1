@@ -14,7 +14,7 @@ namespace Data.Repositories.Interface
         public Task<List<AvailableSubject>> GetAllAvailableSubjectsByLeaderId(int id);
         Task<List<AvailableSubject>> GetAvailableSubjects(Expression<Func<AvailableSubject, bool>> ex, PagingRequest pageRequest);
         Task CreateAvailableSubject(AvailableSubject availableSubject);
-
+        public Task<List<AvailableSubject>> GetAllAvailableSubjectsHaveExamScheduleByLeaderId(int leaderId);
         public Task<AvailableSubject> GetAvailableSubjectById(int id);
     }
 }

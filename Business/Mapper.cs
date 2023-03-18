@@ -25,6 +25,7 @@ namespace Business
             CreateMap<Comment, CommentModel>().ReverseMap();
             CreateMap<UpdateExamScheduleModel, Data.Models.ExamSchedule>().ReverseMap();
             CreateMap<Data.Models.ExamSchedule, ResponseExamSchedule>();
+            CreateMap<Data.Models.ExamSchedule, ResponseGroupExamSchedule>().ReverseMap();
         }
     }
 }
