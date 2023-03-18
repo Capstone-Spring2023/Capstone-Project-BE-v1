@@ -7,5 +7,6 @@ namespace API.Controllers.Subjects
     [ApiController]
     public class SubjectController : ControllerBase
     {
+
     }
 }

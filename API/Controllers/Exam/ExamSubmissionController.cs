@@ -38,7 +38,7 @@ namespace API.Controllers.Exam
             var response = await examService.GetAllExams(x => true, pagingRequest);
             return response;
         }
-        [HttpGet("api/user/{userId}/exam-submission")]
+        [HttpGet("user/{userId}/exam-submission")]
         [SwaggerOperation(Summary = "Get Exam-Submission by UserId")]
         public async Task<ObjectResult> GetByLeaderId([FromRoute] int userId)
         {

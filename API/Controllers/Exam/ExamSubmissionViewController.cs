@@ -21,7 +21,7 @@ namespace API.Controllers.Exam
             return null;
         }
 
-        [HttpGet("{leaderId}")]
+        [HttpGet("leader/{leaderId}")]
         public async Task<ObjectResult> ViewExamSubmissionByLeaderId(int leaderId)
         {
             var response = await examService.ViewExamSubmissionByLeaderId(leaderId);

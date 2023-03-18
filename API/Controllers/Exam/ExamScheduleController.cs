@@ -99,7 +99,7 @@ namespace API.Controllers.Exam
             return await _examManagementService.DeleteExamSchedule(examScheduleId);
         }
 
-        [HttpGet("teachers/subject/{subjectId}")]
+        [HttpGet("api/teachers/subject/{subjectId}")]
         public async Task<ObjectResult> GetTeachers([FromRoute] int subjectId, [FromQuery] int pageIndex)
         {
             PagingRequest pagingRequest = new PagingRequest()
