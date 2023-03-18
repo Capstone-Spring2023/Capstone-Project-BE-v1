@@ -17,8 +17,8 @@ namespace API.Controllers.Exam
         [HttpPut("review-exam")]
         public async Task<ObjectResult> ReviewExam([FromBody] ReviewExamModel reviewExamModel)
         {
-            //var response = await examService.ApproveExam(reviewExamModel.CommentModel, reviewExamModel.ExamUpdateApproveModel);
-            return null;
+            var response = await examService.ApproveExam(reviewExamModel.CommentModel, reviewExamModel.ExamUpdateApproveModel);
+            return response;
         }
 
         [HttpGet("leader/{leaderId}")]
