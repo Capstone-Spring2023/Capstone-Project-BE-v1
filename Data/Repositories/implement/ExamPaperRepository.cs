@@ -45,6 +45,12 @@ namespace Data.Repositories.implement
             return exams;
         }
 
+        public async Task<List<ExamPaper>> GetAllByExamScheduleId(int examScheduleId)
+        {
+            var exam = await _context.ExamPapers.Where(x => x.ExamScheduleId == examScheduleId).ToListAsync();
+            return exam;
+        }
+
         public async Task<ExamPaper> GetById(int id)
         {
             return await _context.ExamPapers

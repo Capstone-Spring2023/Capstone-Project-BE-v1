@@ -20,14 +20,16 @@ namespace Business.ExamPaperService.Implements
     {
         private readonly IExamPaperRepository ExamPaperRepository;
         private readonly ICommentRepository CommentRepository;
+        private readonly IExamScheduleRepository ExamScheduleRepository;
         private readonly CFManagementContext _context;
         private IMapper mapper;
-        public ExamPaperService(CFManagementContext context, IExamPaperRepository ExamPaperRepository, ICommentRepository commentRepository, IMapper mapper)
+        public ExamPaperService(CFManagementContext context, IExamPaperRepository ExamPaperRepository, ICommentRepository commentRepository, IMapper mapper, IExamScheduleRepository examScheduleRepository)
         {
             this.ExamPaperRepository = ExamPaperRepository;
             this.mapper = mapper;
             this.CommentRepository = commentRepository;
             _context = context;
+            ExamScheduleRepository = examScheduleRepository;
         }
 
         public async Task<ObjectResult> CreateExam(ExamCreateRequestModel ExamPaperCreateRequest)
@@ -216,6 +218,35 @@ namespace Business.ExamPaperService.Implements
                 };
             }
         }
-        
+
+        public async Task<ObjectResult> ViewExamSubmissionByLeaderId(int leaderId)
+        {
+            var listExamSchedule = await ExamScheduleRepository.GetAllExamScheduleByLeaderId(leaderId);
+            
+            var listExamSubmission = new List<ExamPaper>();
+            foreach(var examSchedule in listExamSchedule)
+            {
+                var examSubmissions = await ExamPaperRepository.GetAllByExamScheduleId(examSchedule.ExamScheduleId);
+                if(examSubmissions == null)
+                {
+                    return new(examSubmissions)
+                    {
+                        StatusCode = (int)Business.Constants.StatusCode.NOTFOUND
+                    };
+                }
+                foreach(var exam in examSubmissions)
+                {
+                    if(exam.Status == "Pending")
+                    {
+                        listExamSubmission.Add(exam);
+                        break;
+                    }
+                }
+            }
+            return new ObjectResult(listExamSubmission) 
+            { 
+                StatusCode = 200 
+            };
+        }
     }
 }
