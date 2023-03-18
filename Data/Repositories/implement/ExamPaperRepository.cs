@@ -20,7 +20,7 @@ namespace Data.Repositories.implement
         }
         public async Task CreateExam(ExamPaper exam)
         {
-            int id = _context.ExamPapers.Max(x => x.ExamPaperId) + 1;
+            
             _context.Add(exam);
             await _context.SaveChangesAsync();
             

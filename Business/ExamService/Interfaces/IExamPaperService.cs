@@ -14,7 +14,7 @@ namespace Business.ExamPaperService.Interfaces
     public interface IExamPaperService
     {
         public Task<ObjectResult> GetExam(int id);
-        public Task<ObjectResult> CreateExam(ExamCreateRequestModel exam);
+        public Task<ObjectResult> CreateExam( int examScheduleId,ExamCreateRequestModel exam);
 
         public Task<ObjectResult> UpdateExam(int id, ExamUpdateRequestModel examUpdateModel);
         public Task<ObjectResult> GetAllExams(Expression<Func<ExamPaper, bool>> ex,PagingRequest paging);

@@ -32,9 +32,10 @@ namespace Business.ExamPaperService.Implements
             ExamScheduleRepository = examScheduleRepository;
         }
 
-        public async Task<ObjectResult> CreateExam(ExamCreateRequestModel ExamPaperCreateRequest)
+        public async Task<ObjectResult> CreateExam(int examScheduleId,ExamCreateRequestModel ExamPaperCreateRequest)
         {
             var ExamPaper = mapper.Map<ExamPaper>(ExamPaperCreateRequest);
+            ExamPaper.ExamScheduleId = examScheduleId;
             ExamPaper.Status = ExamPaperStatus.PENDING;
             try
             {
@@ -200,9 +201,15 @@ namespace Business.ExamPaperService.Implements
         {
             try
             {
-
-
+                
                 var examPaper = await ExamPaperRepository.GetById(id);
+                if (examPaper.Status != ExamPaperStatus.APPROVED_MANUAL)
+                {
+                    return new ObjectResult("Not allowed")
+                    {
+                        StatusCode = 500
+                    };
+                }
                 examPaper.ExamInstruction = exam.ExamInstruction;
                 await  ExamPaperRepository.Update(examPaper);
                 return new ObjectResult(examPaper)

@@ -36,7 +36,7 @@ namespace Data.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Data Source=13.212.106.245,1433;Initial Catalog=CFManagement;User ID=sa;Password=1234567890Aa");
+                optionsBuilder.UseSqlServer("Data Source=13.212.106.245,1433;Initial Catalog=CFManagement;User ID=SA;Password=1234567890Aa");
             }
         }
 
@@ -183,7 +183,7 @@ namespace Data.Models
                     .HasColumnName("deadline");
 
                 entity.Property(e => e.ExamLink)
-                    .HasMaxLength(200)
+                    .HasMaxLength(500)
                     .IsUnicode(false);
 
                 entity.Property(e => e.RegisterSubjectId).HasColumnName("registerSubjectId");

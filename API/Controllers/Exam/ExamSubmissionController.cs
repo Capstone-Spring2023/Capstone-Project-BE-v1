@@ -51,23 +51,34 @@ namespace API.Controllers.Exam
             return response;
         }
 
-        [HttpPost("")]
-        public async Task<ObjectResult> Create([FromBody] ExamCreateRequestModel examCreateRequestModel)
+        [HttpPost("{examScheduleId}")]
+        [SwaggerOperation(Summary = "Create Exam-Submission with examscheduleId")]
+        public async Task<ObjectResult> Create([FromRoute]int examScheduleId, [FromBody] ExamCreateRequestModel examCreateRequestModel)
         {
-            var response = await examService.CreateExam(examCreateRequestModel);
+            var response = await examService.CreateExam(examScheduleId,examCreateRequestModel);
             return response;
         }
         [HttpPut("{id}")]
+        [SwaggerOperation(Summary = "Update Exam-Submission")]
         public async Task<ObjectResult> Update([FromRoute] int id, [FromBody] ExamUpdateRequestModel examUpdateRequestModel)
         {
             var response = await examService.UpdateExam(id, examUpdateRequestModel);
             return response;
         }
+        [HttpPut("instruction/{id}")]
+        [SwaggerOperation(Summary = "Update Exam-Submission")]
+        public async Task<ObjectResult> UpdateInstruction([FromRoute] int id, [FromBody] ExamUpdateInstructionLinkModel examUpdateRequestModel)
+        {
+            var response = await examService.SendInstructionLink(id, examUpdateRequestModel);
+            return response;
+        }
         [HttpDelete("{id}")]
+        [SwaggerOperation(Summary = "Delete Exam-Submission")]
         public async Task<ObjectResult> Delete([FromRoute] int id)
         {
             return await examService.DeleteExam(id);
         }
+        
 
     }
 }

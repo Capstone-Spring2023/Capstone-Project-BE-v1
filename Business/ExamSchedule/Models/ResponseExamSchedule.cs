@@ -9,11 +9,15 @@ namespace Business.ExamSchedule.Models
     public class ResponseExamSchedule
     {
         public int examScheduleId { get; set; }
+
         public string Tittle { get; set; }
         public DateTime Deadline { get; set; }
         public int SubjectId { get; set; }
+        public string LeaderName { get; set; }
+        public string SubjectName { get; set; }
         public string ExamLink { get; set; }
         public int TypeId { get; set; }
         public bool Status { get; set; }
+        
     }
 }
