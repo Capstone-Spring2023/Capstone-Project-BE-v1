@@ -43,7 +43,7 @@ namespace API.Controllers.Exam
             }
             if (examScheduleResponses == null || examScheduleResponses.Count() == 0)
             {
-                return new ObjectResult("Not Found")
+                return new ObjectResult(new List<object>())
                 {
                     StatusCode = 404,
                 };
@@ -92,7 +92,7 @@ namespace API.Controllers.Exam
                 .ToListAsync();
             if (examSchedules == null || examSchedules.Count() == 0)
             {
-                return new ObjectResult("Not Found")
+                return new ObjectResult(new List<Object>())
                 {
                     StatusCode = 404,
                 };
