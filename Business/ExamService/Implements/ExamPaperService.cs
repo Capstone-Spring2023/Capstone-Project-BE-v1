@@ -124,7 +124,7 @@ namespace Business.ExamPaperService.Implements
                 else statusCode = 200;
 
                 var examSchedule = _context.ExamSchedules.FirstOrDefault(x => x.ExamScheduleId == data.ExamScheduleId);
-                data.SubjectName = _context.Subjects.FirstOrDefault(x => x.SubjectId == examSchedule.SubjectId).SubjectName;
+                data.SubjectName = _context.Subjects.FirstOrDefault(x => x.SubjectId == examSchedule.SubjectId).SubjectCode;
 
                 var register = _context.RegisterSubjects.Find(examSchedule.RegisterSubjectId);
                 data.LecturerName = _context.Users.Find(register.UserId).FullName;
@@ -146,7 +146,8 @@ namespace Business.ExamPaperService.Implements
         {
             try
             {
-                var ExamPaper = mapper.Map<ExamPaper>(examUpdateModel);
+                var ExamPaper =await ExamPaperRepository.GetById(id);
+                ExamPaper = mapper.Map(examUpdateModel,ExamPaper);
                 ExamPaper.ExamPaperId = id;
                 await ExamPaperRepository.Update(ExamPaper);
                 return new ObjectResult(ExamPaper)
@@ -209,6 +210,7 @@ namespace Business.ExamPaperService.Implements
                         StatusCode = 500
                     };
                 }
+                examPaper.Status = ExamPaperStatus.APPROVED;
                 examPaper.ExamInstruction = exam.ExamInstruction;
                 await  ExamPaperRepository.Update(examPaper);
                 return new ObjectResult(examPaper)

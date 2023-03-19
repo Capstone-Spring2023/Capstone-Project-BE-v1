@@ -60,7 +60,8 @@ namespace Data.Repositories.implement
         }
         public async Task Update(ExamPaper exam)
         {
-            _context.ExamPapers.Update(exam);
+            var track = _context.Attach(exam);
+            track.State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
     }

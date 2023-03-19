@@ -9,6 +9,7 @@ namespace Business.AvailableSubjectService.Models
     public class AvailableSubjectResponse
     {
         public int AvailableSubjectId { get; set; }
+        public int ExamScheduleId { get; set; }
         public int SubjectId { get; set; }
         public int SemesterId { get; set; }
         public int LeaderId { get; set; }

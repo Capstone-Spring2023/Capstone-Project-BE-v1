@@ -43,7 +43,7 @@ namespace API.Controllers.Exam
             var response = await _avaibleSubjectService.GetAllAvailableSubjectByLeaderId(leaderId);
             if (response.StatusCode == (int)Business.Constants.StatusCode.NOTFOUND)
             {
-                return NotFound();
+                return NotFound(new List<Object>());
             }
             return Ok(response);
         }
@@ -69,7 +69,7 @@ namespace API.Controllers.Exam
             var response = await _examManagementService.GetAllExamScheduleByLeaderId(leaderId);
             if (response.StatusCode == 404)
             {
-                return NotFound();
+                return NotFound(new List<Object>());
             }
             return Ok(response);
         }
