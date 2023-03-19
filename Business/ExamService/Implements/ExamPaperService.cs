@@ -178,8 +178,22 @@ namespace Business.ExamPaperService.Implements
                 
                 if (examUpdateModel.Status == "Approve")
                 {
-                    if (examPaper.ExamSchedule.TypeId == 1) examPaper.Status = ExamPaperStatus.APPROVED;
-                    else examPaper.Status = ExamPaperStatus.APPROVED_MANUAL;
+                    if (examPaper.ExamSchedule.TypeId == 1) 
+                    { 
+                        examPaper.Status = ExamPaperStatus.APPROVED;
+                    }
+                    if(examPaper.ExamSchedule.TypeId == 2)
+                    {
+                        if(examPaper.Status == ExamPaperStatus.PENDING)
+                        {
+                            examPaper.Status = ExamPaperStatus.APPROVED_MANUAL;
+                        }
+                        if(examPaper.Status == ExamPaperStatus.APPROVED_MANUAL)
+                        {
+                            examPaper.Status = ExamPaperStatus.APPROVED;
+                        }
+                    }
+                    
                 }
 
 
