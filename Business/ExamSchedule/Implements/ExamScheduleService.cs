@@ -192,5 +192,29 @@ namespace Business.ExamSchedule.Implements
                 StatusCode = 200,
             };
         }
+
+        public async Task<ResponseModel> GetDetailRequestExamSchedule(int availableSubjectId)
+        {            
+                var groupExamSchedule = new ResponseGroupExamSchedule();
+                var examSchedules = await _examScheduleRepository.getExamScheduleByAvailableSubjectId(availableSubjectId);
+                if (examSchedules != null)
+                {
+                    var examSchedule = examSchedules.ElementAt(0);
+                    groupExamSchedule.AvailableSubjectId = examSchedule.AvailableSubjectId;
+                    groupExamSchedule.LeaderId = examSchedule.LeaderId;
+                    groupExamSchedule.Deadline = examSchedule.Deadline;
+                    groupExamSchedule.ExamLink = examSchedule.ExamLink;
+                    groupExamSchedule.Tittle = examSchedule.Tittle;
+                    return new()
+                    {
+                        StatusCode = 200,
+                        Data = groupExamSchedule
+                    };
+                }
+            return new()
+            {
+                StatusCode = 404,
+            };
+        }
     }
 }

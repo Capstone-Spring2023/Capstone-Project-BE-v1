@@ -82,7 +82,7 @@ namespace Business.ExamPaperService.Implements
                 foreach(var data in datas)
                 {
                     var examSchedule = _context.ExamSchedules.FirstOrDefault(x => x.ExamScheduleId == data.ExamScheduleId);
-                    data.SubjectName = _context.Subjects.FirstOrDefault(x => x.SubjectId == examSchedule.SubjectId).SubjectName;
+                    data.SubjectName = _context.AvailableSubjects.FirstOrDefault(x => x.AvailableSubjectId == examSchedule.AvailableSubjectId).SubjectName;
                     
                     var register = _context.RegisterSubjects.Find(examSchedule.RegisterSubjectId);
                     data.LecturerName = _context.Users.Find(register.UserId).FullName;
@@ -124,7 +124,7 @@ namespace Business.ExamPaperService.Implements
                 else statusCode = 200;
 
                 var examSchedule = _context.ExamSchedules.FirstOrDefault(x => x.ExamScheduleId == data.ExamScheduleId);
-                data.SubjectName = _context.Subjects.FirstOrDefault(x => x.SubjectId == examSchedule.SubjectId).SubjectCode;
+                data.SubjectName = _context.AvailableSubjects.FirstOrDefault(x => x.AvailableSubjectId == examSchedule.AvailableSubjectId).SubjectName;
 
                 var register = _context.RegisterSubjects.Find(examSchedule.RegisterSubjectId);
                 data.LecturerName = _context.Users.Find(register.UserId).FullName;

@@ -81,5 +81,21 @@ namespace Business.AvailableSubjectService.Implement
             };
         }
 
+        public async Task<ResponseModel> GetAvailableSubjectById(int id)
+        {
+            var availableSubject = await availableSubjectRepository.GetAvailableSubjectById(id);
+            if(availableSubject == null)
+            {
+                return new()
+                {
+                    StatusCode = 404
+                };
+            }
+            return new()
+            {
+                StatusCode = 200,
+                Data = availableSubject
+            };
+        }
     }
 }

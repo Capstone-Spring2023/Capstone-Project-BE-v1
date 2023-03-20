@@ -74,6 +74,18 @@ namespace API.Controllers.Exam
             return Ok(response);
         }
 
+        [HttpGet]
+        [Route("api/exam-schedule/available-subject/{availableSubjectId}")]
+        [SwaggerOperation(Summary = "Get Detail Request ExamSchedule By availableSubjectId")]
+        public async Task<IActionResult> GetDetailRequestExamSchedule(int availableSubjectId)
+        {
+            var response = await _examManagementService.GetDetailRequestExamSchedule(availableSubjectId);
+            if(response.StatusCode == 404)
+            {
+                return NotFound(new List<Object>());
+            }
+            return Ok(response);
+        }
 
         [HttpPost]
         [Route("api/exam-schedule")]
