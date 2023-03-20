@@ -49,13 +49,13 @@ namespace Business.ExamSchedule.Implements
                     var groupExamSchedule = new ResponseGroupExamSchedule();
 
 
-                    var examSchedules = await _examScheduleRepository.getExamScheduleBySubjectId(availableSubject.SubjectId);
+                    var examSchedules = await _examScheduleRepository.getExamScheduleByAvailableSubjectId(availableSubject.AvailableSubjectId);
                     
                     if (examSchedules != null)
                     {
                     var examSchedule = examSchedules.ElementAt(0);
 
-                    groupExamSchedule.SubjectId = examSchedule.SubjectId;
+                    groupExamSchedule.AvailableSubjectId = examSchedule.AvailableSubjectId;
                     groupExamSchedule.LeaderId = examSchedule.LeaderId;
                     groupExamSchedule.Deadline = examSchedule.Deadline;
                     groupExamSchedule.ExamLink = examSchedule.ExamLink;
@@ -111,7 +111,7 @@ namespace Business.ExamSchedule.Implements
                     examScheduleModel.RegisterSubjectId = registerSubject.RegisterSubjectId;
 
                     examScheduleModel.LeaderId = availableSubject.LeaderId;
-                    examScheduleModel.SubjectId = availableSubject.SubjectId;
+                    examScheduleModel.AvailableSubjectId = availableSubject.AvailableSubjectId;
 
                     examScheduleModel.Status = true;
 
@@ -119,7 +119,7 @@ namespace Business.ExamSchedule.Implements
                     //respone
                     var response = new ResponseExamSchedule();
                     response.examScheduleId = examScheduleModel.ExamScheduleId;
-                    response.SubjectId = availableSubject.SubjectId;
+                    response.AvailableSubjectId = availableSubject.AvailableSubjectId;
                     response.Deadline = examScheduleModel.Deadline;
                     response.ExamLink = examScheduleModel.ExamLink;
                     response.Tittle = examScheduleModel.Tittle;

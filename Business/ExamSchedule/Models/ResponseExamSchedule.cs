@@ -12,7 +12,7 @@ namespace Business.ExamSchedule.Models
 
         public string Tittle { get; set; }
         public DateTime Deadline { get; set; }
-        public int SubjectId { get; set; }
+        public int AvailableSubjectId { get; set; }
         public string LeaderName { get; set; }
         public string SubjectName { get; set; }
         public string ExamLink { get; set; }

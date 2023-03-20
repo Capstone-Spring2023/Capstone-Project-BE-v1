@@ -25,7 +25,7 @@ namespace Data.Repositories.implement
                 .AvailableSubjects
                 .Where(x => x.LeaderId == leaderId)
                 .ToListAsync();
-            listAvailableSubject = listAvailableSubject.Where(x => checkIfSubjectAlreadyHaveExamSchedule(x.SubjectId)).ToList();
+            listAvailableSubject = listAvailableSubject.Where(x => checkIfSubjectAlreadyHaveExamSchedule(x.AvailableSubjectId)).ToList();
             return listAvailableSubject;
         }
         public async Task<List<AvailableSubject>> GetAllAvailableSubjectsByLeaderId(int leaderId)
@@ -34,12 +34,12 @@ namespace Data.Repositories.implement
                 .AvailableSubjects
                 .Where(x => x.LeaderId == leaderId)
                 .ToListAsync();
-            listAvailableSubject = listAvailableSubject.Where(x => !checkIfSubjectAlreadyHaveExamSchedule(x.SubjectId)).ToList();
+            listAvailableSubject = listAvailableSubject.Where(x => !checkIfSubjectAlreadyHaveExamSchedule(x.AvailableSubjectId)).ToList();
             return listAvailableSubject;
         }
-        private bool checkIfSubjectAlreadyHaveExamSchedule(int subjectId)
+        private bool checkIfSubjectAlreadyHaveExamSchedule(int availableSubjectId)
         {
-            var examSchedules = _context.ExamSchedules.Where(x => x.SubjectId == subjectId && x.Status == true);
+            var examSchedules = _context.ExamSchedules.Where(x => x.AvailableSubjectId == availableSubjectId && x.Status == true);
             if (examSchedules == null || examSchedules.Count() == 0) return false;
             return true;
         }
