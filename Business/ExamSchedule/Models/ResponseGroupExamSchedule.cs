@@ -11,6 +11,7 @@ namespace Business.ExamSchedule.Models
         public DateTime Deadline { get; set; }
         public int AvailableSubjectId { get; set; }
         public int LeaderId { get; set; }
+        public string? SubjectName { get; set; }
         public string? Tittle { get; set; }
         public string? ExamLink { get; set; }
     }

@@ -54,7 +54,7 @@ namespace Business.ExamSchedule.Implements
                     if (examSchedules != null)
                     {
                     var examSchedule = examSchedules.ElementAt(0);
-
+                    groupExamSchedule.SubjectName = availableSubject.SubjectName;
                     groupExamSchedule.AvailableSubjectId = examSchedule.AvailableSubjectId;
                     groupExamSchedule.LeaderId = examSchedule.LeaderId;
                     groupExamSchedule.Deadline = examSchedule.Deadline;
@@ -201,6 +201,8 @@ namespace Business.ExamSchedule.Implements
                 {
                     var examSchedule = examSchedules.ElementAt(0);
                     groupExamSchedule.AvailableSubjectId = examSchedule.AvailableSubjectId;
+                    var availableSubject = await _availableSubjectRepository.GetAvailableSubjectById(availableSubjectId);
+                    groupExamSchedule.SubjectName = availableSubject.SubjectName;
                     groupExamSchedule.LeaderId = examSchedule.LeaderId;
                     groupExamSchedule.Deadline = examSchedule.Deadline;
                     groupExamSchedule.ExamLink = examSchedule.ExamLink;

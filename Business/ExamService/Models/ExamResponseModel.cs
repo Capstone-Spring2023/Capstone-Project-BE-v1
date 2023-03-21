@@ -12,6 +12,7 @@ namespace Business.ExamService.Models
         public int ExamScheduleId { get; set; }
         public string? ExamContent { get; set; }
         public string? ExamLink { get; set; }
+        public string Type { get; set; }
         public string? ExamInstruction { get; set; }
         public string SubjectName { get; set; }
         public string LecturerName { get; set; }

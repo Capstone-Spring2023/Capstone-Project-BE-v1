@@ -86,7 +86,8 @@ namespace Business.ExamPaperService.Implements
                     
                     var register = _context.RegisterSubjects.Find(examSchedule.RegisterSubjectId);
                     data.LecturerName = _context.Users.Find(register.UserId).FullName;
-                    
+                    var typeId = _context.ExamSchedules.Find(data.ExamScheduleId).TypeId;
+                    data.Type = _context.Types.Find(typeId).TypeName;
                     var comment = ExamPapers.FirstOrDefault(x=> x.ExamPaperId == data.ExamPaperId).Comments.FirstOrDefault();
                     if (comment == null)
                     {
@@ -125,7 +126,8 @@ namespace Business.ExamPaperService.Implements
 
                 var examSchedule = _context.ExamSchedules.FirstOrDefault(x => x.ExamScheduleId == data.ExamScheduleId);
                 data.SubjectName = _context.AvailableSubjects.FirstOrDefault(x => x.AvailableSubjectId == examSchedule.AvailableSubjectId).SubjectName;
-
+                var typeId = _context.ExamSchedules.Find(data.ExamScheduleId).TypeId;
+                data.Type = _context.Types.Find(typeId).TypeName;
                 var register = _context.RegisterSubjects.Find(examSchedule.RegisterSubjectId);
                 data.LecturerName = _context.Users.Find(register.UserId).FullName;
                 return new ObjectResult(data)
