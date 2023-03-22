@@ -104,11 +104,11 @@ namespace API.Controllers.Exam
             return response;
         }
         [HttpDelete]
-        [Route("api/exam-schedule/{examScheduleId}")]
+        [Route("api/exam-schedule/{availableSubjectId}")]
         [SwaggerOperation(Summary = "Delete Exam-Schedule by it's ID")]
-        public async Task<ObjectResult> Delete([FromRoute] int examScheduleId)
+        public async Task<ObjectResult> Delete([FromRoute] int availableSubjectId)
         {
-            return await _examManagementService.DeleteExamSchedule(examScheduleId);
+            return await _examManagementService.DeleteExamSchedule(availableSubjectId);
         }
 
         [HttpGet("api/teachers/subject/{subjectId}")]

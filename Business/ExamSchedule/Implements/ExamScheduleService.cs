@@ -184,9 +184,18 @@ namespace Business.ExamSchedule.Implements
             }
         }
 
-        public async Task<ObjectResult> DeleteExamSchedule(int id)
+        public async Task<ObjectResult> DeleteExamSchedule(int availableSubjectId)
         {
-            await _examScheduleRepository.DeleteExamSchedule(id);
+            var listExamSchedule = await _examScheduleRepository.getExamScheduleByAvailableSubjectId(availableSubjectId);
+            
+            if (listExamSchedule != null)
+            {
+                foreach(var examSchedule in listExamSchedule)
+                {
+                    examSchedule.Status = false;
+                    await _examScheduleRepository.DeleteExamSchedule(examSchedule.ExamScheduleId);
+                }
+            }
             return new ObjectResult("DELETED")
             {
                 StatusCode = 200,
