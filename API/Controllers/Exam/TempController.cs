@@ -88,7 +88,7 @@ namespace API.Controllers.Exam
         public async Task<ObjectResult> getAvailableSubjectWithExamScheduleByUserId([FromRoute] int userId)
         {
             var examSchedules = await _context.ExamSchedules
-                .Where(x => x.RegisterSubject.UserId == userId)
+                .Where(x => x.RegisterSubject.UserId == userId && x.Status)
                 .ToListAsync();
             if (examSchedules == null || examSchedules.Count() == 0)
             {
