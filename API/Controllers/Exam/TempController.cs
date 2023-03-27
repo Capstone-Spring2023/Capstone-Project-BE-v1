@@ -26,7 +26,7 @@ namespace API.Controllers.Exam
         public async Task<ObjectResult> getExamScheduleByUserId([FromRoute] int userId)
         {
             var examSchedules = await _context.ExamSchedules
-                .Where(x => x.RegisterSubject.UserId == userId)
+                .Where(x => x.RegisterSubject.UserId == userId && x.Status)
                 .ToListAsync();
             var examScheduleResponses = new List<ResponseExamSchedule>();
             foreach (var examSchedule in examSchedules)
