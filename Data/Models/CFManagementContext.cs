@@ -18,6 +18,7 @@ namespace Data.Models
 
         public virtual DbSet<AvailableSubject> AvailableSubjects { get; set; } = null!;
         public virtual DbSet<Class> Classes { get; set; } = null!;
+        public virtual DbSet<ClassAsubject> ClassAsubjects { get; set; } = null!;
         public virtual DbSet<Comment> Comments { get; set; } = null!;
         public virtual DbSet<CurrentHeader> CurrentHeaders { get; set; } = null!;
         public virtual DbSet<Department> Departments { get; set; } = null!;
@@ -36,7 +37,7 @@ namespace Data.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Data Source=13.212.106.245,1433;Initial Catalog=CFManagement;User ID=sa;Password=1234567890Aa");
+                optionsBuilder.UseSqlServer("Data Source=13.212.106.245,1433;Initial Catalog=CFManagement;User ID=SA;Password=1234567890Aa");
             }
         }
 
@@ -75,13 +76,32 @@ namespace Data.Models
 
             modelBuilder.Entity<Class>(entity =>
             {
-                entity.Property(e => e.ClassId).HasColumnName("classId");
+                entity.ToTable("Class");
 
-                entity.Property(e => e.ClassNumber).HasColumnName("classNumber");
+                entity.Property(e => e.ClassCode).HasMaxLength(50);
+            });
 
-                entity.Property(e => e.SemesterId).HasColumnName("semesterId");
+            modelBuilder.Entity<ClassAsubject>(entity =>
+            {
+                entity.HasKey(e => new { e.ClassId, e.AsubjectId });
 
-                entity.Property(e => e.Status).HasColumnName("status");
+                entity.ToTable("Class_ASubject");
+
+                entity.Property(e => e.AsubjectId).HasColumnName("ASubjectId");
+
+                entity.Property(e => e.SubjectName).HasMaxLength(50);
+
+                entity.HasOne(d => d.Asubject)
+                    .WithMany(p => p.ClassAsubjects)
+                    .HasForeignKey(d => d.AsubjectId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Class_ASubject_AvailableSubject");
+
+                entity.HasOne(d => d.Class)
+                    .WithMany(p => p.ClassAsubjects)
+                    .HasForeignKey(d => d.ClassId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Class_ASubject_Class");
             });
 
             modelBuilder.Entity<Comment>(entity =>
@@ -246,23 +266,13 @@ namespace Data.Models
             {
                 entity.ToTable("Schedule");
 
-                entity.Property(e => e.ScheduleId).HasColumnName("scheduleId");
-
-                entity.Property(e => e.ClassId).HasColumnName("classId");
-
-                entity.Property(e => e.ClassStatus).HasColumnName("classStatus");
-
-                entity.Property(e => e.Slot).HasColumnName("slot");
-
-                entity.Property(e => e.Time)
-                    .HasColumnType("date")
-                    .HasColumnName("time");
+                entity.Property(e => e.ScheduleDate).HasColumnType("date");
 
                 entity.HasOne(d => d.Class)
                     .WithMany(p => p.Schedules)
                     .HasForeignKey(d => d.ClassId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Schedule_Classes");
+                    .HasConstraintName("FK_Schedule_Class");
             });
 
             modelBuilder.Entity<Semester>(entity =>
