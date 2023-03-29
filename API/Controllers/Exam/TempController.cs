@@ -100,9 +100,25 @@ namespace API.Controllers.Exam
             var res = new List<AvailableSubjectResponse>(); 
             foreach (var examSchedule in examSchedules)
             {
+                var examPaper = await _context.ExamPapers.FirstOrDefaultAsync(x => x.ExamScheduleId == examSchedule.ExamScheduleId);
+                if (examPaper != null)
+                {
+                    if (examPaper.Status != "Rejected")
+                    {
+                        return new ObjectResult(new List<Object>())
+                        {
+                            StatusCode = 404,
+                        };
+                    }
+                }
                 var register = await _context.RegisterSubjects.FirstOrDefaultAsync(x => x.RegisterSubjectId == examSchedule.RegisterSubjectId);
                 var availableSubject = await _context.AvailableSubjects.FirstOrDefaultAsync(x => x.AvailableSubjectId == register.AvailableSubjectId);
+                var type = await _context.Types.FirstOrDefaultAsync(x => x.TypeId == examSchedule.TypeId);
                 res.Add(_mapper.Map<AvailableSubjectResponse>(availableSubject));
+                foreach (var each in res)
+                {
+                    each.TypeName = type?.TypeName;
+                }
             }
             return new ObjectResult(res)
             {

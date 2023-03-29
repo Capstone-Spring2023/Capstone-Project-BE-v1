@@ -15,5 +15,6 @@ namespace Business.AvailableSubjectService.Models
         public int LeaderId { get; set; }
         public string? SubjectName { get; set; }
         public string? LeaderName { get; set; }
+        public string? TypeName { get; set; }
     }
 }

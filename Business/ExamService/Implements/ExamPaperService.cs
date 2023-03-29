@@ -190,7 +190,7 @@ namespace Business.ExamPaperService.Implements
                         {
                             examPaper.Status = ExamPaperStatus.APPROVED_MANUAL;
                         }
-                        if(examPaper.Status == ExamPaperStatus.APPROVED_MANUAL)
+                        else if(examPaper.Status == ExamPaperStatus.APPROVED_MANUAL)
                         {
                             examPaper.Status = ExamPaperStatus.APPROVED;
                         }
