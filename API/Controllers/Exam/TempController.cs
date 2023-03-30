@@ -114,11 +114,11 @@ namespace API.Controllers.Exam
                 var register = await _context.RegisterSubjects.FirstOrDefaultAsync(x => x.RegisterSubjectId == examSchedule.RegisterSubjectId);
                 var availableSubject = await _context.AvailableSubjects.FirstOrDefaultAsync(x => x.AvailableSubjectId == register.AvailableSubjectId);
                 var type = await _context.Types.FirstOrDefaultAsync(x => x.TypeId == examSchedule.TypeId);
-                res.Add(_mapper.Map<AvailableSubjectResponse>(availableSubject));
-                foreach (var each in res)
-                {
-                    each.TypeName = type?.TypeName;
-                }
+                var availableSubjectresponse = _mapper.Map<AvailableSubjectResponse>(availableSubject);
+                availableSubjectresponse.ExamScheduleId = examSchedule.ExamScheduleId;
+                availableSubjectresponse.TypeName = type.TypeName;
+                res.Add(availableSubjectresponse);
+                
             }
             return new ObjectResult(res)
             {
