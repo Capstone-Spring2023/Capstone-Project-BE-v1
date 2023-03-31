@@ -5,11 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 using Business.ExamService.Models;
 using System.ComponentModel.DataAnnotations;
 using Swashbuckle.AspNetCore.Annotations;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers.Exam
 {
     [ApiController]
     [Route("api/exam-submission")]
+    [Authorize]
     public class ExamSubmisionController : Controller
     {
         private readonly IExamPaperService examService;

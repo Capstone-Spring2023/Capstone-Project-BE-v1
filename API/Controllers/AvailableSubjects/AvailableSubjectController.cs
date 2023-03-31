@@ -1,4 +1,5 @@
 ﻿using Business.AvailableSubjectService.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,6 +7,7 @@ namespace API.Controllers.AvailableSubjects
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AvailableSubjectController : ControllerBase
     {
         private readonly IAvailableSubjectService _availableSubjectService;

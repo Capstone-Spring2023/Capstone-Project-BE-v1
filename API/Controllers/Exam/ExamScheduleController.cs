@@ -2,6 +2,7 @@
 using Business.ExamSchedule.interfaces;
 using Business.ExamSchedule.Models;
 using Data.Paging;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -11,6 +12,7 @@ namespace API.Controllers.Exam
 {
     [Route("")]
     [ApiController]
+    [Authorize]
     public class ExamScheduleController : ControllerBase
     {
         private readonly IExamScheduleService _examManagementService;

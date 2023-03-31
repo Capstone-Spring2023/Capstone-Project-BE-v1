@@ -124,14 +124,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
+                        ValidIssuer = builder.Configuration["AppSettings:Issuer"],
+                        ValidAudience = builder.Configuration["AppSettings:Audience"],
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["AppSettings:JwtSecret"]))
+
                     };
                 });
-builder.Services.AddScoped<LoginService>(x=> new LoginService(Configuration));
+builder.Services.AddScoped<LoginService>(x => new LoginService(Configuration, x.GetRequiredService<CFManagementContext>()));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -158,6 +161,8 @@ app.UseCors();
 
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

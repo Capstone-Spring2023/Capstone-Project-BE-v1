@@ -4,6 +4,7 @@ using Business.Constants;
 using Business.ExamSchedule.Models;
 using Business.ExamService.Models;
 using Data.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,7 @@ namespace API.Controllers.Exam
 {
     [Route("api")]
     [ApiController]
+    [Authorize]
     public class TempController : ControllerBase
     {
         private readonly CFManagementContext _context;
@@ -94,22 +96,16 @@ namespace API.Controllers.Exam
             {
                 return new ObjectResult(new List<Object>())
                 {
-                    StatusCode = 404,
+                    StatusCode = 404
                 };
             }
             var res = new List<AvailableSubjectResponse>(); 
             foreach (var examSchedule in examSchedules)
             {
-                var examPaper = await _context.ExamPapers.FirstOrDefaultAsync(x => x.ExamScheduleId == examSchedule.ExamScheduleId);
-                if (examPaper != null)
+                var examPaper = await _context.ExamPapers.Where(x => x.ExamScheduleId == examSchedule.ExamScheduleId && x.Status != "Rejected").FirstOrDefaultAsync();
+                if(examPaper != null)
                 {
-                    if (examPaper.Status != "Rejected")
-                    {
-                        return new ObjectResult(new List<Object>())
-                        {
-                            StatusCode = 404,
-                        };
-                    }
+                    continue;
                 }
                 var register = await _context.RegisterSubjects.FirstOrDefaultAsync(x => x.RegisterSubjectId == examSchedule.RegisterSubjectId);
                 var availableSubject = await _context.AvailableSubjects.FirstOrDefaultAsync(x => x.AvailableSubjectId == register.AvailableSubjectId);

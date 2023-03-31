@@ -1,4 +1,5 @@
-﻿using Google.Apis.Auth;
+﻿using Data.Models;
+using Google.Apis.Auth;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -18,25 +19,29 @@ namespace Business.AuthenticationService
     public class LoginService
     {
         private IConfiguration configuration;
-        public LoginService(IConfiguration configuration)
+        private readonly CFManagementContext context;
+        public LoginService(IConfiguration configuration, CFManagementContext context)
         {
             this.configuration = configuration;
+            this.context = context;
         }
-        public string CreateToken()
+        public string CreateToken(GoogleJsonWebSignature.Payload payload)
         {
+            var user = context.Users.Where(x => x.Email == payload.Email).FirstOrDefault();
+            var roleName = context.Roles.Where(x => x.RoleId == user.RoleId).FirstOrDefault().RoleName;
             var claims = new[]
               {
                     //new Claim(JwtRegisteredClaimNames.Sub, Security.Encrypt(AppSettings.appSettings.JwtEmailEncryption,user.Gmail)),
-                    //new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim(ClaimTypes.NameIdentifier, "Dat"),
-                    new Claim(ClaimTypes.Email,"tqdatqn01230@gmail.com"),
-                    new Claim(ClaimTypes.Role, "User")
-                };
+                    new Claim("Email", user.Email.Trim()),
+                    new Claim("Role", roleName.Trim()),
+                    new Claim("UserId", user.UserId.ToString()),                   
+               };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["AppSettings:JwtSecret"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var token = new JwtSecurityToken(String.Empty,
-              String.Empty,
+            var token = new JwtSecurityToken(
+              configuration["AppSettings:Issuer"],
+              configuration["AppSettings:Audience"],
               claims,
               expires: DateTime.Now.AddSeconds(55 * 60),
               signingCredentials: creds);
@@ -49,7 +54,7 @@ namespace Business.AuthenticationService
             {
 
                 var payload = GoogleJsonWebSignature.ValidateAsync(userView.tokenId, new GoogleJsonWebSignature.ValidationSettings()).Result;
-                return CreateToken();
+                return CreateToken(payload);
             }catch (InvalidJwtException exception)
             {
                 return "Invalid Token";

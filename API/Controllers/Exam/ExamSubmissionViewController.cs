@@ -1,11 +1,13 @@
 ﻿using Business.ExamPaperService.Interfaces;
 using Business.ExamService.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.Exam
 {
     [ApiController]
     [Route("api/exam-submission-view")]
+    [Authorize]
     public class ExamSubmissionViewController : ControllerBase
     {
         private readonly IExamPaperService examService;
