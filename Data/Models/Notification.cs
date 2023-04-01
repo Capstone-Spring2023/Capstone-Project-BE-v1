@@ -9,6 +9,7 @@ namespace Data.Models
         public string Title { get; set; } = null!;
         public string Message { get; set; } = null!;
         public int UserId { get; set; }
+        public int? Status { get; set; }
 
         public virtual User User { get; set; } = null!;
     }

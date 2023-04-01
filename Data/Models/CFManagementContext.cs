@@ -234,6 +234,8 @@ namespace Data.Models
 
                 entity.Property(e => e.Message).HasMaxLength(1000);
 
+                entity.Property(e => e.Status).HasColumnName("status");
+
                 entity.Property(e => e.Title).HasMaxLength(50);
 
                 entity.HasOne(d => d.User)
