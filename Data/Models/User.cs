@@ -8,6 +8,7 @@ namespace Data.Models
         public User()
         {
             AvailableSubjects = new HashSet<AvailableSubject>();
+            Notifications = new HashSet<Notification>();
             RegisterSubjects = new HashSet<RegisterSubject>();
         }
 
@@ -21,6 +22,7 @@ namespace Data.Models
 
         public virtual Role Role { get; set; } = null!;
         public virtual ICollection<AvailableSubject> AvailableSubjects { get; set; }
+        public virtual ICollection<Notification> Notifications { get; set; }
         public virtual ICollection<RegisterSubject> RegisterSubjects { get; set; }
     }
 }
