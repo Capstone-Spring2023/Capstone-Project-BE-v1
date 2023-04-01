@@ -16,13 +16,10 @@ namespace API.Controllers
         }
         
         [HttpPost("login-google")]
-        public TokenReturnModel LoginGoogle(UserView userView)
+        public IActionResult LoginGoogle(UserView userView)
         {
-            string token = _loginService.CheckValidateGoogleToken(userView);
-            return new TokenReturnModel()
-            {
-                Token = token,
-            };
+            var response = _loginService.CheckValidateGoogleToken(userView);
+            return Ok(response.Result);
         }
 
         [HttpGet("test-authen")]

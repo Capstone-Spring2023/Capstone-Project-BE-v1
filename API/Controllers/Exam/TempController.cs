@@ -14,7 +14,6 @@ namespace API.Controllers.Exam
 {
     [Route("api")]
     [ApiController]
-    [Authorize]
     public class TempController : ControllerBase
     {
         private readonly CFManagementContext _context;

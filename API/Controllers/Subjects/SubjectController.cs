@@ -6,7 +6,6 @@ namespace API.Controllers.Subjects
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class SubjectController : ControllerBase
     {
 

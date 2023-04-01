@@ -12,7 +12,6 @@ namespace API.Controllers.Exam
 {
     [Route("")]
     [ApiController]
-    [Authorize]
     public class ExamScheduleController : ControllerBase
     {
         private readonly IExamScheduleService _examManagementService;

@@ -12,7 +12,6 @@ namespace API.Controllers
 {
     
     [ApiController]
-    [Authorize]
     public class HeaderManagementController : ControllerBase
     {
         private readonly IUserService _userService;

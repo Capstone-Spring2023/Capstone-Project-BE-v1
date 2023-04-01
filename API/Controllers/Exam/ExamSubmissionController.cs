@@ -11,7 +11,6 @@ namespace API.Controllers.Exam
 {
     [ApiController]
     [Route("api/exam-submission")]
-    [Authorize]
     public class ExamSubmisionController : Controller
     {
         private readonly IExamPaperService examService;

@@ -7,7 +7,6 @@ namespace API.Controllers.Lecture
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class RegisterSubjectController : ControllerBase
     {
         private readonly CFManagementContext _context;

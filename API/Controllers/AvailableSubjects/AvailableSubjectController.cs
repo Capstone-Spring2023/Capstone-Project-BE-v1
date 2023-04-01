@@ -7,7 +7,6 @@ namespace API.Controllers.AvailableSubjects
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class AvailableSubjectController : ControllerBase
     {
         private readonly IAvailableSubjectService _availableSubjectService;

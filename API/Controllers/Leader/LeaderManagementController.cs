@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Authorization;
 namespace API.Controllers
 {
     [ApiController]
-    [Authorize]
     public class LeaderManagementController : ControllerBase
     {
         private readonly IUserService _userService;
