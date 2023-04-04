@@ -12,6 +12,7 @@ using Data.Paging;
 using Business.AvailableSubjectService.Models;
 using AutoMapper;
 using Business.AvailableSubjectService.Interface;
+using Microsoft.EntityFrameworkCore;
 
 namespace Business.AvailableSubjectService.Implement
 {
@@ -95,6 +96,16 @@ namespace Business.AvailableSubjectService.Implement
             {
                 StatusCode = 200,
                 Data = availableSubject
+            };
+        }
+
+        public async Task<ResponseModel> GetAvailableSubjectByDepartmentId(int departmentId)
+        {
+            var listSubjects = await availableSubjectRepository.GetAvailableSubjectsByDepartmentId(departmentId);
+            return new()
+            {
+                StatusCode = 200,
+                Data = listSubjects
             };
         }
     }

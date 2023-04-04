@@ -42,5 +42,16 @@ namespace API.Controllers.Notifications
             var response = await _notificationService.SaveNotification(notification);
             return Ok(response);
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> MarkAsRead(int id)
+        {
+            var response = await _notificationService.MarkAsRead(id);
+            if (response == null)
+            {
+                return BadRequest();
+            }
+            return Ok(response);
+        }
     }
 }

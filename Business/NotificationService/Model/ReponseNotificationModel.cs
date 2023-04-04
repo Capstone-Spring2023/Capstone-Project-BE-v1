@@ -9,8 +9,9 @@ namespace Business.NotificationService.Model
     public class ReponseNotificationModel
     {
         public int NotiId { get; set; }
-        public string Title { get; set; } = null!;
+        public string Type { get; set; } = null!;
         public string Message { get; set; } = null!;
         public int UserId { get; set; }
+        public string? Status { get; set; }
     }
 }

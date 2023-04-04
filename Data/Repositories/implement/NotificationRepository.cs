@@ -29,14 +29,14 @@ namespace Data.Repositories.implement
             var notification = _context.Notifications.Find(id);
             if(notification != null)
             {
-                notification.Status = 3;
+                notification.Status = "Deleted";
             }
             await _context.SaveChangesAsync();
         }
 
         public async Task<List<Notification>> GetAllNotificationsByUserId(int userId)
         {
-            var notifications = await _context.Notifications.Where(x => x.UserId == userId && x.Status != 3).ToListAsync();
+            var notifications = await _context.Notifications.Where(x => x.UserId == userId && x.Status != "Deleted").ToListAsync();
             return notifications;
         }
 
@@ -44,6 +44,16 @@ namespace Data.Repositories.implement
         {
             var notification = await _context.Notifications.FindAsync(id);
             return notification;
+        }
+
+        public async Task MarkAsRead(int id)
+        {
+            var notification = _context.Notifications.Find(id);
+            if (notification != null)
+            {
+                notification.Status = "Read";
+            }
+            await _context.SaveChangesAsync();
         }
     }
 }

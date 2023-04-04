@@ -73,7 +73,7 @@ builder.Services.AddScoped<IExamScheduleService>(x => new ExamScheduleService(x.
 builder.Services.AddScoped<ITypeService>(x => new TypeService(x.GetRequiredService<ITypeRepository>()));
 builder.Services.AddScoped<INotificationService>(x => new NotificationService(x.GetRequiredService<INotificationRepository>(), x.GetRequiredService<IMapper>()));
 //Add UserService
-builder.Services.AddScoped<IUserService>(x => new UserService(x.GetRequiredService<IUserRepository>()));
+builder.Services.AddScoped<IUserService>(x => new UserService(x.GetRequiredService<IUserRepository>(), x.GetRequiredService<CFManagementContext>(), x.GetRequiredService<IMapper>()));
 builder.Services.AddScoped<IExamPaperService>(x => new ExamPaperService(x.GetRequiredService<CFManagementContext>(),x.GetRequiredService<IExamPaperRepository>()
     , x.GetRequiredService<ICommentRepository>(), x.GetRequiredService<IMapper>(), x.GetRequiredService<IExamScheduleRepository>()));
 

@@ -16,5 +16,6 @@ namespace Data.Repositories.Interface
         Task CreateAvailableSubject(AvailableSubject availableSubject);
         public Task<List<AvailableSubject>> GetAllAvailableSubjectsHaveExamScheduleByLeaderId(int leaderId);
         public Task<AvailableSubject> GetAvailableSubjectById(int id);
+        public Task<List<AvailableSubject>> GetAvailableSubjectsByDepartmentId(int departmentId); 
     }
 }

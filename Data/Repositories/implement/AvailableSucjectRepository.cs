@@ -62,5 +62,11 @@ namespace Data.Repositories.implement
         {
             return await _context.AvailableSubjects.FindAsync(id);
         }
+
+        public async Task<List<AvailableSubject>> GetAvailableSubjectsByDepartmentId(int departmentId)
+        {
+            var listAvailableSubjects = await _context.AvailableSubjects.Where(x => x.Subject.DepartmentId == departmentId && x.Status).ToListAsync();
+            return listAvailableSubjects;
+        }
     }
 }

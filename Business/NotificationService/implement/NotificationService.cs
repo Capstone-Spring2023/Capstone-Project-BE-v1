@@ -52,11 +52,26 @@ namespace Business.NotificationService.implement
             };
         }
 
+        public async Task<ResponseModel> MarkAsRead(int id)
+        {
+            var notification = await _notificationRepository.GetNotification(id);
+            if (notification == null)
+            {
+                return null;
+            }
+            await _notificationRepository.MarkAsRead(id);
+            return new()
+            {
+                StatusCode = 201,
+                Data = "Read"
+            };
+        }
+
         public async Task<ResponseModel> SaveNotification(CreateNotificationModel model)
         {
             // status = 1 là chưa đọc
             var notification = _mapper.Map<Notification>(model);
-            notification.Status = 1;
+            notification.Status = "Unread";
             await _notificationRepository.CreateNotification(notification);
             return new()
             {

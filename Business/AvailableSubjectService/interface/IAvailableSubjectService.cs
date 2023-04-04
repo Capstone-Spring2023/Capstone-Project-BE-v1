@@ -16,6 +16,7 @@ namespace Business.AvailableSubjectService.Interface
         Task<ObjectResult> GetTeachersBySubjectId(int subjectId, PagingRequest paging);
         Task<ResponseModel> GetAllAvailableSubjectByLeaderId(int leaderId);
         Task<ResponseModel> GetAvailableSubjectById(int id);
+        Task<ResponseModel> GetAvailableSubjectByDepartmentId(int departmentId);
 
     }
 }

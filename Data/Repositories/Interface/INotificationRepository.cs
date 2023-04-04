@@ -13,5 +13,6 @@ namespace Data.Repositories.Interface
         public Task DeleteNotification(int id);
         public Task<List<Notification>> GetAllNotificationsByUserId(int userId);
         public Task<Notification> GetNotification(int id);
+        public Task MarkAsRead(int id);
     }
 }

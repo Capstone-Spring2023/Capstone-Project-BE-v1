@@ -24,5 +24,12 @@ namespace API.Controllers.AvailableSubjects
             }
             return Ok(response);
         }
+
+        [HttpGet("/Department/{departmentId}")]
+        public async Task<IActionResult> GetAvailableSubjectsByDepartmentId(int departmentId)
+        {
+            var response = await _availableSubjectService.GetAvailableSubjectByDepartmentId(departmentId);
+            return Ok(response);
+        }
     }
 }

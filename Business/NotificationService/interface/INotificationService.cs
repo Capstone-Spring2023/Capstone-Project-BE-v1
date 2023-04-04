@@ -13,5 +13,6 @@ namespace Business.NotificationService.Interfaces
         public Task<ResponseModel> GetAllNotificaionsByUserId(int userId);
         public Task<ResponseModel> DeleteNotificaion(int id);
         public Task<ResponseModel> SaveNotification(CreateNotificationModel model);
+        public Task<ResponseModel> MarkAsRead(int id);
     }
 }
