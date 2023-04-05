@@ -25,6 +25,7 @@ namespace Data.Models
         public virtual DbSet<ExamPaper> ExamPapers { get; set; } = null!;
         public virtual DbSet<ExamSchedule> ExamSchedules { get; set; } = null!;
         public virtual DbSet<Notification> Notifications { get; set; } = null!;
+        public virtual DbSet<RegisterSlot> RegisterSlots { get; set; } = null!;
         public virtual DbSet<RegisterSubject> RegisterSubjects { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<Schedule> Schedules { get; set; } = null!;
@@ -38,7 +39,7 @@ namespace Data.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Data Source=13.212.106.245,1433;Initial Catalog=CFManagement;User ID=sa;Password=1234567890Aa");
+                optionsBuilder.UseSqlServer("Data Source=13.212.106.245,1433;Initial Catalog=CFManagement_Algo;User ID=sa;Password=1234567890Aa");
             }
         }
 
@@ -80,6 +81,11 @@ namespace Data.Models
                 entity.ToTable("Class");
 
                 entity.Property(e => e.ClassCode).HasMaxLength(50);
+
+                entity.HasOne(d => d.RegisterSubject)
+                    .WithMany(p => p.Classes)
+                    .HasForeignKey(d => d.RegisterSubjectId)
+                    .HasConstraintName("FK_Class_RegisterSubjects");
             });
 
             modelBuilder.Entity<ClassAsubject>(entity =>
@@ -109,9 +115,7 @@ namespace Data.Models
             {
                 entity.Property(e => e.CommentId).HasColumnName("commentId");
 
-                entity.Property(e => e.CommentContent)
-                    .HasMaxLength(200)
-                    .IsFixedLength();
+                entity.Property(e => e.CommentContent).HasMaxLength(200);
 
                 entity.Property(e => e.LeaderId).HasColumnName("leaderId");
 
@@ -247,6 +251,23 @@ namespace Data.Models
                     .HasConstraintName("FK_Notification_Users");
             });
 
+            modelBuilder.Entity<RegisterSlot>(entity =>
+            {
+                entity.ToTable("RegisterSlot");
+
+                entity.HasOne(d => d.Semester)
+                    .WithMany(p => p.RegisterSlots)
+                    .HasForeignKey(d => d.SemesterId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_RegisterSlot_Semester");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.RegisterSlots)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_RegisterSlot_Users");
+            });
+
             modelBuilder.Entity<RegisterSubject>(entity =>
             {
                 entity.Property(e => e.RegisterSubjectId).HasColumnName("registerSubjectId");
@@ -282,8 +303,7 @@ namespace Data.Models
 
                 entity.Property(e => e.RoleName)
                     .HasMaxLength(50)
-                    .HasColumnName("roleName")
-                    .IsFixedLength();
+                    .HasColumnName("roleName");
             });
 
             modelBuilder.Entity<Schedule>(entity =>
@@ -366,8 +386,7 @@ namespace Data.Models
 
                 entity.Property(e => e.Email)
                     .HasMaxLength(100)
-                    .HasColumnName("email")
-                    .IsFixedLength();
+                    .HasColumnName("email");
 
                 entity.Property(e => e.FullName)
                     .HasMaxLength(50)
@@ -375,12 +394,20 @@ namespace Data.Models
 
                 entity.Property(e => e.Phone)
                     .HasMaxLength(20)
-                    .HasColumnName("phone")
-                    .IsFixedLength();
+                    .HasColumnName("phone");
 
                 entity.Property(e => e.RoleId).HasColumnName("roleId");
 
                 entity.Property(e => e.Status).HasColumnName("status");
+
+                entity.Property(e => e.UserCode)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("userCode");
+
+                entity.Property(e => e.UserCodeMustEliminate)
+                    .HasMaxLength(50)
+                    .HasColumnName("userCode-mustEliminate");
 
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.Users)
