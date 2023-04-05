@@ -19,6 +19,8 @@ namespace Data.Models
         public string Phone { get; set; } = null!;
         public string Address { get; set; } = null!;
         public bool Status { get; set; }
+        public byte[]? UserCodeMustEliminate { get; set; }
+        public string? UserCode { get; set; }
 
         public virtual Role Role { get; set; } = null!;
         public virtual ICollection<AvailableSubject> AvailableSubjects { get; set; }

@@ -14,7 +14,9 @@ namespace Data.Models
         public int ClassId { get; set; }
         public string ClassCode { get; set; } = null!;
         public bool Status { get; set; }
+        public int? RegisterSubjectId { get; set; }
 
+        public virtual RegisterSubject? RegisterSubject { get; set; }
         public virtual ICollection<ClassAsubject> ClassAsubjects { get; set; }
         public virtual ICollection<Schedule> Schedules { get; set; }
     }

@@ -7,6 +7,7 @@ namespace Data.Models
     {
         public RegisterSubject()
         {
+            Classes = new HashSet<Class>();
             ExamSchedules = new HashSet<ExamSchedule>();
         }
 
@@ -19,6 +20,7 @@ namespace Data.Models
 
         public virtual AvailableSubject AvailableSubject { get; set; } = null!;
         public virtual User User { get; set; } = null!;
+        public virtual ICollection<Class> Classes { get; set; }
         public virtual ICollection<ExamSchedule> ExamSchedules { get; set; }
     }
 }
