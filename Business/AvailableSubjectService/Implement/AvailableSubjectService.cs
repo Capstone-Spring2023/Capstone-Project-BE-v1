@@ -108,5 +108,12 @@ namespace Business.AvailableSubjectService.Implement
                 Data = listSubjects
             };
         }
+
+        public Task<ResponseModel> GetAllAvailableSubjectNotHaveRegister()
+        {
+
+
+            throw new NotImplementedException();
+        }
     }
 }

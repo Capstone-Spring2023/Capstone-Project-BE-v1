@@ -10,6 +10,7 @@ using Business.AvailableSubjectService.Models;
 using Business.ExamSchedule.Models;
 using Business.NotificationService.Model;
 using Business.UserService.Models;
+using Business.RegisterSubjectService.Models;
 
 namespace Business
 {
@@ -31,6 +32,7 @@ namespace Business
             CreateMap<CreateNotificationModel, Notification>().ReverseMap();
             CreateMap<ReponseNotificationModel, Notification>().ReverseMap();
             CreateMap<ResponseDepartment, Department>().ReverseMap();
+            CreateMap<CreateRegisterSubjectModel, RegisterSubject>().ReverseMap();
         }
     }
 }

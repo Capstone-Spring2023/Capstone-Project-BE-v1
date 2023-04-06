@@ -19,6 +19,12 @@ namespace Data.Repositories.implement
             _context = context;
         }
 
+        public async Task CreateRegisterSubject(RegisterSubject registerSubject)
+        {
+            _context.RegisterSubjects.Add(registerSubject);
+            await _context.SaveChangesAsync();
+        }
+
         public Task<List<RegisterSubject>> GetAllRegisterSubject()
         {
             var listRegisterSubject = _context.RegisterSubjects.ToListAsync();
