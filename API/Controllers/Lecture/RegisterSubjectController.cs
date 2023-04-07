@@ -19,7 +19,7 @@ namespace API.Controllers.Lecture
         }
 
         [HttpPost]
-        [Route("api/lecture/registerSubject/createRegisterSubject")]
+        [Route("/api/lecture/registerSubject/createRegisterSubject")]
         public async Task<IActionResult> CreateRegisterSubject(CreateRegisterSubjectModel model)
         {
             var response = await _registerSubjectService.CreateRegisterSubject(model);

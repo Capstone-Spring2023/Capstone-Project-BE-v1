@@ -255,6 +255,10 @@ namespace Data.Models
             {
                 entity.ToTable("RegisterSlot");
 
+                entity.Property(e => e.Slot)
+                    .HasMaxLength(10)
+                    .IsFixedLength();
+
                 entity.HasOne(d => d.Semester)
                     .WithMany(p => p.RegisterSlots)
                     .HasForeignKey(d => d.SemesterId)
