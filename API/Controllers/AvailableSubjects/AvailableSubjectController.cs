@@ -1,4 +1,5 @@
 ﻿using Business.AvailableSubjectService.Interface;
+using Data.Paging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +31,18 @@ namespace API.Controllers.AvailableSubjects
         {
             var response = await _availableSubjectService.GetAvailableSubjectByDepartmentId(departmentId);
             return Ok(response);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllAvailableSubjects()
+        {
+            PagingRequest pagingRequest = new PagingRequest()
+            {
+                PageIndex = 1,
+                PageSize = 20
+            };
+            var response = await _availableSubjectService.GetAvailableSubjects(x => x.Status == true, pagingRequest);
+            return Ok(response.Value);
         }
     }
 }

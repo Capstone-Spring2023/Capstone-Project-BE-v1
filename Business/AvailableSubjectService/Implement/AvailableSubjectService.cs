@@ -31,8 +31,7 @@ namespace Business.AvailableSubjectService.Implement
         {
             try
             {
-                var ExamPapers = await availableSubjectRepository.GetAvailableSubjects(ex, paging);
-                List<AvailableSubjectResponse> datas = ExamPapers.Select(x => mapper.Map<AvailableSubjectResponse>(x)).ToList();
+                var datas = await availableSubjectRepository.GetAvailableSubjects(ex, paging);
                 return new ObjectResult(datas)
                 {
                     StatusCode = 200,
