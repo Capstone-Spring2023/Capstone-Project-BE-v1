@@ -25,8 +25,8 @@ namespace Business.RegisterSubjectService.Models
     }
     public class RegisterSubjectSlotResponse
     {
-        public List<RegisterSubjectResponse> registerSubjects { get; set; }
-        public List<RegisterSlotResponse> registerSlots { get; set; }   
+        public List<string> registerSubjects { get; set; }
+        public List<string> registerSlots { get; set; }   
 
     }
 }

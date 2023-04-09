@@ -132,26 +132,17 @@ namespace API.Controllers.Exam
             var registerSubjects = await _context.RegisterSubjects
                 .Include(x => x.AvailableSubject)
                 .Where(x => x.UserId == userId)
-                //.Select(x => _mapper.Map<RegisterSubjectResponse>(x))
+                .Select(x => _mapper.Map<RegisterSubjectResponse>(x))
                 .ToListAsync();
             List<RegisterSubjectResponse> registerSubjectResponses = new List<RegisterSubjectResponse>();
-
-            foreach (var a in registerSubjects)
-            {
-                var b = _context.Departments
-                    .First(x => x.Subjects.Where(s => s.SubjectId == a.AvailableSubject.SubjectId).Count() > 0);
-                var c = _mapper.Map<RegisterSubjectResponse>(a);
-                c.Department = b.DepartmentName;
-                registerSubjectResponses.Add(c);
-               
-            }
+            
             var registerSlots = _context.RegisterSlots.Where(x => x.UserId == userId)
                 .Select(x => _mapper.Map<RegisterSlotResponse>(x)).ToList();
 
             var res = new RegisterSubjectSlotResponse()
             {
-                registerSlots = registerSlots,
-                registerSubjects = registerSubjectResponses
+                registerSlots = registerSlots.Select(x=> x.Slot.Trim()).ToList(),
+                registerSubjects = registerSubjects.Select(x => x.SubjectName).ToList()
             }
             ;
 
