@@ -142,7 +142,7 @@ namespace API.Controllers.Exam
             var res = new RegisterSubjectSlotResponse()
             {
                 registerSlots = registerSlots.Select(x=> x.Slot.Trim()).ToList(),
-                registerSubjects = registerSubjects.Select(x => x.SubjectName).ToList()
+                registerSubjects = registerSubjects
             }
             ;
 
