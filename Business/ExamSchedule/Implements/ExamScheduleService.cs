@@ -110,9 +110,10 @@ namespace Business.ExamSchedule.Implements
 
                     //Create Request
                     var examScheduleModel = _mapper.Map<Data.Models.ExamSchedule>(createExamScheduleModel);
+                    int typeId = _context.Subjects.Find(availableSubject.SubjectId).TypeId;
 
+                    examScheduleModel.TypeId = typeId;
                     examScheduleModel.RegisterSubjectId = registerSubject.RegisterSubjectId;
-
                     examScheduleModel.LeaderId = availableSubject.LeaderId;
                     examScheduleModel.AvailableSubjectId = availableSubject.AvailableSubjectId;
 

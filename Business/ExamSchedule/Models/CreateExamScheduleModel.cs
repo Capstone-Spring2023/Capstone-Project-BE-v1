@@ -13,7 +13,6 @@ namespace Business.ExamSchedule.Models
         public DateTime Deadline { get; set; }
 
         public string? ExamLink { get; set; }
-        public int TypeId { get; set; }
         public string Type { get; set; } = null!;
         public string Message { get; set; } = null!;
         public int UserId { get; set; }
