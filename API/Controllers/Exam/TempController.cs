@@ -3,6 +3,7 @@ using Business.AvailableSubjectService.Models;
 using Business.Constants;
 using Business.ExamSchedule.Models;
 using Business.ExamService.Models;
+using Business.RegisterSubjectService.Models;
 using Data.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -123,6 +124,21 @@ namespace API.Controllers.Exam
             {
                 StatusCode = 200,
             };
+        }
+        [HttpGet("user/{userId}/register-subjects")]
+        [SwaggerOperation(Summary = "API lấy ra danh sách register subject của 1 user")]
+        public async Task<ObjectResult> getRegisterSubjects([FromRoute] int userId)
+        {
+            var registerSubjects = await _context.RegisterSubjects
+                .Include(x => x.AvailableSubject)
+                .Where(x => x.UserId == userId)
+                .Select(x => _mapper.Map<RegisterSubjectResponse>(x))
+                .ToListAsync();
+            return new ObjectResult(registerSubjects)
+            {
+                StatusCode = 200
+            };
+         
         }
     }
 }
