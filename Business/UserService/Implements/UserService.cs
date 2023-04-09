@@ -32,9 +32,8 @@ namespace Business.UserService.Implements
                     StatusCode = (int) StatusCode.NOTFOUND
                 };
             }
-            
             UserModel userModel = new UserModel(
-                user.FullName, user.Phone.Trim(), user.Address, user.RoleId
+                user.FullName, user.Phone.Trim(), user.Address, user.RoleId, user.Role.RoleName
             );
            
             return new()
