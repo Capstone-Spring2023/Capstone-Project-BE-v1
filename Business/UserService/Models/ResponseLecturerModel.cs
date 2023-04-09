@@ -12,5 +12,7 @@ namespace Business.UserService.Models
         public string semester { get; set; }
         public string subjectName { get; set; }
         public bool isLeader { get; set; }
+        public int userId { get; set; }
+        public int availableSubjectId { get; set; }
     }
 }

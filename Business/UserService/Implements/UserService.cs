@@ -126,7 +126,14 @@ namespace Business.UserService.Implements
                     var lecturer = _context.Users.Where(x => x.UserId == registerSubject.UserId).FirstOrDefault();
                     response.fullName = lecturer.FullName;
                     response.subjectName = ASubject.SubjectName;
-                    response.isLeader = (availableSubject.LeaderId == registerSubject.UserId);
+                    var isLeader = false;
+                    if(availableSubject.LeaderId == lecturer.UserId)
+                    {
+                        isLeader = true;
+                    }
+                    response.isLeader = isLeader;
+                    response.availableSubjectId = availableSubjectId;
+                    response.userId = lecturer.UserId;
                     listResponse.Add(response);
                 }
                 
