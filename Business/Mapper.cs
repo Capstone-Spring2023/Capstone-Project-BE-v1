@@ -11,13 +11,14 @@ using Business.ExamSchedule.Models;
 using Business.NotificationService.Model;
 using Business.UserService.Models;
 using Business.RegisterSubjectService.Models;
-
 namespace Business
 {
     public class AutoMapperProfile:Profile
     {
         public AutoMapperProfile()
         {
+            CreateMap<RegisterSubject, RegisterSubjectResponse>()
+                .ForMember(src => src.SubjectName, act => act.MapFrom(des => des.AvailableSubject.SubjectName));
             CreateMap<ExamCreateRequestModel, ExamPaper>();
             CreateMap<ExamUpdateRequestModel, ExamPaper>();
             CreateMap<ExamUpdateApproveModel, ExamPaper>().ReverseMap();

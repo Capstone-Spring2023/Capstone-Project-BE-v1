@@ -13,6 +13,7 @@ using Business.ExamPaperService.Interfaces;
 using Business.ExamService.Models;
 using Data.Repositories.implement;
 using Business.Constants;
+using Business.ExamSchedule.Models;
 
 namespace Business.ExamPaperService.Implements
 {
@@ -40,6 +41,12 @@ namespace Business.ExamPaperService.Implements
             try
             {
                 await ExamPaperRepository.CreateExam(ExamPaper);
+                /*var notification = mapper.Map<Notification>(ExamPaperCreateRequest);
+                notification.UserId = registerSubject.UserId;
+                notification.LeaderName = _context.Users.Find(createExamScheduleModel.LeaderId).FullName;
+                notification.SubjectCode = Subject.SubjectCode;
+                notification.Status = "Unread";
+                await _notificationRepository.CreateNotification(notification);*/
                 return new ObjectResult("Create Success")
                 {
                     StatusCode = 201,

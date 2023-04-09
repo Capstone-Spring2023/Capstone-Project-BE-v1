@@ -123,7 +123,7 @@ namespace Business.ExamSchedule.Implements
                     await _examScheduleRepository.CreateScheduleExam(examScheduleModel);
                     var notification = _mapper.Map<Notification>(createExamScheduleModel);
                     notification.UserId = registerSubject.UserId;
-                    notification.LeaderName = _context.Users.Find(createExamScheduleModel.LeaderId).FullName;
+                    notification.Sender = _context.Users.Find(createExamScheduleModel.LeaderId).FullName;
                     notification.SubjectCode = Subject.SubjectCode;
                     notification.Status = "Unread";
                     await _notificationRepository.CreateNotification(notification);
