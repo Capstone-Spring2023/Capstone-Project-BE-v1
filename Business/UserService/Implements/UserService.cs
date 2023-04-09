@@ -5,6 +5,7 @@ using Business.UserService.Models;
 using Data.Models;
 using Data.Repositories.Interface;
 using Microsoft.EntityFrameworkCore;
+using System.Net.WebSockets;
 using System.Xml.Xsl;
 
 namespace Business.UserService.Implements
@@ -32,8 +33,9 @@ namespace Business.UserService.Implements
                     StatusCode = (int) StatusCode.NOTFOUND
                 };
             }
+            var roleName = _context.Roles.Find(user.RoleId).RoleName;
             UserModel userModel = new UserModel(
-                user.FullName, user.Phone.Trim(), user.Address, user.RoleId, user.Role.RoleName
+                user.FullName, user.Phone.Trim(), user.Address, user.RoleId, roleName
             );
            
             return new()
@@ -74,8 +76,9 @@ namespace Business.UserService.Implements
             {
                 if(user.RoleId == ((int)Constants.Role.Leader))
                 {
+                    var roleName = _context.Roles.Find(user.RoleId).RoleName;
                     listLeader.Add(new UserModel(
-                        user.FullName, user.Phone.Trim(), user.Address, user.RoleId, user.Role.RoleName
+                        user.FullName, user.Phone.Trim(), user.Address, user.RoleId, roleName
                     ));
                 }
             }
