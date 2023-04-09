@@ -8,7 +8,7 @@ namespace Business.UserService.Models
 {
     public class UserModel
     {
-        public UserModel(string fullName, string phone, string address, int roleId, string roleName
+        public UserModel(string fullName, string phone, string address, int roleId, string roleName)
         {
             this.fullName = fullName;
             this.phone = phone;
