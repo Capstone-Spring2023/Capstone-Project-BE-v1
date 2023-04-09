@@ -17,6 +17,7 @@ namespace Business
     {
         public AutoMapperProfile()
         {
+            CreateMap<RegisterSlot, RegisterSlotResponse>();
             CreateMap<RegisterSubject, RegisterSubjectResponse>()
                 .ForMember(src => src.SubjectName, act => act.MapFrom(des => des.AvailableSubject.SubjectName));
             CreateMap<ExamCreateRequestModel, ExamPaper>();

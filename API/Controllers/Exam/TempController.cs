@@ -125,16 +125,37 @@ namespace API.Controllers.Exam
                 StatusCode = 200,
             };
         }
-        [HttpGet("user/{userId}/register-subjects")]
-        [SwaggerOperation(Summary = "API lấy ra danh sách register subject của 1 user")]
+        [HttpGet("user/{userId}/register-subject-slot")]
+        [SwaggerOperation(Summary = "API lấy ra danh sách register subject + slot của 1 user")]
         public async Task<ObjectResult> getRegisterSubjects([FromRoute] int userId)
         {
             var registerSubjects = await _context.RegisterSubjects
                 .Include(x => x.AvailableSubject)
                 .Where(x => x.UserId == userId)
-                .Select(x => _mapper.Map<RegisterSubjectResponse>(x))
+                //.Select(x => _mapper.Map<RegisterSubjectResponse>(x))
                 .ToListAsync();
-            return new ObjectResult(registerSubjects)
+            List<RegisterSubjectResponse> registerSubjectResponses = new List<RegisterSubjectResponse>();
+
+            foreach (var a in registerSubjects)
+            {
+                var b = _context.Departments
+                    .First(x => x.Subjects.Where(s => s.SubjectId == a.AvailableSubject.SubjectId).Count() > 0);
+                var c = _mapper.Map<RegisterSubjectResponse>(a);
+                c.Department = b.DepartmentName;
+                registerSubjectResponses.Add(c);
+               
+            }
+            var registerSlots = _context.RegisterSlots.Where(x => x.UserId == userId)
+                .Select(x => _mapper.Map<RegisterSlotResponse>(x)).ToList();
+
+            var res = new RegisterSubjectSlotResponse()
+            {
+                registerSlots = registerSlots,
+                registerSubjects = registerSubjectResponses
+            }
+            ;
+
+            return new ObjectResult(res)
             {
                 StatusCode = 200
             };
