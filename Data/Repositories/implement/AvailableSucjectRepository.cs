@@ -19,18 +19,27 @@ namespace Data.Repositories.implement
             _context = context;
         }
 
+        public async Task<List<AvailableSubject>> GetAllAvailableSubjectsHaveExamScheduleByLeaderId(int leaderId)
+        {
+            var listAvailableSubject = await _context
+                .AvailableSubjects
+                .Where(x => x.LeaderId == leaderId)
+                .ToListAsync();
+            listAvailableSubject = listAvailableSubject.Where(x => checkIfSubjectAlreadyHaveExamSchedule(x.AvailableSubjectId)).ToList();
+            return listAvailableSubject;
+        }
         public async Task<List<AvailableSubject>> GetAllAvailableSubjectsByLeaderId(int leaderId)
         {
             var listAvailableSubject = await _context
                 .AvailableSubjects
                 .Where(x => x.LeaderId == leaderId)
                 .ToListAsync();
-            listAvailableSubject = listAvailableSubject.Where(x => !checkIfSubjectAlreadyHaveExamSchedule(x.SubjectId)).ToList();
+            listAvailableSubject = listAvailableSubject.Where(x => !checkIfSubjectAlreadyHaveExamSchedule(x.AvailableSubjectId)).ToList();
             return listAvailableSubject;
         }
-        private bool checkIfSubjectAlreadyHaveExamSchedule(int subjectId)
+        private bool checkIfSubjectAlreadyHaveExamSchedule(int availableSubjectId)
         {
-            var examSchedules = _context.ExamSchedules.Where(x => x.SubjectId == subjectId && x.Status == true);
+            var examSchedules = _context.ExamSchedules.Where(x => x.AvailableSubjectId == availableSubjectId && x.Status == true);
             if (examSchedules == null || examSchedules.Count() == 0) return false;
             return true;
         }
@@ -52,6 +61,12 @@ namespace Data.Repositories.implement
         public async Task<AvailableSubject> GetAvailableSubjectById(int id)
         {
             return await _context.AvailableSubjects.FindAsync(id);
+        }
+
+        public async Task<List<AvailableSubject>> GetAvailableSubjectsByDepartmentId(int departmentId)
+        {
+            var listAvailableSubjects = await _context.AvailableSubjects.Where(x => x.Subject.DepartmentId == departmentId && x.Status).ToListAsync();
+            return listAvailableSubjects;
         }
     }
 }

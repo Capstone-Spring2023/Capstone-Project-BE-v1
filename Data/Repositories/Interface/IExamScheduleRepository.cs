@@ -16,5 +16,6 @@ namespace Data.Repositories.Interface
         public Task<List<ExamSchedule>> GetAllAsync();
         public Task<ExamSchedule> GetExamScheduleByRegisterSubjectId(int id);
         public Task<List<ExamSchedule>> GetAllExamScheduleByLeaderId(int leaderId);
+        public Task<List<ExamSchedule>> getExamScheduleByAvailableSubjectId(int availableSubjectId);
     }
 }

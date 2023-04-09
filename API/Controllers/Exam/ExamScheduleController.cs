@@ -1,7 +1,9 @@
 ﻿using Business.AvailableSubjectService.Interface;
 using Business.ExamSchedule.interfaces;
 using Business.ExamSchedule.Models;
+using Business.NotificationService.Model;
 using Data.Paging;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -43,7 +45,7 @@ namespace API.Controllers.Exam
             var response = await _avaibleSubjectService.GetAllAvailableSubjectByLeaderId(leaderId);
             if (response.StatusCode == (int)Business.Constants.StatusCode.NOTFOUND)
             {
-                return NotFound();
+                return NotFound(new List<Object>());
             }
             return Ok(response);
         }
@@ -69,11 +71,23 @@ namespace API.Controllers.Exam
             var response = await _examManagementService.GetAllExamScheduleByLeaderId(leaderId);
             if (response.StatusCode == 404)
             {
-                return NotFound();
+                return NotFound(new List<Object>());
             }
             return Ok(response);
         }
 
+        [HttpGet]
+        [Route("api/exam-schedule/available-subject/{availableSubjectId}")]
+        [SwaggerOperation(Summary = "Get Detail Request ExamSchedule By availableSubjectId")]
+        public async Task<IActionResult> GetDetailRequestExamSchedule(int availableSubjectId)
+        {
+            var response = await _examManagementService.GetDetailRequestExamSchedule(availableSubjectId);
+            if(response.StatusCode == 404)
+            {
+                return NotFound(new List<Object>());
+            }
+            return Ok(response);
+        }
 
         [HttpPost]
         [Route("api/exam-schedule")]
@@ -92,14 +106,14 @@ namespace API.Controllers.Exam
             return response;
         }
         [HttpDelete]
-        [Route("api/exam-schedule/{examScheduleId}")]
+        [Route("api/exam-schedule/{availableSubjectId}")]
         [SwaggerOperation(Summary = "Delete Exam-Schedule by it's ID")]
-        public async Task<ObjectResult> Delete([FromRoute] int examScheduleId)
+        public async Task<ObjectResult> Delete([FromRoute] int availableSubjectId)
         {
-            return await _examManagementService.DeleteExamSchedule(examScheduleId);
+            return await _examManagementService.DeleteExamSchedule(availableSubjectId);
         }
 
-        [HttpGet("teachers/subject/{subjectId}")]
+        [HttpGet("api/teachers/subject/{subjectId}")]
         public async Task<ObjectResult> GetTeachers([FromRoute] int subjectId, [FromQuery] int pageIndex)
         {
             PagingRequest pagingRequest = new PagingRequest()

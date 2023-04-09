@@ -1,4 +1,7 @@
-﻿using Google.Apis.Auth;
+﻿using Business.AuthenticationService.Models;
+using Data.Models;
+using Google.Apis.Auth;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -18,41 +21,70 @@ namespace Business.AuthenticationService
     public class LoginService
     {
         private IConfiguration configuration;
-        public LoginService(IConfiguration configuration)
+        private readonly CFManagementContext context;
+        public LoginService(IConfiguration configuration, CFManagementContext context)
         {
             this.configuration = configuration;
+            this.context = context;
         }
-        public string CreateToken()
+        public async Task<ResponseModel> CreateToken(GoogleJsonWebSignature.Payload payload)
         {
-            var claims = new[]
+            var user = context.Users.Where(x => x.Email == payload.Email).FirstOrDefault();
+            if(user == null)
+            {
+                return new()
+                {
+                    StatusCode = 500
+                };
+            }
+            var roleName = context.Roles.Where(x => x.RoleId == user.RoleId).FirstOrDefault().RoleName;
+            /*var claims = new[]
               {
                     //new Claim(JwtRegisteredClaimNames.Sub, Security.Encrypt(AppSettings.appSettings.JwtEmailEncryption,user.Gmail)),
-                    //new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim(ClaimTypes.NameIdentifier, "Dat"),
-                    new Claim(ClaimTypes.Email,"tqdatqn01230@gmail.com"),
-                    new Claim(ClaimTypes.Role, "User")
-                };
+                    new Claim("Email", user.Email.Trim()),
+                    new Claim("Role", roleName.Trim()),
+                    new Claim("UserId", user.UserId.ToString()),                   
+               };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["AppSettings:JwtSecret"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var token = new JwtSecurityToken(String.Empty,
-              String.Empty,
+            var token = new JwtSecurityToken(
+              configuration["AppSettings:Issuer"],
+              configuration["AppSettings:Audience"],
               claims,
               expires: DateTime.Now.AddSeconds(55 * 60),
               signingCredentials: creds);
-            string tokenId = new JwtSecurityTokenHandler().WriteToken(token);
-            return tokenId;
+            string tokenId = new JwtSecurityTokenHandler().WriteToken(token);*/
+
+            var responseLogin = new ResponseLogin();
+            responseLogin.Email = user.Email.Trim();
+            responseLogin.FullName = user.FullName;
+            responseLogin.UserId = user.UserId;
+            responseLogin.RoleName = roleName.Trim();
+            return new()
+            {
+                StatusCode = 200,
+                Data = responseLogin
+            };
         }
-        public string CheckValidateGoogleToken(UserView userView)
+        public async Task<ResponseModel> CheckValidateGoogleToken(UserView userView)
         {
             try
             {
 
                 var payload = GoogleJsonWebSignature.ValidateAsync(userView.tokenId, new GoogleJsonWebSignature.ValidationSettings()).Result;
-                return CreateToken();
+                var response = CreateToken(payload);
+                return new()
+                {
+                    StatusCode = 200,
+                    Data = response.Result.Data
+                };
             }catch (InvalidJwtException exception)
             {
-                return "Invalid Token";
+                return new()
+                {
+                    StatusCode = 500,
+                };
             }
         }
     }

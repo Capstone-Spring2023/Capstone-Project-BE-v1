@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Data.Repositories.Interface;
 using Business.UserService.Interfaces;
 using Business.UserService.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers
 {

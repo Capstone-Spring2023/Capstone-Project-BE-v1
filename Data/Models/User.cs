@@ -8,6 +8,8 @@ namespace Data.Models
         public User()
         {
             AvailableSubjects = new HashSet<AvailableSubject>();
+            Notifications = new HashSet<Notification>();
+            RegisterSlots = new HashSet<RegisterSlot>();
             RegisterSubjects = new HashSet<RegisterSubject>();
         }
 
@@ -18,9 +20,13 @@ namespace Data.Models
         public string Phone { get; set; } = null!;
         public string Address { get; set; } = null!;
         public bool Status { get; set; }
+        public byte[]? UserCodeMustEliminate { get; set; }
+        public string? UserCode { get; set; }
 
         public virtual Role Role { get; set; } = null!;
         public virtual ICollection<AvailableSubject> AvailableSubjects { get; set; }
+        public virtual ICollection<Notification> Notifications { get; set; }
+        public virtual ICollection<RegisterSlot> RegisterSlots { get; set; }
         public virtual ICollection<RegisterSubject> RegisterSubjects { get; set; }
     }
 }

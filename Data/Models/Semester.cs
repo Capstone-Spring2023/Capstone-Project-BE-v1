@@ -9,6 +9,7 @@ namespace Data.Models
         {
             AvailableSubjects = new HashSet<AvailableSubject>();
             CurrentHeaders = new HashSet<CurrentHeader>();
+            RegisterSlots = new HashSet<RegisterSlot>();
         }
 
         public int SemesterId { get; set; }
@@ -18,5 +19,6 @@ namespace Data.Models
 
         public virtual ICollection<AvailableSubject> AvailableSubjects { get; set; }
         public virtual ICollection<CurrentHeader> CurrentHeaders { get; set; }
+        public virtual ICollection<RegisterSlot> RegisterSlots { get; set; }
     }
 }

@@ -18,5 +18,6 @@ namespace Data.Repositories.Interface
 
         Task<List<User>> SearchTeachersBySubjectId(int subjectId, PagingRequest pageRequest);
 
+        public Task CreateRegisterSubject(RegisterSubject registerSubject);
     }
 }

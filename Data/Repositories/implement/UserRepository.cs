@@ -32,6 +32,11 @@ namespace Data.Repositories.implement
             await _context.SaveChangesAsync();
             
         }
+        public async Task<User> GetUserByEmail(string email)
+        {
+            var user = await _context.Users.Where(x => x.Email == email).FirstOrDefaultAsync();
+            return user;
+        }
         
     }
 }

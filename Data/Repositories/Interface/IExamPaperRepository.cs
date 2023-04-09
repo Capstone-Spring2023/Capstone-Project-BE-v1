@@ -15,6 +15,7 @@ namespace Data.Repositories.Interface
         Task<IEnumerable<ExamPaper>> GetAll(Expression<Func<ExamPaper, bool>> ex, PagingRequest pageRequest);
         Task DeleteExam(int id);
         Task CreateExam(ExamPaper exam);
-        public Task Update(ExamPaper exam);
+        Task Update(ExamPaper exam);
+        Task<List<ExamPaper>> GetAllByExamScheduleId(int examScheduleId);
     }
 }

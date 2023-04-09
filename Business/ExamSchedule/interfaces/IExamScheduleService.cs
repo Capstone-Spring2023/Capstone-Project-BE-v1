@@ -1,4 +1,5 @@
 ﻿using Business.ExamSchedule.Models;
+using Business.NotificationService.Model;
 using Business.UserService.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -15,6 +16,7 @@ namespace Business.ExamSchedule.interfaces
         public Task<ResponseModel> GetExamSchedule(int id);
         public Task<ResponseModel> GetAllExamScheduleByLeaderId(int leaderId);
         Task<ObjectResult> UpdateExamSchedule(UpdateExamScheduleModel updateExamScheduleModel, int availableSubjectId);
-        Task<ObjectResult> DeleteExamSchedule(int id);
+        Task<ObjectResult> DeleteExamSchedule(int availableSubjectId);
+        public Task<ResponseModel> GetDetailRequestExamSchedule(int availableSubjectId);
     }
 }

@@ -12,6 +12,7 @@ using Data.Paging;
 using Business.AvailableSubjectService.Models;
 using AutoMapper;
 using Business.AvailableSubjectService.Interface;
+using Microsoft.EntityFrameworkCore;
 
 namespace Business.AvailableSubjectService.Implement
 {
@@ -30,8 +31,7 @@ namespace Business.AvailableSubjectService.Implement
         {
             try
             {
-                var ExamPapers = await availableSubjectRepository.GetAvailableSubjects(ex, paging);
-                List<AvailableSubjectResponse> datas = ExamPapers.Select(x => mapper.Map<AvailableSubjectResponse>(x)).ToList();
+                var datas = await availableSubjectRepository.GetAvailableSubjects(ex, paging);
                 return new ObjectResult(datas)
                 {
                     StatusCode = 200,
@@ -81,5 +81,38 @@ namespace Business.AvailableSubjectService.Implement
             };
         }
 
+        public async Task<ResponseModel> GetAvailableSubjectById(int id)
+        {
+            var availableSubject = await availableSubjectRepository.GetAvailableSubjectById(id);
+            if(availableSubject == null)
+            {
+                return new()
+                {
+                    StatusCode = 404
+                };
+            }
+            return new()
+            {
+                StatusCode = 200,
+                Data = availableSubject
+            };
+        }
+
+        public async Task<ResponseModel> GetAvailableSubjectByDepartmentId(int departmentId)
+        {
+            var listSubjects = await availableSubjectRepository.GetAvailableSubjectsByDepartmentId(departmentId);
+            return new()
+            {
+                StatusCode = 200,
+                Data = listSubjects
+            };
+        }
+
+        public Task<ResponseModel> GetAllAvailableSubjectNotHaveRegister()
+        {
+
+
+            throw new NotImplementedException();
+        }
     }
 }

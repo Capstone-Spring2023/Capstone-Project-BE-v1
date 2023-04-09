@@ -16,5 +16,7 @@ namespace Business.UserService.Interfaces
 
         public Task<ResponseModel> UpdateUser(int id, UserModel user);
         public Task<ResponseModel> GetAllLeaders();
+        public Task<ResponseModel> getAllDepartmentByHeader(int userId);
+        public Task<ResponseModel> GetLecturersHaveRegisterSubjectByAvailableSubjectId(int availableSubjectId);
     }
 }

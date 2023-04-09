@@ -1,4 +1,7 @@
-﻿using Data.Models;
+﻿using Business.RegisterSubjectService.Interfaces;
+using Business.RegisterSubjectService.Models;
+using Data.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,19 +11,19 @@ namespace API.Controllers.Lecture
     [ApiController]
     public class RegisterSubjectController : ControllerBase
     {
-        private readonly CFManagementContext _context;
+        private readonly IRegisterSubjectService _registerSubjectService;
 
-        public RegisterSubjectController(CFManagementContext context)
+        public RegisterSubjectController(IRegisterSubjectService registerSubjectService)
         {
-            _context = context;
+            _registerSubjectService = registerSubjectService;
         }
 
-        [HttpGet]
-        [Route("api/lecture/registerSubject/getRegisterSubject/{id}")]
-        public  IActionResult getRegisterSubject()
+        [HttpPost]
+        [Route("/api/lecture/registerSubject/createRegisterSubject")]
+        public async Task<IActionResult> CreateRegisterSubject(CreateRegisterSubjectModel model)
         {
-            var respone = 123;
-            return Ok(respone);
+            var response = await _registerSubjectService.CreateRegisterSubject(model);
+            return Ok(response);
         }
     }
 }

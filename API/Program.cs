@@ -23,6 +23,10 @@ using Business.TypeService.implement;
 using Business.AvailableSubjectService.Implement;
 using Business.AvailableSubjectService.Interface;
 using System.Text.Json.Serialization;
+using Business.NotificationService.Interfaces;
+using Business.NotificationService.implement;
+using Business.RegisterSubjectService.Interfaces;
+using Business.RegisterSubjectService.implement;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -64,15 +68,18 @@ builder.Services.AddScoped<IRegisterSubjectRepository, RegisterSubjectRepository
 builder.Services.AddScoped<ISubjectRepository, SubjectRepository>();
 builder.Services.AddScoped<IAvailableSubjectRepository, AvailableSucjectRepository>();
 builder.Services.AddScoped<ITypeRepository, TypeRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<IRegisterSubjectRepository, RegisterSubjectRepository>();
 
 builder.Services.AddScoped<IExamScheduleService>(x => new ExamScheduleService(x.GetRequiredService<IExamScheduleRepository>(), x.GetRequiredService<IRegisterSubjectRepository>(),
-    x.GetRequiredService<IAvailableSubjectRepository>(), x.GetRequiredService<IMapper>(), x.GetRequiredService<CFManagementContext>()));
+    x.GetRequiredService<IAvailableSubjectRepository>(), x.GetRequiredService<IMapper>(), x.GetRequiredService<CFManagementContext>(), x.GetRequiredService<INotificationRepository>()));
 builder.Services.AddScoped<ITypeService>(x => new TypeService(x.GetRequiredService<ITypeRepository>()));
-
+builder.Services.AddScoped<INotificationService>(x => new NotificationService(x.GetRequiredService<INotificationRepository>(), x.GetRequiredService<IMapper>()));
+builder.Services.AddScoped<IRegisterSubjectService>(x => new RegisterSubjectService(x.GetRequiredService<IRegisterSubjectRepository>(), x.GetRequiredService<IMapper>(), x.GetRequiredService<CFManagementContext>()));
 //Add UserService
-builder.Services.AddScoped<IUserService>(x => new UserService(x.GetRequiredService<IUserRepository>()));
+builder.Services.AddScoped<IUserService>(x => new UserService(x.GetRequiredService<IUserRepository>(), x.GetRequiredService<CFManagementContext>(), x.GetRequiredService<IMapper>()));
 builder.Services.AddScoped<IExamPaperService>(x => new ExamPaperService(x.GetRequiredService<CFManagementContext>(),x.GetRequiredService<IExamPaperRepository>()
-    , x.GetRequiredService<ICommentRepository>(), x.GetRequiredService<IMapper>()));
+    , x.GetRequiredService<ICommentRepository>(), x.GetRequiredService<IMapper>(), x.GetRequiredService<IExamScheduleRepository>()));
 
 builder.Services.AddScoped<IAvailableSubjectService>(x => new AvailableSubjectService(
         x.GetRequiredService<IAvailableSubjectRepository>(),
@@ -124,14 +131,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
+                        ValidIssuer = builder.Configuration["AppSettings:Issuer"],
+                        ValidAudience = builder.Configuration["AppSettings:Audience"],
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["AppSettings:JwtSecret"]))
+
                     };
                 });
-builder.Services.AddScoped<LoginService>(x=> new LoginService(Configuration));
+builder.Services.AddScoped<LoginService>(x => new LoginService(Configuration, x.GetRequiredService<CFManagementContext>()));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -158,6 +168,8 @@ app.UseCors();
 
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

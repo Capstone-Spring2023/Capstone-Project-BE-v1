@@ -11,9 +11,11 @@ namespace Business.ExamSchedule.Models
     {
         public string? Tittle { get; set; }
         public DateTime Deadline { get; set; }
-
+ 
         public string? ExamLink { get; set; }
-        public int TypeId { get; set; }
+        public string Type { get; set; } = null!;
+        public string Message { get; set; } = null!;
+        public int LeaderId { get; set; }
 
     }
     public class UpdateExamScheduleModel

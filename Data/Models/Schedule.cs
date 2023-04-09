@@ -7,9 +7,8 @@ namespace Data.Models
     {
         public int ScheduleId { get; set; }
         public int ClassId { get; set; }
-        public DateTime Time { get; set; }
+        public DateTime ScheduleDate { get; set; }
         public int Slot { get; set; }
-        public bool ClassStatus { get; set; }
 
         public virtual Class Class { get; set; } = null!;
     }

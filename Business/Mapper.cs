@@ -8,6 +8,9 @@ using Data.Models;
 using Business.ExamService.Models;
 using Business.AvailableSubjectService.Models;
 using Business.ExamSchedule.Models;
+using Business.NotificationService.Model;
+using Business.UserService.Models;
+using Business.RegisterSubjectService.Models;
 
 namespace Business
 {
@@ -25,6 +28,12 @@ namespace Business
             CreateMap<Comment, CommentModel>().ReverseMap();
             CreateMap<UpdateExamScheduleModel, Data.Models.ExamSchedule>().ReverseMap();
             CreateMap<Data.Models.ExamSchedule, ResponseExamSchedule>();
+            CreateMap<Data.Models.ExamSchedule, ResponseGroupExamSchedule>().ReverseMap();
+            CreateMap<CreateNotificationModel, Notification>().ReverseMap();
+            CreateMap<ReponseNotificationModel, Notification>().ReverseMap();
+            CreateMap<ResponseDepartment, Department>().ReverseMap();
+            CreateMap<CreateRegisterSubjectModel, RegisterSubject>().ReverseMap();
+            CreateMap<CreateExamScheduleModel, Notification>().ReverseMap();
         }
     }
 }

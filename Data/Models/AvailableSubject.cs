@@ -7,6 +7,7 @@ namespace Data.Models
     {
         public AvailableSubject()
         {
+            ClassAsubjects = new HashSet<ClassAsubject>();
             RegisterSubjects = new HashSet<RegisterSubject>();
         }
 
@@ -21,6 +22,7 @@ namespace Data.Models
         public virtual User Leader { get; set; } = null!;
         public virtual Semester Semester { get; set; } = null!;
         public virtual Subject Subject { get; set; } = null!;
+        public virtual ICollection<ClassAsubject> ClassAsubjects { get; set; }
         public virtual ICollection<RegisterSubject> RegisterSubjects { get; set; }
     }
 }

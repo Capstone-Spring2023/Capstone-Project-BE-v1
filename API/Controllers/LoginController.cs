@@ -14,23 +14,12 @@ namespace API.Controllers
         {
             _loginService = loginService;
         }
-        [HttpGet("login")]
-        public TokenReturnModel Login()
-        {
-            TokenReturnModel tokenReturnModel = new TokenReturnModel()
-            {
-                Token = _loginService.CreateToken(),
-            };
-            return tokenReturnModel;
-        }
+        
         [HttpPost("login-google")]
-        public TokenReturnModel LoginGoogle(UserView userView)
+        public IActionResult LoginGoogle(UserView userView)
         {
-            string token = _loginService.CheckValidateGoogleToken(userView);
-            return new TokenReturnModel()
-            {
-                Token = token,
-            };
+            var response = _loginService.CheckValidateGoogleToken(userView);
+            return Ok(response.Result);
         }
 
         [HttpGet("test-authen")]

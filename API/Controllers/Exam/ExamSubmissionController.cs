@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Business.ExamService.Models;
 using System.ComponentModel.DataAnnotations;
 using Swashbuckle.AspNetCore.Annotations;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers.Exam
 {
@@ -38,7 +39,7 @@ namespace API.Controllers.Exam
             var response = await examService.GetAllExams(x => true, pagingRequest);
             return response;
         }
-        [HttpGet("/user/{userId}/exam-submission")]
+        [HttpGet("user/{userId}/exam-submission")]
         [SwaggerOperation(Summary = "Get Exam-Submission by UserId")]
         public async Task<ObjectResult> GetByLeaderId([FromRoute] int userId)
         {
@@ -51,23 +52,34 @@ namespace API.Controllers.Exam
             return response;
         }
 
-        [HttpPost("")]
-        public async Task<ObjectResult> Create([FromBody] ExamCreateRequestModel examCreateRequestModel)
+        [HttpPost("{examScheduleId}")]
+        [SwaggerOperation(Summary = "Create Exam-Submission with examscheduleId")]
+        public async Task<ObjectResult> Create([FromRoute]int examScheduleId, [FromBody] ExamCreateRequestModel examCreateRequestModel)
         {
-            var response = await examService.CreateExam(examCreateRequestModel);
+            var response = await examService.CreateExam(examScheduleId,examCreateRequestModel);
             return response;
         }
         [HttpPut("{id}")]
+        [SwaggerOperation(Summary = "Update Exam-Submission")]
         public async Task<ObjectResult> Update([FromRoute] int id, [FromBody] ExamUpdateRequestModel examUpdateRequestModel)
         {
             var response = await examService.UpdateExam(id, examUpdateRequestModel);
             return response;
         }
+        [HttpPut("instruction/{id}")]
+        [SwaggerOperation(Summary = "Update Exam-Submission")]
+        public async Task<ObjectResult> UpdateInstruction([FromRoute] int id, [FromBody] ExamUpdateInstructionLinkModel examUpdateRequestModel)
+        {
+            var response = await examService.SendInstructionLink(id, examUpdateRequestModel);
+            return response;
+        }
         [HttpDelete("{id}")]
+        [SwaggerOperation(Summary = "Delete Exam-Submission")]
         public async Task<ObjectResult> Delete([FromRoute] int id)
         {
             return await examService.DeleteExam(id);
         }
+        
 
     }
 }

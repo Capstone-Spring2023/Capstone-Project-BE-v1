@@ -20,7 +20,7 @@ namespace Data.Repositories.implement
         }
         public async Task CreateExam(ExamPaper exam)
         {
-            int id = _context.ExamPapers.Max(x => x.ExamPaperId) + 1;
+            
             _context.Add(exam);
             await _context.SaveChangesAsync();
             
@@ -45,6 +45,12 @@ namespace Data.Repositories.implement
             return exams;
         }
 
+        public async Task<List<ExamPaper>> GetAllByExamScheduleId(int examScheduleId)
+        {
+            var exam = await _context.ExamPapers.Where(x => x.ExamScheduleId == examScheduleId).ToListAsync();
+            return exam;
+        }
+
         public async Task<ExamPaper> GetById(int id)
         {
             return await _context.ExamPapers
@@ -54,7 +60,8 @@ namespace Data.Repositories.implement
         }
         public async Task Update(ExamPaper exam)
         {
-            _context.ExamPapers.Update(exam);
+            var track = _context.Attach(exam);
+            track.State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
     }

@@ -1,19 +1,26 @@
-﻿using Business.Constants;
+﻿using AutoMapper;
+using Business.Constants;
 using Business.UserService.Interfaces;
 using Business.UserService.Models;
 using Data.Models;
 using Data.Repositories.Interface;
+using Microsoft.EntityFrameworkCore;
+using System.Net.WebSockets;
+using System.Xml.Xsl;
 
 namespace Business.UserService.Implements
 {
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly CFManagementContext _context;
+        private readonly IMapper _mapper;
 
-
-        public UserService(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, CFManagementContext context, IMapper mapper)
         {
             _userRepository = userRepository;
+            _context = context;
+            _mapper = mapper;
         }
 
         public async Task<ResponseModel> GetUser(int id)
@@ -26,9 +33,9 @@ namespace Business.UserService.Implements
                     StatusCode = (int) StatusCode.NOTFOUND
                 };
             }
-            
+            var roleName = _context.Roles.Find(user.RoleId).RoleName;
             UserModel userModel = new UserModel(
-                user.FullName, user.Phone.Trim(), user.Address, user.RoleId
+                user.FullName, user.Phone.Trim(), user.Address, user.RoleId, roleName
             );
            
             return new()
@@ -69,8 +76,9 @@ namespace Business.UserService.Implements
             {
                 if(user.RoleId == ((int)Constants.Role.Leader))
                 {
+                    var roleName = _context.Roles.Find(user.RoleId).RoleName;
                     listLeader.Add(new UserModel(
-                        user.FullName, user.Phone.Trim(), user.Address, user.RoleId
+                        user.FullName, user.Phone.Trim(), user.Address, user.RoleId, roleName
                     ));
                 }
             }
@@ -81,6 +89,52 @@ namespace Business.UserService.Implements
             };
         }
 
-        
+        public async Task<ResponseModel> getAllDepartmentByHeader(int userId)
+        {
+            var headers = _context.CurrentHeaders.Where(x => x.UserId == userId && x.Status).ToList();
+            var ListDepartment = new List<ResponseDepartment>();
+            foreach (var header in headers)
+            {
+                var department = _context.Departments.Find(header.DepartmentId);
+
+                if(department != null && department.Status)
+                {
+                    ListDepartment.Add(_mapper.Map<ResponseDepartment>(department));
+                }
+                
+            }
+            return new()
+            {
+                StatusCode = 200,
+                Data = ListDepartment
+            };
+        }
+
+        public async Task<ResponseModel> GetLecturersHaveRegisterSubjectByAvailableSubjectId(int availableSubjectId)
+        {
+            var listRegisterSubjects = await _context.RegisterSubjects.Where(x => x.AvailableSubjectId == availableSubjectId && x.Status).ToListAsync();
+            var listResponse = new List<ResponseLecturerModel>();
+            foreach (var registerSubject in listRegisterSubjects)
+            {
+                var response = new ResponseLecturerModel();
+                var availableSubject = _context.AvailableSubjects.Find(availableSubjectId);
+                if(availableSubject != null && availableSubject.Status)
+                {
+                    var semester = _context.Semesters.Find(availableSubject.SemesterId);
+                    response.semester = semester.Name;
+                    var lecturer = _context.Users.Where(x => x.UserId == registerSubject.UserId).FirstOrDefault();
+                    response.fullName = lecturer.FullName;
+                    response.subjectName = _context.AvailableSubjects.Find(availableSubjectId).SubjectName;
+                    listResponse.Add(response);
+                }
+                
+            }
+            return new()
+            {
+                StatusCode = 200,
+                Data = listResponse
+            };
+
+        }
     }
 }

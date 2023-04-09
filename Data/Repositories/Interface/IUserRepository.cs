@@ -9,6 +9,7 @@ namespace Data.Repositories.Interface
         public Task<List<User>> GetAllAsync();
         public  Task<User> GetUserAsync(int id);
         public Task UpdateUserAsync(int id, User user);
+        public Task<User> GetUserByEmail(string email);
 
     }
 }
