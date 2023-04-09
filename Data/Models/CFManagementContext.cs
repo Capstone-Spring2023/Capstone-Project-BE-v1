@@ -249,6 +249,8 @@ namespace Data.Models
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Notification_Users");
+                entity.Property(e => e.LeaderName).HasMaxLength(100);
+                entity.Property(e => e.SubjectCode).HasMaxLength(50);
             });
 
             modelBuilder.Entity<RegisterSlot>(entity =>
