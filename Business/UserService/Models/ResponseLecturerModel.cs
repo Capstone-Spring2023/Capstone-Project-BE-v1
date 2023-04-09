@@ -11,5 +11,6 @@ namespace Business.UserService.Models
         public string fullName { get; set; }
         public string semester { get; set; }
         public string subjectName { get; set; }
+        public bool isLeader { get; set; }
     }
 }

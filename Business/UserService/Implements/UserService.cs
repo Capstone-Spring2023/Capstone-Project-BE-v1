@@ -114,6 +114,7 @@ namespace Business.UserService.Implements
         {
             var listRegisterSubjects = await _context.RegisterSubjects.Where(x => x.AvailableSubjectId == availableSubjectId && x.Status).ToListAsync();
             var listResponse = new List<ResponseLecturerModel>();
+            var ASubject = _context.AvailableSubjects.Find(availableSubjectId);
             foreach (var registerSubject in listRegisterSubjects)
             {
                 var response = new ResponseLecturerModel();
@@ -124,7 +125,8 @@ namespace Business.UserService.Implements
                     response.semester = semester.Name;
                     var lecturer = _context.Users.Where(x => x.UserId == registerSubject.UserId).FirstOrDefault();
                     response.fullName = lecturer.FullName;
-                    response.subjectName = _context.AvailableSubjects.Find(availableSubjectId).SubjectName;
+                    response.subjectName = ASubject.SubjectName;
+                    response.isLeader = (availableSubject.LeaderId == registerSubject.UserId);
                     listResponse.Add(response);
                 }
                 
