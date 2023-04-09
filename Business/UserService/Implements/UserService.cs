@@ -75,7 +75,7 @@ namespace Business.UserService.Implements
                 if(user.RoleId == ((int)Constants.Role.Leader))
                 {
                     listLeader.Add(new UserModel(
-                        user.FullName, user.Phone.Trim(), user.Address, user.RoleId
+                        user.FullName, user.Phone.Trim(), user.Address, user.RoleId, user.Role.RoleName
                     ));
                 }
             }
