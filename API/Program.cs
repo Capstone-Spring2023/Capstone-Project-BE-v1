@@ -72,7 +72,7 @@ builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<IRegisterSubjectRepository, RegisterSubjectRepository>();
 
 builder.Services.AddScoped<IExamScheduleService>(x => new ExamScheduleService(x.GetRequiredService<IExamScheduleRepository>(), x.GetRequiredService<IRegisterSubjectRepository>(),
-    x.GetRequiredService<IAvailableSubjectRepository>(), x.GetRequiredService<IMapper>(), x.GetRequiredService<CFManagementContext>()));
+    x.GetRequiredService<IAvailableSubjectRepository>(), x.GetRequiredService<IMapper>(), x.GetRequiredService<CFManagementContext>(), x.GetRequiredService<INotificationRepository>()));
 builder.Services.AddScoped<ITypeService>(x => new TypeService(x.GetRequiredService<ITypeRepository>()));
 builder.Services.AddScoped<INotificationService>(x => new NotificationService(x.GetRequiredService<INotificationRepository>(), x.GetRequiredService<IMapper>()));
 builder.Services.AddScoped<IRegisterSubjectService>(x => new RegisterSubjectService(x.GetRequiredService<IRegisterSubjectRepository>(), x.GetRequiredService<IMapper>(), x.GetRequiredService<CFManagementContext>()));

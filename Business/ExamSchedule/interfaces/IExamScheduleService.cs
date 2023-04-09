@@ -1,4 +1,5 @@
 ﻿using Business.ExamSchedule.Models;
+using Business.NotificationService.Model;
 using Business.UserService.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;

@@ -2,6 +2,7 @@
 using Business.Constants;
 using Business.ExamSchedule.interfaces;
 using Business.ExamSchedule.Models;
+using Business.NotificationService.Model;
 using Data.Models;
 using Data.Repositories.implement;
 using Data.Repositories.Interface;
@@ -21,15 +22,17 @@ namespace Business.ExamSchedule.Implements
         private readonly IRegisterSubjectRepository _registerSubjectRepository;
         private readonly IAvailableSubjectRepository _availableSubjectRepository;
         private readonly CFManagementContext _context;
+        private readonly INotificationRepository _notificationRepository;
         private readonly IMapper _mapper;
 
-        public ExamScheduleService(IExamScheduleRepository examRepository, IRegisterSubjectRepository registerSubjectRepository, IAvailableSubjectRepository availableSubjectRepository, IMapper mapper, CFManagementContext context)
+        public ExamScheduleService(IExamScheduleRepository examRepository, IRegisterSubjectRepository registerSubjectRepository, IAvailableSubjectRepository availableSubjectRepository, IMapper mapper, CFManagementContext context, INotificationRepository notificationRepository)
         {
             _examScheduleRepository = examRepository;
             _registerSubjectRepository = registerSubjectRepository;
             _availableSubjectRepository = availableSubjectRepository;   
             _context = context;
             _mapper = mapper;
+            _notificationRepository = notificationRepository;
         }
 
         public async Task<ResponseModel> GetAllExamScheduleByLeaderId(int leaderId)
@@ -129,6 +132,9 @@ namespace Business.ExamSchedule.Implements
                 }
                 
             }
+            var notification = _mapper.Map<Notification>(createExamScheduleModel);
+            notification.Status = "Unread";
+            await _notificationRepository.CreateNotification(notification);
             return new()
             {
                 StatusCode = (int)StatusCode.OK,

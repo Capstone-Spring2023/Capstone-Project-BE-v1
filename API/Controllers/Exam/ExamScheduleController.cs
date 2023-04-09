@@ -1,6 +1,7 @@
 ﻿using Business.AvailableSubjectService.Interface;
 using Business.ExamSchedule.interfaces;
 using Business.ExamSchedule.Models;
+using Business.NotificationService.Model;
 using Data.Paging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

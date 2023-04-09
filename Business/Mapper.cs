@@ -33,6 +33,7 @@ namespace Business
             CreateMap<ReponseNotificationModel, Notification>().ReverseMap();
             CreateMap<ResponseDepartment, Department>().ReverseMap();
             CreateMap<CreateRegisterSubjectModel, RegisterSubject>().ReverseMap();
+            CreateMap<CreateExamScheduleModel, Notification>().ReverseMap();
         }
     }
 }
