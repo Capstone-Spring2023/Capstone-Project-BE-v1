@@ -125,6 +125,9 @@ namespace Business.UserService.Implements
                     var lecturer = _context.Users.Where(x => x.UserId == registerSubject.UserId).FirstOrDefault();
                     response.fullName = lecturer.FullName;
                     response.subjectName = _context.AvailableSubjects.Find(availableSubjectId).SubjectName;
+                    response.roleName = _context.Roles.Find(lecturer.RoleId).RoleName;
+                    response.userId = lecturer.UserId;
+                    response.availableSubjectId = availableSubjectId;
                     listResponse.Add(response);
                 }
                 

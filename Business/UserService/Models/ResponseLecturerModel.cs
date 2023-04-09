@@ -11,5 +11,8 @@ namespace Business.UserService.Models
         public string fullName { get; set; }
         public string semester { get; set; }
         public string subjectName { get; set; }
+        public string roleName { get; set; }
+        public int availableSubjectId { get; set; }
+        public int userId { get; set; }
     }
 }
