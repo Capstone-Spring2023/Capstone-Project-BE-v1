@@ -64,8 +64,12 @@ namespace API.Controllers.Exam
             foreach (var data in datas)
             {
                 var examSchedule = _context.ExamSchedules.FirstOrDefault(x => x.ExamScheduleId == data.ExamScheduleId);
-                data.SubjectName = _context.AvailableSubjects.FirstOrDefault(x => x.AvailableSubjectId == examSchedule.AvailableSubjectId).SubjectName;
+                var ASubject = _context.AvailableSubjects.FirstOrDefault(x => x.AvailableSubjectId == examSchedule.AvailableSubjectId);
+                data.SubjectName = ASubject.SubjectName;
+                data.Tittle = examSchedule.Tittle;
 
+                int typeId = _context.Subjects.First(x => x.SubjectId == ASubject.SubjectId).TypeId;
+                data.Type = _context.Types.First(x => x.TypeId == typeId).TypeName;
                 var register = _context.RegisterSubjects.Find(examSchedule.RegisterSubjectId);
                 data.LecturerName = _context.Users.Find(register.UserId).FullName;
 
@@ -98,11 +102,11 @@ namespace API.Controllers.Exam
                     StatusCode = 404
                 };
             }
-            var res = new List<AvailableSubjectResponse>(); 
+            var res = new List<AvailableSubjectResponse>();
             foreach (var examSchedule in examSchedules)
             {
                 var examPaper = await _context.ExamPapers.Where(x => x.ExamScheduleId == examSchedule.ExamScheduleId && x.Status != "Rejected").FirstOrDefaultAsync();
-                if(examPaper != null)
+                if (examPaper != null)
                 {
                     continue;
                 }
@@ -113,7 +117,7 @@ namespace API.Controllers.Exam
                 availableSubjectresponse.ExamScheduleId = examSchedule.ExamScheduleId;
                 availableSubjectresponse.TypeName = type.TypeName;
                 res.Add(availableSubjectresponse);
-                
+
             }
             return new ObjectResult(res)
             {
