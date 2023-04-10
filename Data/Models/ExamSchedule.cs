@@ -19,6 +19,7 @@ namespace Data.Models
         public string? Tittle { get; set; }
         public string? ExamLink { get; set; }
         public bool Status { get; set; }
+        public int? AppovalUserId { get; set; }
 
         public virtual RegisterSubject RegisterSubject { get; set; } = null!;
         public virtual ICollection<ExamPaper> ExamPapers { get; set; }
