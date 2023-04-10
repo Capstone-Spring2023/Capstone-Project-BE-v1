@@ -286,6 +286,8 @@ namespace Data.Models
 
                 entity.Property(e => e.ClassId).HasColumnName("classId");
 
+                entity.Property(e => e.IsRegistered).HasColumnName("isRegistered");
+
                 entity.Property(e => e.RegisterDate)
                     .HasColumnType("date")
                     .HasColumnName("registerDate");

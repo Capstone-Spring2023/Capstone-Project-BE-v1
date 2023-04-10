@@ -17,6 +17,7 @@ namespace Data.Models
         public int ClassId { get; set; }
         public DateTime RegisterDate { get; set; }
         public bool Status { get; set; }
+        public bool? IsRegistered { get; set; }
 
         public virtual AvailableSubject AvailableSubject { get; set; } = null!;
         public virtual User User { get; set; } = null!;

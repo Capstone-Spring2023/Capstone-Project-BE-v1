@@ -76,9 +76,13 @@ namespace API.Controllers.Schedules
         public async Task<ObjectResult> updateSchedule([FromBody] ScheduleUpdateRequest request)
         {
             
-            var a = _context.Classes.First(x=> x.ClassId == request.ClassId);   
+            var a = _context.Classes.First(x=> x.ClassId == request.ClassId);
             var registerSubjectId = _context.RegisterSubjects
-                .FirstOrDefault(x=>x.UserId == request.UserId && x.AvailableSubjectId == a.RegisterSubject.AvailableSubjectId);        
+                .FirstOrDefault(
+                x => x.UserId == request.UserId
+                && x.AvailableSubjectId == a.RegisterSubject.AvailableSubjectId).RegisterSubjectId;
+
+            a.RegisterSubjectId = registerSubjectId;
             await _context.SaveChangesAsync();
             return new ObjectResult("OK")
             {
