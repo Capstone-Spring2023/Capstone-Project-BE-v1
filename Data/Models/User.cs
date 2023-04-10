@@ -22,6 +22,8 @@ namespace Data.Models
         public bool Status { get; set; }
         public byte[]? UserCodeMustEliminate { get; set; }
         public string? UserCode { get; set; }
+        public int? NumMinClass { get; set; }
+        public double? AlphaIndex { get; set; }
 
         public virtual Role Role { get; set; } = null!;
         public virtual ICollection<AvailableSubject> AvailableSubjects { get; set; }

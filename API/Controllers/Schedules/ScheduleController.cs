@@ -72,46 +72,17 @@ namespace API.Controllers.Schedules
                 StatusCode = 200
             };
         }
-        private readonly string UPDATE_ONE_SCHEDULE = "one";
-        private readonly string UPDATE_ALL_SCHEDULE = "all";
         [HttpPut("lecturer/schedule")]
         public async Task<ObjectResult> updateSchedule([FromBody] ScheduleUpdateRequest request)
         {
-            if (request.Type == UPDATE_ONE_SCHEDULE)
+            
+            var a = _context.Classes.First(x=> x.ClassId == request.ClassId);   
+            var registerSubjectId = _context.RegisterSubjects
+                .FirstOrDefault(x=>x.UserId == request.UserId && x.AvailableSubjectId == a.RegisterSubject.AvailableSubjectId);        
+            await _context.SaveChangesAsync();
+            return new ObjectResult("OK")
             {
-                Schedule schedule = new Schedule()
-                {
-                    ScheduleDate = request.ScheduleDate,
-                    ScheduleId = request.ScheduleId,
-                    Slot = request.Slot,
-                    ClassId = request.ClassId,
-                };
-                var track = _context.Attach(schedule);
-                track.State = EntityState.Modified;
-                await _context.SaveChangesAsync();
-                return new ObjectResult("OK")
-                {
-                    StatusCode = 200,
-                };
-            }
-            else if (request.Type == UPDATE_ALL_SCHEDULE)
-            {
-                var schedules = _context.Schedules
-                    .Where(x => x.ClassId == request.ClassId && x.ScheduleDate.DayOfWeek == request.ScheduleDate.DayOfWeek);
-                foreach (var a in schedules)
-                {
-
-                    a.Slot = request.Slot;
-                }
-                await _context.SaveChangesAsync();
-                return new ObjectResult("OK")
-                {
-                    StatusCode = 200,
-                };
-            }
-            else return new ObjectResult("Wrong type")
-            {
-                StatusCode = 400,
+                StatusCode = 200,
             };
         }
     }

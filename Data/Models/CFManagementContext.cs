@@ -82,6 +82,10 @@ namespace Data.Models
 
                 entity.Property(e => e.ClassCode).HasMaxLength(50);
 
+                entity.Property(e => e.Slot)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
                 entity.HasOne(d => d.RegisterSubject)
                     .WithMany(p => p.Classes)
                     .HasForeignKey(d => d.RegisterSubjectId)
@@ -261,7 +265,7 @@ namespace Data.Models
 
                 entity.Property(e => e.Slot)
                     .HasMaxLength(10)
-                    .IsFixedLength();
+                    .IsUnicode(false);
 
                 entity.HasOne(d => d.Semester)
                     .WithMany(p => p.RegisterSlots)
