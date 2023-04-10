@@ -27,7 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Capstone-Project-BE-v1\OrTools\OrTools.csproj" />
     <ProjectReference Include="..\Business\Business.csproj" />
   </ItemGroup>
 
