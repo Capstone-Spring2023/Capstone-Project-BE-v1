@@ -79,7 +79,7 @@ builder.Services.AddScoped<IRegisterSubjectService>(x => new RegisterSubjectServ
 //Add UserService
 builder.Services.AddScoped<IUserService>(x => new UserService(x.GetRequiredService<IUserRepository>(), x.GetRequiredService<CFManagementContext>(), x.GetRequiredService<IMapper>()));
 builder.Services.AddScoped<IExamPaperService>(x => new ExamPaperService(x.GetRequiredService<CFManagementContext>(),x.GetRequiredService<IExamPaperRepository>()
-    , x.GetRequiredService<ICommentRepository>(), x.GetRequiredService<IMapper>(), x.GetRequiredService<IExamScheduleRepository>()));
+    , x.GetRequiredService<ICommentRepository>(), x.GetRequiredService<IMapper>(), x.GetRequiredService<IExamScheduleRepository>(), x.GetRequiredService<INotificationRepository>()));
 
 builder.Services.AddScoped<IAvailableSubjectService>(x => new AvailableSubjectService(
         x.GetRequiredService<IAvailableSubjectRepository>(),
