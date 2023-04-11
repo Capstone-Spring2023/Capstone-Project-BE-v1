@@ -11,11 +11,11 @@ namespace AutoScheduling.Reader
 {
     public class RegisterSubjectReader
     {
-        private readonly string fileName = @"register_subject_v1.csv";
+        private readonly string fileName = Constant.REGISTER_SUBJECT_FILE;
             // @"\tmp\register_subject_1.csv";
-        public List<(int, string, List<string>, bool, bool, bool, bool, bool, bool)> readRegisterSubjectFile()
+        public List<(int, string, List<string>, bool, bool, bool, bool, bool, bool)> readRegisterSubjectFile(IFormFile file)
         {
-            using (var reader = new StreamReader(fileName))
+            using (var reader = new StreamReader(file.OpenReadStream()))
             {
                 var list = new List<(int,string,List<string>,bool,bool,bool,bool,bool,bool)>();
                 for (int i = 0; i< 4; i++ ) reader.ReadLine();

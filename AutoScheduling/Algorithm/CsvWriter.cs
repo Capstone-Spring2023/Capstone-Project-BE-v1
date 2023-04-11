@@ -94,7 +94,7 @@ namespace AutoScheduling
                             }
                         }
             }
-            string filePath = @"D:\Schedule\schedule.csv";
+            string filePath = Constant.SCHEDULE_FILE;
             File.WriteAllText(filePath, csvSchedule.ToString());
         }
 

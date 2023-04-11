@@ -11,7 +11,7 @@ namespace AutoScheduling.Reader
         public async Task createRegisterSubjectDatabaseFromFile()
         {
             RegisterSubjectReader reader = new RegisterSubjectReader(); 
-            var list = reader.readRegisterSubjectFile();
+            var list = reader.readRegisterSubjectFile(null);
             using(CFManagementContext _context = new CFManagementContext())
             {
                 foreach (var a in list)

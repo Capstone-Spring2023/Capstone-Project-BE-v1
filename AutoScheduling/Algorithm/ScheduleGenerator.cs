@@ -162,12 +162,12 @@ namespace AutoScheduling
             
             if ( slot  <= 2)
             {
-                int index = day * 2 + slot  ;
+                int index = day * 2 + slot +1 ;
                 return "A" +index.ToString();
             }
             else 
             {
-                int index = day * 2 + slot - 2;
+                int index = day * 2 + slot - 1;
                 return "P" + index.ToString();
             }
 

@@ -3,6 +3,7 @@ using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Mvc;
 using AutoScheduling.Reader;
 using Swashbuckle.AspNetCore.Annotations;
+using AutoScheduling;
 
 namespace API.Controllers.Schedules
 {
@@ -37,6 +38,44 @@ namespace API.Controllers.Schedules
             //Response.SendFileAsync((Microsoft.Extensions.FileProviders.IFileInfo)file);
             var link = await uploadFile(formFile);
             return new ObjectResult(link);
+        }
+        [HttpPost("main-flow")]
+        [SwaggerOperation(Summary = "Tạo lịch")]
+        public async Task<IActionResult> mainFlow(IFormFile[] file)
+        {
+            if (file.Length < 2) return BadRequest();
+            AutoSchedulingMain a = new AutoSchedulingMain();
+            Last_Constraint @delegate = new Last_Constraint(MainFlowFunctions.noDuplicateClass);
+            var check = a.MainFlow(file[0], file[1], @delegate);
+            if (!check) return BadRequest("Cannot create Schedule with this data");
+            else
+            {
+                var filePath = Constant.SCHEDULE_FILE;
+                var stream = new MemoryStream(System.IO.File.ReadAllBytes(filePath).ToArray());
+                var formFile = new FormFile(stream, 0, stream.Length, "file", filePath.Split(@"\").Last());
+                //Response.SendFileAsync((Microsoft.Extensions.FileProviders.IFileInfo)file);
+                var link = await uploadFile(formFile);
+                return Ok(link);
+            }
+        }
+        [HttpPost("main-flow-full")]
+        [SwaggerOperation(Summary = "Tạo lịch nhưng với điều kiện TẤT CẢ các lớp đều có người dạy")]
+        public async Task<IActionResult> mainFlowButFull(IFormFile[] file)
+        {
+            if (file.Length < 2) return BadRequest();
+            AutoSchedulingMain a = new AutoSchedulingMain();
+            Last_Constraint @delegate = new Last_Constraint(MainFlowFunctions.everyClassHaveTeacher);
+            var check = a.MainFlow(file[0], file[1], @delegate);
+            if (!check) return BadRequest("Cannot create Schedule with this data");
+            else
+            {
+                var filePath = Constant.SCHEDULE_FILE;
+                var stream = new MemoryStream(System.IO.File.ReadAllBytes(filePath).ToArray());
+                var formFile = new FormFile(stream, 0, stream.Length, "file", filePath.Split(@"\").Last());
+                //Response.SendFileAsync((Microsoft.Extensions.FileProviders.IFileInfo)file);
+                var link = await uploadFile(formFile);
+                return Ok(link);
+            }
         }
         private BlobContainerClient GetBlobContainerClient()
         {

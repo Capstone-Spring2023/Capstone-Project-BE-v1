@@ -10,10 +10,10 @@ namespace AutoScheduling.Reader
 {
     public class ClassDaySlotReader
     {
-        private readonly string fileName = @"D:\Schedule\Input\CF-Lịch-FA22.csv";
-        public int[,,] readClassDaySlotCsv(List<(int,string)> subjectDic,out List<(int,int,string)> subject_class_className)
+        //private readonly string fileName = @"D:\Schedule\Input\CF-Lịch-FA22.csv";
+        public int[,,] readClassDaySlotCsv(IFormFile file,List<(int,string)> subjectDic,out List<(int,int,string)> subject_class_className)
         {
-            using (var reader = new StreamReader(fileName))
+            using (var reader = new StreamReader(file.OpenReadStream()))
             {
                 subject_class_className = new List<(int, int, string)>();
                 for (int i = 0; i < 1; i++) reader.ReadLine();
@@ -40,11 +40,11 @@ namespace AutoScheduling.Reader
                     
                     if (APx.StartsWith("A"))
                     {
-                        slot = int.Parse(a) % 2;
+                        slot = (int.Parse(a) + 1) % 2;
                     }
                     else
                     {
-                        slot = int.Parse(a) % 2 + 2;
+                        slot = (int.Parse(a) + 1) % 2 + 2;
                     }
                     class_day_slot_list.Add((classIndex,day,slot));
 

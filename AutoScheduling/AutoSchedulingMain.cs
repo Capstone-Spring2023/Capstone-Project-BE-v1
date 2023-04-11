@@ -5,10 +5,13 @@ using AutoScheduling.Reader;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using Microsoft.AspNetCore.Http;
 
 namespace AutoScheduling
 {
-    public class Program
+    public delegate void Last_Constraint(int num_lecturers, int num_classes, int num_days, int num_slots
+            , int[,,] class_day_slot, IntVar[,,,] f, CpModel model);
+    public class AutoSchedulingMain
     {
         const int num_classes = 60;
         const int num_days = 6;
@@ -43,7 +46,7 @@ namespace AutoScheduling
         }
 
 
-        public static void MainFlow()
+        public  bool MainFlow(IFormFile register_subject_file, IFormFile class_day_slot_file, Last_Constraint @delegate)
         {
             int num_classes, num_subject, num_lecturers;
             const int num_days = 6;
@@ -58,17 +61,19 @@ namespace AutoScheduling
             num_subject = subjectDic.Count;
             num_lecturers = userDic.Count;
 
-            var register_subject_list_raw = registerSubjectReader.readRegisterSubjectFile();
+            var register_subject_list_raw = registerSubjectReader.readRegisterSubjectFile(register_subject_file);
             //tạo register_subject
             int[,] registerSubject;//= new int[num_lecturers, num_subject];
             registerSubjectReader.createRegisterSubjectFromFile(userDic, subjectDic, register_subject_list_raw, out registerSubject);
             //tạo teacher_day_slot
             int[,,] teacher_day_slot;
             registerSubjectReader.createTeacher_Day_Slot(userDic, register_subject_list_raw, registerSubject, out teacher_day_slot);
+
+
             // tạo class_day_slot
             List < (int, int, string)> subject_class_className;
             
-            var class_day_slot = classDaySlotReader.readClassDaySlotCsv(subjectDic, out subject_class_className);
+            var class_day_slot = classDaySlotReader.readClassDaySlotCsv(class_day_slot_file, subjectDic, out subject_class_className);
 
 
             int[] d = new int[num_lecturers];
@@ -94,13 +99,13 @@ namespace AutoScheduling
                 subject_class[a.Item1, a.Item2] = 1; 
             }
             bool check = MainFlow1a(num_lecturers,num_subject,num_classes,class_day_slot, registerSubject, subject_class, teacher_day_slot,subject_class_className,subjectDic,userDic,
-                d);
-
+                d,@delegate);
+            return check;
         }
-        public static bool MainFlow1a(int num_lecturers,int num_subjects,int num_classes,int[,,] class_day_slot, int[,] registerSubject, int[,] subject_class,
+        public  bool MainFlow1a(int num_lecturers,int num_subjects,int num_classes,int[,,] class_day_slot, int[,] registerSubject, int[,] subject_class,
            int[,,] teacher_day_slot, List<(int, int, string)> subject_class_classNam, List<(int, string)> subjectDic,
            List<(int, int, string)> userDic,
-           int[] d)
+           int[] d, Last_Constraint @delegate)
         {
             CpModel model = new CpModel();
             IntVar[,,,] f = new IntVar[num_lecturers, num_classes, num_days, num_slots_per_day];
@@ -114,8 +119,11 @@ namespace AutoScheduling
             //Mỗi gv khi dạy 1 lớp 1 slot phải dạy slot còn lại 
             MainFlowFunctions.teachAllSlotOfAClass(num_lecturers, num_classes, num_days, num_slots_per_day, f, model);
             // Đảm bảo tất cả các lớp đều có người dạy
-            MainFlowFunctions.everyClassHaveTeacher(num_lecturers, num_classes, num_days, num_slots_per_day, class_day_slot, f, model);
-            
+            //MainFlowFunctions.everyClassHaveTeacher(num_lecturers, num_classes, num_days, num_slots_per_day, class_day_slot, f, model);
+
+            @delegate.Invoke(num_lecturers, num_classes, num_days, num_slots_per_day, class_day_slot, f, model);
+            //MainFlowFunctions.noDuplicateClass(num_lecturers, num_classes, num_days, num_slots_per_day, class_day_slot, f, model);
+
             //Đảm bảo 1 người dạy 1 slot ở 1 ngày
             for (int i = 0; i < num_lecturers; i++)
                 for (int k = 0; k < num_days; k++)
