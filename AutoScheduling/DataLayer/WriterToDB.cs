@@ -4,11 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Data.Models;
-namespace OrTools.DataLayer
+using Microsoft.EntityFrameworkCore;
+
+namespace AutoScheduling.DataLayer
 {
     public class WriterToDB
     {
-        public void writeAvaialbleSubject_Class_Schedule(int semesterId, List<string> subjects
+        public async Task writeAvaialbleSubject_Class_Schedule(int semesterId, List<string> subjects
             ,List<(string, string, int, int,string)> subject_class_day_slot_slotAPx, DateTime startDate, int summerTime)
         {
             using (var context = new CFManagementContext())
@@ -17,7 +19,7 @@ namespace OrTools.DataLayer
                 List<(string, int)> subjectName_AsubjectId = new List<(string, int)>();
                 foreach (var a in subjects)
                 {
-                    Subject subject = context.Subjects.FirstOrDefault(x => x.SubjectName.ToUpper() == a.ToUpper().Trim());
+                    Subject subject = await context.Subjects.FirstOrDefaultAsync(x => x.SubjectName.ToUpper() == a.ToUpper().Trim());
                     if (subject != null)
                     {
                         var ASubject = new AvailableSubject()
@@ -30,7 +32,7 @@ namespace OrTools.DataLayer
                             Status = true,
                         };
                         context.Add(ASubject);
-                        context.SaveChanges();
+                        await context.SaveChangesAsync();
                         subjectName_AsubjectId.Add((subject.SubjectName, ASubject.AvailableSubjectId));
                     }
                 }
@@ -46,7 +48,7 @@ namespace OrTools.DataLayer
                         Status = true
                     };
                     context.Add(Class1);
-                    context.SaveChanges();
+                    await context.SaveChangesAsync();
                     subject_classId.Add((a.Item1, Class1.ClassId));
 
                     // Create Schedule
@@ -91,7 +93,7 @@ namespace OrTools.DataLayer
                         SubjectName = a.Item1,
                     };
                     context.Add(classAsubject);
-                    context.SaveChanges();
+                    await context.SaveChangesAsync();
                 }
             }
         }

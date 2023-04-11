@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Google.OrTools.Sat;
-namespace OrTools.Algorithm
+namespace AutoScheduling.Algorithm
 {
     public class SubjectClassGenerator
     {

@@ -1,12 +1,12 @@
 ﻿using Google.OrTools.Sat;
-using OrTools.Algorithm;
-using OrTools.DataLayer;
-using OrTools.Reader;
+using AutoScheduling.Algorithm;
+using AutoScheduling.DataLayer;
+using AutoScheduling.Reader;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace OrTools
+namespace AutoScheduling
 {
     public class Program
     {
@@ -25,8 +25,8 @@ namespace OrTools
             
             Stopwatch timer = new Stopwatch();
             timer.Start();
-            ClassDaySlotReader classDaySlotReader = new ClassDaySlotReader();
-            classDaySlotReader.readClassDaySlotCsvToDb();
+           /// ClassDaySlotReader classDaySlotReader = new ClassDaySlotReader();
+            //classDaySlotReader.readClassDaySlotCsvToDb();
 
             ///RegisterSubjectReader registerSubjectReader = new RegisterSubjectReader();
            // registerSubjectReader.createRegisterSubjectFileFromDatabase();
