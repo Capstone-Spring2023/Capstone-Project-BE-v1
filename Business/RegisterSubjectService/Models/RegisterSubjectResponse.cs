@@ -11,7 +11,7 @@ namespace Business.RegisterSubjectService.Models
         //public int AvailableSubjectId { get; set; }
         public DateTime RegisterDate { get; set; }
         public bool Status { get; set; }
-        public List<string> SubjectName { get; set; } = new List<string>();
+        public string SubjectName { get; set; }
       
 
     }
@@ -23,7 +23,7 @@ namespace Business.RegisterSubjectService.Models
     }
     public class RegisterSubjectSlotResponse
     {
-        public RegisterSubjectResponse registerSubjects { get; set; }
+        public List<RegisterSubjectResponse> registerSubjects { get; set; }
         public List<string> registerSlots { get; set; }   
 
     }
