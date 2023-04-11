@@ -1,18 +1,21 @@
-﻿using OrTools.DataLayer;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Internal;
+using AutoScheduling.DataLayer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrTools.Reader
+namespace AutoScheduling.Reader
 {
     public class RegisterSubjectReader
     {
-        private readonly string fileName = @"D:\Schedule\Input\register_subject_1.csv";
-        public List<(int, string, List<string>, bool, bool, bool, bool, bool, bool)> readRegisterSubjectFile()
+        private readonly string fileName = Constant.REGISTER_SUBJECT_FILE;
+            // @"\tmp\register_subject_1.csv";
+        public List<(int, string, List<string>, bool, bool, bool, bool, bool, bool)> readRegisterSubjectFile(IFormFile file)
         {
-            using (var reader = new StreamReader(fileName))
+            using (var reader = new StreamReader(file.OpenReadStream()))
             {
                 var list = new List<(int,string,List<string>,bool,bool,bool,bool,bool,bool)>();
                 for (int i = 0; i< 4; i++ ) reader.ReadLine();
@@ -192,6 +195,8 @@ namespace OrTools.Reader
                 csv.AppendLine(registerSubjects.ToString());
             }
             File.WriteAllText(filePath, csv.ToString());
+            
+            
         }
     }
 }

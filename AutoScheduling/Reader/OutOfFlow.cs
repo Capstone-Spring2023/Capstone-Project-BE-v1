@@ -4,14 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-namespace OrTools.Reader
+namespace AutoScheduling.Reader
 {
     public class OutOfFlow
     {
         public async Task createRegisterSubjectDatabaseFromFile()
         {
             RegisterSubjectReader reader = new RegisterSubjectReader(); 
-            var list = reader.readRegisterSubjectFile();
+            var list = reader.readRegisterSubjectFile(null);
             using(CFManagementContext _context = new CFManagementContext())
             {
                 foreach (var a in list)

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrTools.DataLayer
+namespace AutoScheduling.DataLayer
 {
     public class Getter
     {

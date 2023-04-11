@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrTools
+namespace AutoScheduling
 {
     public class MainFlowFunctions
     {
@@ -56,9 +56,9 @@ namespace OrTools
                         }
                 LinearExpr linearExpr = LinearExpr.Sum(teach_num_classes);
                 if (d[i] > 0)
-                model.Add(linearExpr >= d[i]  );
+                model.Add(linearExpr >= 2  );
                 
-                //model.Add(linearExpr <= d[i] * 5);
+                model.Add(linearExpr <= d[i]);
             }
         }
         public static void teachAllSlotOfAClass(int num_lecturers, int num_classes, int num_days, int num_slots
@@ -106,7 +106,22 @@ namespace OrTools
         {
             
         }
-
+        public static void noDuplicateClass(int num_lecturers, int num_classes, int num_days, int num_slots
+            , int[,,] class_day_slot, IntVar[,,,] f, CpModel model)
+        {
+            for (int j = 0; j < num_classes; j++)
+                for (int k = 0; k < num_days; k++)
+                    for (int l = 0; l < num_slots; l++)
+                        if (class_day_slot[j, k, l] == 1)
+                        {
+                            IntVar[] a = new IntVar[num_lecturers];
+                            for (int i = 0; i < num_lecturers; i++)
+                            {
+                                a[i] = f[i, j, k, l];
+                            }
+                            model.Add(LinearExpr.Sum(a) <= 1);
+                        }
+        }
 
     }
 }

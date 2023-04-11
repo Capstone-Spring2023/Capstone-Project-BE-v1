@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrTools
+namespace AutoScheduling
 {
     public class CsvWriter
     {
@@ -94,7 +94,7 @@ namespace OrTools
                             }
                         }
             }
-            string filePath = @"D:\Schedule\schedule.csv";
+            string filePath = Constant.SCHEDULE_FILE;
             File.WriteAllText(filePath, csvSchedule.ToString());
         }
 

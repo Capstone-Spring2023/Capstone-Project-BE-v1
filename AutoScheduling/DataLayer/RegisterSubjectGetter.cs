@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Data.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace OrTools.DataLayer
+namespace AutoScheduling.DataLayer
 {
     public class UserRegisterSubjectAndSlot
     {
