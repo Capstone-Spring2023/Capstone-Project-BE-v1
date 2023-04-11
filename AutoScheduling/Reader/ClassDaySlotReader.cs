@@ -1,11 +1,12 @@
-﻿using OrTools.DataLayer;
+﻿using Microsoft.AspNetCore.Http;
+using AutoScheduling.DataLayer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrTools.Reader
+namespace AutoScheduling.Reader
 {
     public class ClassDaySlotReader
     {
@@ -59,9 +60,9 @@ namespace OrTools.Reader
                 return class_day_slot;
             }
         }
-        public void readClassDaySlotCsvToDb()
+        public async Task readClassDaySlotCsvToDb(IFormFile file)
         {
-            using (var reader = new StreamReader(fileName))
+            using (var reader = new StreamReader(file.OpenReadStream()))
             {
                 List<string> subjectsRaw = new List<string>();
                 var subject_class_day_slot_slotAx = new List<(string, string, int, int,string)>();
@@ -77,7 +78,7 @@ namespace OrTools.Reader
                     string className = subjectName + "_" + classGroup;
                     string APx = parts[2];
 
-                    if (!subjectsRaw.Exists(x => x == subjectName)) subjectsRaw.Add(subjectName);
+                    if (!subjectsRaw.Exists(x => x.ToUpper().Trim() == subjectName.ToUpper().Trim())) subjectsRaw.Add(subjectName);
 
                     
                     int day, slot;
@@ -99,7 +100,7 @@ namespace OrTools.Reader
                 }
                 WriterToDB writer = new WriterToDB();
                 DateTime startDate = DateTime.Parse("05-08-2023");
-                writer.writeAvaialbleSubject_Class_Schedule(1, subjectsRaw, subject_class_day_slot_slotAx, startDate, 6);
+                await writer.writeAvaialbleSubject_Class_Schedule(1, subjectsRaw, subject_class_day_slot_slotAx, startDate, 6);
             }
         }
     }

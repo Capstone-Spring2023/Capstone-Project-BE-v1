@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Google.OrTools.Sat;
 
-namespace OrTools
+namespace AutoScheduling
 {
     public class LecturerRegisterSlotGenerator
     {
