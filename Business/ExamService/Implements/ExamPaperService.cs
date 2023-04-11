@@ -24,13 +24,15 @@ namespace Business.ExamPaperService.Implements
         private readonly IExamScheduleRepository ExamScheduleRepository;
         private readonly CFManagementContext _context;
         private IMapper mapper;
-        public ExamPaperService(CFManagementContext context, IExamPaperRepository ExamPaperRepository, ICommentRepository commentRepository, IMapper mapper, IExamScheduleRepository examScheduleRepository)
+        private readonly INotificationRepository NotificationRepository;
+        public ExamPaperService(CFManagementContext context, IExamPaperRepository ExamPaperRepository, ICommentRepository commentRepository, IMapper mapper, IExamScheduleRepository examScheduleRepository, INotificationRepository NotificationRepository)
         {
             this.ExamPaperRepository = ExamPaperRepository;
             this.mapper = mapper;
             this.CommentRepository = commentRepository;
             _context = context;
-            ExamScheduleRepository = examScheduleRepository;
+            this.ExamScheduleRepository = examScheduleRepository;
+            this.NotificationRepository = NotificationRepository;
         }
 
         public async Task<ObjectResult> CreateExam(int examScheduleId,ExamCreateRequestModel ExamPaperCreateRequest)
@@ -41,12 +43,17 @@ namespace Business.ExamPaperService.Implements
             try
             {
                 await ExamPaperRepository.CreateExam(ExamPaper);
-                /*var notification = mapper.Map<Notification>(ExamPaperCreateRequest);
-                notification.UserId = registerSubject.UserId;
-                notification.LeaderName = _context.Users.Find(createExamScheduleModel.LeaderId).FullName;
-                notification.SubjectCode = Subject.SubjectCode;
+                var notification = mapper.Map<Notification>(ExamPaperCreateRequest);
+                var registerSubjectId = _context.ExamSchedules.Find(examScheduleId).RegisterSubjectId;
+                var registerSubject = _context.RegisterSubjects.Find(registerSubjectId);
+                notification.Sender = _context.Users.Find(registerSubject.UserId).FullName;
+                var leaderId = _context.ExamSchedules.Find(examScheduleId).LeaderId;
+                notification.UserId = leaderId;
+                var availableSubject = _context.AvailableSubjects.Find(_context.ExamSchedules.Find(examScheduleId).AvailableSubjectId);
+                var subject = _context.Subjects.Where(x => x.SubjectId == availableSubject.SubjectId && x.Status).FirstOrDefault();
+                notification.SubjectCode = subject.SubjectCode;
                 notification.Status = "Unread";
-                await _notificationRepository.CreateNotification(notification);*/
+                await NotificationRepository.CreateNotification(notification);
                 return new ObjectResult("Create Success")
                 {
                     StatusCode = 201,
