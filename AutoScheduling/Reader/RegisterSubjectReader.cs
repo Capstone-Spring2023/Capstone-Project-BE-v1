@@ -11,7 +11,7 @@ namespace AutoScheduling.Reader
 {
     public class RegisterSubjectReader
     {
-        private readonly string fileName = @"\tmp\register_subject.csv";
+        private readonly string fileName = @"register_subject_v1.csv";
             // @"\tmp\register_subject_1.csv";
         public List<(int, string, List<string>, bool, bool, bool, bool, bool, bool)> readRegisterSubjectFile()
         {

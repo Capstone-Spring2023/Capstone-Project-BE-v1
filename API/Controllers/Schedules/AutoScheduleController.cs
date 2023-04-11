@@ -31,7 +31,7 @@ namespace API.Controllers.Schedules
             RegisterSubjectReader registerSubjectReader = new RegisterSubjectReader();
              registerSubjectReader.createRegisterSubjectFileFromDatabase();
             //await classDaySlotReader.readClassDaySlotCsvToDb(csvFile);
-            string filePath = @"\tmp\register_subject.csv";
+            string filePath = @"register_subject_v1.csv";
             var stream = new MemoryStream(System.IO.File.ReadAllBytes(filePath).ToArray());
             var formFile = new FormFile(stream, 0, stream.Length, "file", filePath.Split(@"\").Last());
             //Response.SendFileAsync((Microsoft.Extensions.FileProviders.IFileInfo)file);
@@ -54,11 +54,11 @@ namespace API.Controllers.Schedules
                 {
                     file.CopyTo(ms);
                     ms.Position = 0;
-                    var blobHttpHeader = new BlobHttpHeaders { ContentType = "csv/jpeg" };
+                    var blobHttpHeader = new BlobHttpHeaders { ContentType = "text/csv" };
                     await blobClient.UploadAsync(ms, new BlobUploadOptions { HttpHeaders = blobHttpHeader });
                     ;
                 }
-                return "https:/merry.blob.core.windows.net/yume/" + file.FileName;
+                return "https://eoolykos.blob.core.windows.net/mustang/" + file.FileName;
             }
             catch (Exception ex)
             {
