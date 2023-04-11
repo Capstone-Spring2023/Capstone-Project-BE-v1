@@ -130,19 +130,28 @@ namespace API.Controllers.Exam
         public async Task<ObjectResult> getRegisterSubjects([FromRoute] int userId)
         {
             var registerSubjects = await _context.RegisterSubjects
-                .Include(x => x.AvailableSubject)
                 .Where(x => x.UserId == userId)
-                .Select(x => _mapper.Map<RegisterSubjectResponse>(x))
                 .ToListAsync();
-            List<RegisterSubjectResponse> registerSubjectResponses = new List<RegisterSubjectResponse>();
-            
+            var registerSubjectResponse = new RegisterSubjectResponse();
+            registerSubjectResponse.RegisterDate = registerSubjects[0].RegisterDate;
+            registerSubjectResponse.Status = registerSubjects[0].Status;
+            foreach(var register in registerSubjects)
+            {
+                var avaibaleSubject = _context.AvailableSubjects.Find(register.AvailableSubjectId);
+                if (avaibaleSubject.Status)
+                {
+                    var subjectName = _context.Subjects.Find(avaibaleSubject.SubjectId).SubjectName;
+                    registerSubjectResponse.SubjectName.Add(subjectName);
+                }
+                
+            }
             var registerSlots = _context.RegisterSlots.Where(x => x.UserId == userId)
                 .Select(x => _mapper.Map<RegisterSlotResponse>(x)).ToList();
 
             var res = new RegisterSubjectSlotResponse()
             {
                 registerSlots = registerSlots.Select(x=> x.Slot.Trim()).ToList(),
-                registerSubjects = registerSubjects
+                registerSubjects = registerSubjectResponse
             }
             ;
 
