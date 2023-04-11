@@ -52,7 +52,7 @@ namespace API.Controllers.Schedules
                 StatusCode = 200,
             };
         }
-        [HttpGet("lecturer/{lecturerId}/schedule/")]
+        [HttpGet("lecturer/{lecturerId}")]
         public async Task<ObjectResult> getScheduleByLecturer([FromRoute] int lecturerId)
         {
             var a = _context.Schedules
@@ -72,11 +72,13 @@ namespace API.Controllers.Schedules
                 StatusCode = 200
             };
         }
-        [HttpPut("lecturer/schedule")]
+        [HttpPut("lecturer")]
         public async Task<ObjectResult> updateSchedule([FromBody] ScheduleUpdateRequest request)
         {
             
-            var a = _context.Classes.First(x=> x.ClassId == request.ClassId);
+            var a = _context.Classes
+                .Include(x => x.RegisterSubject)
+                .First(x=> x.ClassId == request.ClassId);
             var registerSubjectId = _context.RegisterSubjects
                 .FirstOrDefault(
                 x => x.UserId == request.UserId
