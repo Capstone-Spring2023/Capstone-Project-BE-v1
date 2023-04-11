@@ -11,7 +11,7 @@ namespace Business.ExamSchedule.Models
     {
         public string? Tittle { get; set; }
         public DateTime Deadline { get; set; }
- 
+        public int AppovalUserId { get; set; }
         public string? ExamLink { get; set; }
         public string Type { get; set; } = null!;
         public string Message { get; set; } = null!;
