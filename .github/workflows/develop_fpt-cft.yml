@@ -53,5 +53,5 @@ jobs:
         with:
           app-name: 'fpt-cft'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_72B0A9E871054EDD845CCFC13AD07521 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_3A3F6DECA11B47E0B00861DD335970E0 }}
           package: .
