@@ -105,10 +105,11 @@ namespace Business.ExamSchedule.Implements
                             StatusCode = (int)Business.Constants.StatusCode.BADREQUEST                           
                         };
                     }
-                    
+                    if (registerSubject.UserId != createExamScheduleModel.LeaderId && registerSubject.UserId != createExamScheduleModel.AppovalUserId)
+                    {
 
-                    //Create Request
-                    var examScheduleModel = _mapper.Map<Data.Models.ExamSchedule>(createExamScheduleModel);
+                        //Create Request
+                        var examScheduleModel = _mapper.Map<Data.Models.ExamSchedule>(createExamScheduleModel);
                     int typeId = _context.Subjects.Find(availableSubject.SubjectId).TypeId;
 
                     examScheduleModel.TypeId = typeId;
@@ -120,8 +121,7 @@ namespace Business.ExamSchedule.Implements
 
                     await _examScheduleRepository.CreateScheduleExam(examScheduleModel);
                     var notification = _mapper.Map<Notification>(createExamScheduleModel);
-                    if(registerSubject.UserId != createExamScheduleModel.LeaderId && registerSubject.UserId != createExamScheduleModel.AppovalUserId)
-                    {
+                    
                         notification.UserId = registerSubject.UserId;
                         notification.Sender = _context.Users.Find(createExamScheduleModel.LeaderId).FullName;
                         notification.SubjectCode = Subject.SubjectCode;
