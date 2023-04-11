@@ -79,6 +79,13 @@ namespace API.Controllers
             return Ok(response);
         }
 
+        [HttpGet]
+        [Route("api/header/GetLecturersHaveRegisterSubject")]
+        public async Task<IActionResult> GetLecturersHaveRegisterSubject()
+        {
+            var response = await _userService.GetAllLecturerHaveRegisterSubject();
+            return Ok(response);
+        }
 
     }
 

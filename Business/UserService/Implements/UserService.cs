@@ -145,5 +145,24 @@ namespace Business.UserService.Implements
             };
 
         }
+
+        public async Task<ResponseModel> GetAllLecturerHaveRegisterSubject()
+        {
+            var listRegister = await _context.RegisterSubjects.Where(x => x.Status).ToListAsync();
+            var listUserId = listRegister.Select(x => x.UserId).Distinct().ToList();
+            List<ResponseLecturerHaveRegisterSubject> listResponse = new List<ResponseLecturerHaveRegisterSubject>();
+            listUserId.ForEach(delegate (int s)
+            {
+                var lecturer = new ResponseLecturerHaveRegisterSubject();
+                lecturer.UserId = s;
+                lecturer.FullName = _context.Users.Find(s).FullName;
+                listResponse.Add(lecturer);
+            });
+            return new()
+            {
+                StatusCode = 200,
+                Data = listResponse
+            };
+        }
     }
 }

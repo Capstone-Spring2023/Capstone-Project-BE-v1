@@ -10,5 +10,6 @@ namespace Business.RegisterSubjectService.Interfaces
     public interface IRegisterSubjectService
     {
         public Task<ResponseModel> CreateRegisterSubject(CreateRegisterSubjectModel model);
+        
     }
 }
