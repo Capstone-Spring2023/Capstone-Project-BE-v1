@@ -274,7 +274,7 @@ namespace Business.ExamPaperService.Implements
                 }
                 foreach(var exam in examSubmissions)
                 {
-                    if(exam.Status == "Pending")
+                    if(exam.Status == ExamPaperStatus.PENDING)
                     {
                         var examResponse = mapper.Map<ExamResponseModel>(exam);
                         if( examResponse == null)
@@ -294,6 +294,32 @@ namespace Business.ExamPaperService.Implements
                                 StatusCode = 404,
                             };
                         }
+                        examResponse.LecturerName = _context.Users.Find(register.UserId).FullName;
+                        examResponse.Type = _context.Types.Find(examSchedule.TypeId).TypeName;
+                        listExamSubmission.Add(examResponse);
+                        break;
+                    }
+                    if(exam.Status == ExamPaperStatus.APPROVED_MANUAL)
+                    {
+                        var examResponse = mapper.Map<ExamResponseModel>(exam);
+                        if (examResponse == null)
+                        {
+                            return new(new List<object>())
+                            {
+                                StatusCode = 404,
+                            };
+                        }
+                        examResponse.SubjectName = _context.AvailableSubjects.Where(x => x.AvailableSubjectId == examSchedule.AvailableSubjectId && x.Status).FirstOrDefault().SubjectName;
+                        examResponse.Tittle = examSchedule.Tittle;
+                        var register = _context.RegisterSubjects.Where(x => x.RegisterSubjectId == examSchedule.RegisterSubjectId && x.Status).FirstOrDefault();
+                        if (register == null)
+                        {
+                            return new(new List<object>())
+                            {
+                                StatusCode = 404,
+                            };
+                        }
+                        examResponse.ExamInstruction = exam.ExamInstruction;
                         examResponse.LecturerName = _context.Users.Find(register.UserId).FullName;
                         examResponse.Type = _context.Types.Find(examSchedule.TypeId).TypeName;
                         listExamSubmission.Add(examResponse);
