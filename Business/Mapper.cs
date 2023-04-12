@@ -22,6 +22,7 @@ namespace Business
                 .ForMember(src => src.SubjectName, act => act.MapFrom(des => des.AvailableSubject.SubjectName));
             CreateMap<ExamCreateRequestModel, ExamPaper>();
             CreateMap<ExamUpdateRequestModel, ExamPaper>();
+            CreateMap<ExamCreateRequestModel, Notification>().ReverseMap();
             CreateMap<ExamUpdateApproveModel, ExamPaper>().ReverseMap();
             CreateMap<ExamPaper, ExamResponseModel>();
             CreateMap<AvailableSubject, AvailableSubjectResponse>();
