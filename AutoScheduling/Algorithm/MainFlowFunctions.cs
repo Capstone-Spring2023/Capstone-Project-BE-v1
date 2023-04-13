@@ -26,7 +26,7 @@ namespace AutoScheduling
                     for (int k = 0; k < num_days; k++)
                         for (int l = 0; l < num_slots; l++)
                         {
-                            if (class_day_slot[j,k,l] == 1)
+                            if (class_day_slot[j, k, l] == 1)
                             {
                                 f[i, j, k, l] = model.NewIntVar(0, 1, "");
                             }
@@ -58,35 +58,11 @@ namespace AutoScheduling
                     //model.Add(linearExpr >= d[i]);
                     //model.Add(linearExpr <= 15);
                     model.AddLinearConstraint(linearExpr, d[i], 15);
-                else model.AddLinearConstraint(linearExpr, 0,0);
+                else model.AddLinearConstraint(linearExpr, 0, 0);
             }
         }
-        public static void teachAllSlotOfAClass(int num_lecturers, int num_classes, int num_days, int num_slots
-            , IntVar[,,,] f, CpModel model)
-        {
-            for (int i = 0; i < num_lecturers; i++)
-            {
-                for (int j = 0; j < num_classes; j++)
-                {
-                    int count = 0;
-                    IntVar[] teach_class = new IntVar[num_days * num_slots];
-                    for (int k = 0; k < num_days; k++)
-                        for (int l = 0; l < num_slots; l++)
-                        {
-                            teach_class[count] = f[i, j, k, l];
-                            count++;
-                        }
-
-                    LinearExpr linearExpr = LinearExpr.Sum(teach_class);
-
-                    model.Add(linearExpr >= 0);
-                    model.Add(linearExpr != 1);
-                    model.Add(linearExpr <= 2);
-                }
-            }
-        }
-        public static void everyClassHaveTeacher(int num_lecturers,int num_classes, int num_days, int num_slots
-            ,int [,,] class_day_slot, IntVar[,,,] f, CpModel model)
+        public static void everyClassHaveTeacher(int num_lecturers, int num_classes, int num_days, int num_slots
+            , int[,,] class_day_slot, IntVar[,,,] f, CpModel model)
         {
             for (int j = 0; j < num_classes; j++)
                 for (int k = 0; k < num_days; k++)
@@ -100,11 +76,6 @@ namespace AutoScheduling
                             }
                             model.Add(LinearExpr.Sum(a) == 1);
                         }
-        }
-        public static void teacher_teaching_mustSatisfy_di(int num_lecturers, int num_classes, int num_days,
-            int num_slots, int[] d, IntVar[,,,] f, CpModel model)
-        {
-            
         }
         public static void noDuplicateClass(int num_lecturers, int num_classes, int num_days, int num_slots
             , int[,,] class_day_slot, IntVar[,,,] f, CpModel model)

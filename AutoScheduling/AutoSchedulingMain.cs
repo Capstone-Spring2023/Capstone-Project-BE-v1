@@ -175,35 +175,6 @@ namespace AutoScheduling
             //for (int i = 0)
             int[,,] class_day_slot = ScheduleGenerator.Create_Schedule(num_classes, num_days, num_slots_per_day, subject_class_list, subject_Dic);
         }
-        public static void OldFlow()
-        {/*
-            int[] d = new int[num_lecturers];
-            Random r = new Random();
-
-            for (int i = 0; i < num_lecturers; i++)
-            {
-                d[i] = (int)r.NextInt64(0, 2);
-                d[i] = d[i] * 2 + 4;
-            }
-            int[,] subject_class = create_subject_class();
-            int[,,] class_day_slot = ScheduleGenerator.Create_Schedule(num_classes, num_days, num_slots_per_day);
-            
-            int[,] register_subject = RegisterSubjectGenerator.Create_Lecturer_Subject(num_lecturers, num_subjects);
-
-
-            int[,,] teacher_day_slot = LecturerRegisterSlotGenerator
-                .generate(num_lecturers, num_subjects, num_classes, num_days, num_slots_per_day, d, subject_class, register_subject, class_day_slot);
-
-            bool check = MainFlow1a(class_day_slot, register_subject, subject_class, teacher_day_slot, d);
-
-            if (!check)
-            {
-                //var a = MainFlow1b(class_day_slot, register_subject, subject_class, teacher_day_slot, d);
-
-            }
-            //RegisterSubjectReader reader = new RegisterSubjectReader();
-            //reader.readRegisterSubjectFile();*/
-        }
        
     }
 
