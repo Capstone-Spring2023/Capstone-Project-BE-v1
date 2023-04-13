@@ -1,4 +1,5 @@
 ﻿using Data.Models;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,12 +11,12 @@ namespace AutoScheduling.Reader
     
     public class ScheduleReader
     {
-        private readonly string filePath = @"D:\Schedule\schedule.csv";
-        public void fromScheduleFile_writeToDatabase()
+        //private readonly string filePath = @"D:\Schedule\schedule.csv";
+        public async Task fromScheduleFile_writeToDatabase(IFormFile file)
         {
             using(var _context = new CFManagementContext())
             {
-                using (var reader = new StreamReader(filePath))
+                using (var reader = new StreamReader(file.OpenReadStream()))
                 {
                     reader.ReadLine();
 
@@ -28,8 +29,28 @@ namespace AutoScheduling.Reader
                         string subjectName = parts[2];
                         int asubjectId = _context.AvailableSubjects
                             .First(x => x.SemesterId == 1 && x.SubjectName == subjectName).AvailableSubjectId;
-                        int registerSubjectId = _context.RegisterSubjects.First(x => x.AvailableSubjectId == asubjectId && x.UserId == lecturerId).RegisterSubjectId;
-                        
+                        var registerSubject = _context.RegisterSubjects.FirstOrDefault(x => x.AvailableSubjectId == asubjectId && x.UserId == lecturerId);
+                        int registerSubjectId;//= _context.RegisterSubjects.First(x => x.AvailableSubjectId == asubjectId && x.UserId == lecturerId).RegisterSubjectId;
+                        if (registerSubject == null)
+                        {
+                            registerSubject = new RegisterSubject()
+                            {
+                                AvailableSubjectId = asubjectId,
+                                ClassId = 123,
+                                IsRegistered = false,
+                                Status = true,
+                                RegisterDate = DateTime.Now,
+                                UserId = lecturerId,
+                                
+                            };
+                            _context.RegisterSubjects.Add(registerSubject);   
+                        }
+                        else
+                        {
+                            registerSubject.Status = true;
+                        }
+                        await _context.SaveChangesAsync();
+                        registerSubjectId = registerSubject.RegisterSubjectId;
                         var class1 = _context.Classes.First(x => x.ClassCode == classCode);
                         class1.RegisterSubjectId = registerSubjectId;
                         _context.SaveChanges();

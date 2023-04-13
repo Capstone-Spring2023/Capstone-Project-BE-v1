@@ -24,7 +24,7 @@ namespace API.Controllers.Schedules
             await classDaySlotReader.readClassDaySlotCsvToDb(csvFile);
             return Ok("Create Success");
         }
-        [HttpPost("get-file")]
+        [HttpGet("get-file")]
         [SwaggerOperation(Summary = "Lấy csv file đăng ký từ hệ thống")]
         public async Task<ObjectResult> registerSubjectReaderAPi()
         {
@@ -76,6 +76,21 @@ namespace API.Controllers.Schedules
                 var link = await uploadFile(formFile);
                 return Ok(link);
             }
+        }
+        [HttpPut("import-schedule-file")]
+        [SwaggerOperation(Summary = "Import lịch schedule.csv ở 1 trong 2 api trên vào")]
+        public async Task<IActionResult> importSchedule(IFormFile[] file)
+        {
+            if (file.Length == 0) return BadRequest();
+            ScheduleReader reader = new ScheduleReader();
+            try
+            {
+                await reader.fromScheduleFile_writeToDatabase(file[0]);
+            }catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            return Ok("Import Success");
         }
         private BlobContainerClient GetBlobContainerClient()
         {

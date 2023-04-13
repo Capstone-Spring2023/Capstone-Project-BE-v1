@@ -49,6 +49,7 @@ namespace API.Controllers.Schedules
                     ClassId = 123,
                     RegisterDate = DateTime.Now,
                     Status = true,
+                    IsRegistered = true,
                 };
                 list.Add(registerSubject);
             }
@@ -61,7 +62,7 @@ namespace API.Controllers.Schedules
                 {
                     SemesterId = 1,
                     Slot = a,
-                    Status = true,
+                    Status = false,
                     UserId = registerSubjectSlot.userId
                 };
                 list1.Add(registerSlot);
