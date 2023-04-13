@@ -98,7 +98,7 @@ namespace AutoScheduling.Reader
         public void createTeacher_Day_Slot(List<(int, int,string)> userDic,List<(int, string, List<string>, bool, bool, bool, bool, bool, bool)> list, int[,] registerSubject,
              out int[,,] teacher_day_slot)
         {
-            teacher_day_slot = new int[userDic.Count, 6, 4];
+            teacher_day_slot = new int[userDic.Count, 3, 4];
             for (int i = 0; i < list.Count; i++)
             {
                 var a = list[i];
@@ -107,43 +107,36 @@ namespace AutoScheduling.Reader
                 {
                     teacher_day_slot[userIndex, 0, 0] = 1;
                     teacher_day_slot[userIndex, 0, 1] = 1;
-                    teacher_day_slot[userIndex, 3, 0] = 1;
-                    teacher_day_slot[userIndex, 3, 1] = 1;
+                  
                 }
                 if (a.Item5)
                 {
                     teacher_day_slot[userIndex, 0, 2] = 1;
                     teacher_day_slot[userIndex, 0, 3] = 1;
-                    teacher_day_slot[userIndex, 3, 2] = 1;
-                    teacher_day_slot[userIndex, 3, 3] = 1;
+                
                 }
                 if (a.Item6)
                 {
                     teacher_day_slot[userIndex, 1, 0] = 1;
                     teacher_day_slot[userIndex, 1, 1] = 1;
-                    teacher_day_slot[userIndex, 4, 0] = 1;
-                    teacher_day_slot[userIndex, 4, 1] = 1;
+           
                 }
                 if (a.Item7)
                 {
                     teacher_day_slot[userIndex, 1, 2] = 1;
                     teacher_day_slot[userIndex, 1, 3] = 1;
-                    teacher_day_slot[userIndex, 4, 2] = 1;
-                    teacher_day_slot[userIndex, 4, 3] = 1;
+                    
                 }
                 if (a.Item8)
                 {
                     teacher_day_slot[userIndex, 2, 0] = 1;
                     teacher_day_slot[userIndex, 2, 1] = 1;
-                    teacher_day_slot[userIndex, 5, 0] = 1;
-                    teacher_day_slot[userIndex, 5, 1] = 1;
+                    
                 }
                 if (a.Item9)
                 {
                     teacher_day_slot[userIndex, 2, 2] = 1;
                     teacher_day_slot[userIndex, 2, 3] = 1;
-                    teacher_day_slot[userIndex, 5, 2] = 1;
-                    teacher_day_slot[userIndex, 5, 3] = 1;
                 }
             }
         }

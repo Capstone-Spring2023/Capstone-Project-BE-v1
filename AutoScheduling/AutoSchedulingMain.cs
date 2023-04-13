@@ -160,21 +160,6 @@ namespace AutoScheduling
             }
 
         }
-        public static void createSchedule()
-        {
-            int num_classes = 91;
-            Getter getter = new Getter();
-            var subject_Dic = getter.getAllSubject(1);
-            //int[,] subject_class = create_subject_class();
-            var subjectClassGenerator = new SubjectClassGenerator()
-            {
-                subjectDic = subject_Dic,
-            };
-            List<(int, int)> subject_class_list = subjectClassGenerator.create_subject_class(num_classes);
-            
-            //for (int i = 0)
-            int[,,] class_day_slot = ScheduleGenerator.Create_Schedule(num_classes, num_days, num_slots_per_day, subject_class_list, subject_Dic);
-        }
        
     }
 

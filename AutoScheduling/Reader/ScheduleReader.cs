@@ -12,10 +12,11 @@ namespace AutoScheduling.Reader
     public class ScheduleReader
     {
         //private readonly string filePath = @"D:\Schedule\schedule.csv";
-        public async Task fromScheduleFile_writeToDatabase(IFormFile file)
+        public async Task fromScheduleFile_writeToDatabase(IFormFile file,int semesterid)
         {
             using(var _context = new CFManagementContext())
             {
+                //List<(int)> userId_subjectCode_Slot 
                 using (var reader = new StreamReader(file.OpenReadStream()))
                 {
                     reader.ReadLine();
@@ -53,7 +54,10 @@ namespace AutoScheduling.Reader
                         registerSubjectId = registerSubject.RegisterSubjectId;
                         var class1 = _context.Classes.First(x => x.ClassCode == classCode);
                         class1.RegisterSubjectId = registerSubjectId;
-                        _context.SaveChanges();
+                        await _context.SaveChangesAsync();
+
+
+
                     }
                 }
             }

@@ -79,13 +79,13 @@ namespace API.Controllers.Schedules
         }
         [HttpPut("import-schedule-file")]
         [SwaggerOperation(Summary = "Import lịch schedule.csv ở 1 trong 2 api trên vào")]
-        public async Task<IActionResult> importSchedule(IFormFile[] file)
+        public async Task<IActionResult> importSchedule([FromForm]IFormFile[] file, [FromQuery] int semesterId)
         {
             if (file.Length == 0) return BadRequest();
             ScheduleReader reader = new ScheduleReader();
             try
             {
-                await reader.fromScheduleFile_writeToDatabase(file[0]);
+                await reader.fromScheduleFile_writeToDatabase(file[0],semesterId);
             }catch (Exception ex)
             {
                 return BadRequest(ex.Message);
