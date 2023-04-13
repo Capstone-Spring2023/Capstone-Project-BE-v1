@@ -6,6 +6,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers.Schedules
 {
+    public class UserAlphaResponse
+    {
+        public int UserId { get; set; } 
+        public double alphaIndex { get; set; }   
+        public int numMinClass { get; set; } = 0;
+        public double percent { get; set; }
+    }
     [Route("api/schedule")]
     [ApiController]
     public class ScheduleController : ControllerBase
@@ -14,6 +21,20 @@ namespace API.Controllers.Schedules
         public ScheduleController(CFManagementContext context)
         {
             _context = context;
+        }
+        [HttpGet("alpha-index-and-min-class")]
+        public async Task<ObjectResult> getAlpha()
+        {
+            var users = await _context.Users.Skip(1).ToListAsync();
+            var sum = users.Sum(x => x.AlphaIndex);
+            var res = users.Select(x => new UserAlphaResponse()
+            {
+                UserId = x.UserId,
+                alphaIndex =(double) x.AlphaIndex,
+                numMinClass = (int) x.NumMinClass,
+                percent = ((double)x.AlphaIndex / (double)sum) *100
+            });
+            return new ObjectResult(res);
         }
         [HttpPost("register-subject-slot")]
         public async Task<ObjectResult> register(RegisterSubjectSlot registerSubjectSlot)

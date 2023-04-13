@@ -26,15 +26,14 @@ namespace AutoScheduling
                     for (int k = 0; k < num_days; k++)
                         for (int l = 0; l < num_slots; l++)
                         {
-                            if (class_day_slot[j, k, l] == 1 // class ở ngày k slot l CÓ
-                            &&
-                            registerSubject[i, subjectId] == 1  // Lecturer có đký Subject của class này
-                            && teacher_day_slot[i, k, l] == 1 // Lecturer Được dạy slot họ yêu cầu
-                            )
+                            if (class_day_slot[j,k,l] == 1)
                             {
                                 f[i, j, k, l] = model.NewIntVar(0, 1, "");
                             }
-                            else f[i, j, k, l] = model.NewIntVar(0, 0, "");
+                            else
+                            {
+                                f[i, j, k, l] = model.NewIntVar(0, 0, "");
+                            }
                         }
                 }
             return f;
@@ -56,9 +55,10 @@ namespace AutoScheduling
                         }
                 LinearExpr linearExpr = LinearExpr.Sum(teach_num_classes);
                 if (d[i] > 0)
-                model.Add(linearExpr >= 2  );
-                
-                model.Add(linearExpr <= d[i]);
+                    //model.Add(linearExpr >= d[i]);
+                    //model.Add(linearExpr <= 15);
+                    model.AddLinearConstraint(linearExpr, d[i], 15);
+                else model.AddLinearConstraint(linearExpr, 0,0);
             }
         }
         public static void teachAllSlotOfAClass(int num_lecturers, int num_classes, int num_days, int num_slots

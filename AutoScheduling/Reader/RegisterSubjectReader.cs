@@ -18,7 +18,7 @@ namespace AutoScheduling.Reader
             using (var reader = new StreamReader(file.OpenReadStream()))
             {
                 var list = new List<(int,string,List<string>,bool,bool,bool,bool,bool,bool)>();
-                for (int i = 0; i< 4; i++ ) reader.ReadLine();
+                for (int i = 0; i< 3; i++ ) reader.ReadLine();
 
                 while (!reader.EndOfStream)
                 {
