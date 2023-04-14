@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using AutoScheduling.Reader;
 using Swashbuckle.AspNetCore.Annotations;
 using AutoScheduling;
+using System.ComponentModel.DataAnnotations;
 
 namespace API.Controllers.Schedules
 {
@@ -46,7 +47,9 @@ namespace API.Controllers.Schedules
             if (file.Length < 2) return BadRequest();
             AutoSchedulingMain a = new AutoSchedulingMain();
             Last_Constraint @delegate = new Last_Constraint(MainFlowFunctions.noDuplicateClass);
+
             var check = a.MainFlow(file[0], file[1], @delegate);
+
             if (!check) return BadRequest("Cannot create Schedule with this data");
             else
             {
@@ -65,7 +68,9 @@ namespace API.Controllers.Schedules
             if (file.Length < 2) return BadRequest();
             AutoSchedulingMain a = new AutoSchedulingMain();
             Last_Constraint @delegate = new Last_Constraint(MainFlowFunctions.everyClassHaveTeacher);
+
             var check = a.MainFlow(file[0], file[1], @delegate);
+
             if (!check) return BadRequest("Cannot create Schedule with this data");
             else
             {
@@ -79,7 +84,7 @@ namespace API.Controllers.Schedules
         }
         [HttpPut("import-schedule-file")]
         [SwaggerOperation(Summary = "Import lịch schedule.csv ở 1 trong 2 api trên vào")]
-        public async Task<IActionResult> importSchedule([FromForm]IFormFile[] file, [FromQuery] int semesterId)
+        public async Task<IActionResult> importSchedule([FromForm]IFormFile[] file,[Required] [FromQuery] int semesterId)
         {
             if (file.Length == 0) return BadRequest();
             ScheduleReader reader = new ScheduleReader();

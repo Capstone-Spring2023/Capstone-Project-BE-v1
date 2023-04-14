@@ -62,7 +62,7 @@ namespace API.Controllers.Schedules
                 {
                     SemesterId = 1,
                     Slot = a,
-                    Status = false,
+                    Status = true,
                     UserId = registerSubjectSlot.userId
                 };
                 list1.Add(registerSlot);

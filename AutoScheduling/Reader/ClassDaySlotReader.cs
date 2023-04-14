@@ -80,20 +80,10 @@ namespace AutoScheduling.Reader
 
                     if (!subjectsRaw.Exists(x => x.ToUpper().Trim() == subjectName.ToUpper().Trim())) subjectsRaw.Add(subjectName);
 
+                    var day_slot = APx_to_day_slot(APx);
+                    int day = day_slot.Item1, slot = day_slot.Item2;
+
                     
-                    int day, slot;
-
-                    string a = APx.Substring(1);
-                    day = (int.Parse(a) - 1) / 2;
-
-                    if (APx.StartsWith("A"))
-                    {
-                        slot = (int.Parse(a)) % 2 ;
-                    }
-                    else
-                    {
-                        slot = (int.Parse(a)) % 2 + 2;
-                    }
 
                     subject_class_day_slot_slotAx.Add((subjectName, className, day, slot,APx));
                     //class_day_slot_list.Add((classIndex, day + 3, slot));
@@ -102,6 +92,23 @@ namespace AutoScheduling.Reader
                 DateTime startDate = DateTime.Parse("05-08-2023");
                 await writer.writeAvaialbleSubject_Class_Schedule(1, subjectsRaw, subject_class_day_slot_slotAx, startDate, 6);
             }
+        }
+        public static (int,int) APx_to_day_slot(string APx)
+        {
+            int day, slot;
+
+            string a = APx.Substring(1);
+            day = (int.Parse(a) - 1) / 2;
+
+            if (APx.StartsWith("A"))
+            {
+                slot = (int.Parse(a)) % 2;
+            }
+            else
+            {
+                slot = (int.Parse(a)) % 2 + 2;
+            }
+            return (day, slot);
         }
     }
 }

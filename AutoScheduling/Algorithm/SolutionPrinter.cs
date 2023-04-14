@@ -56,11 +56,15 @@ namespace AutoScheduling
 
         public override void OnSolutionCallback()
         {
-            Console.WriteLine($"Start Of Solution: #{solutionCount_}: {U}");
+            Console.WriteLine($"-------------------------------------------");
+            Console.WriteLine($"Start Of Solution: #{solutionCount_}");
+
             float a = 0;
             for (int i = 0; i < num_lecturers; i++)
             {
                 u[i] = 20;
+                Console.WriteLine($"+++++++++++++++++++++++++++++++++++++++++++++");
+                Console.WriteLine($"u{i} - {userDic.First(x => x.Item1 == i).Item3}");
                 int count_num_teaching_class = 0;
                 for (int j = 0; j< num_classes; j++)
                 {
@@ -73,16 +77,29 @@ namespace AutoScheduling
                             if (Value(f[i,j,k,l]) == 1)
                             {
                                 // Check độ hài lòng ở slot dạy
-                                if (l - previous_slot > 1) u[i] -= (l - previous_slot);
+                                if (previous_slot != -1 &&  l - previous_slot > 1)
+                                {
+                                    Console.WriteLine($"Minus in tight slot. previous slot: {previous_slot}, current slot: {l}");
+                                    u[i] -= (l - previous_slot);
+                                }
                                 previous_slot = l;
                                 count_num_teaching_class++;
 
                                 // Check độ hài lòng với register subject
                                 int subjectIndex = subject_class_className.First(x => x.Item2 == j).Item1;
-                                if (registerSubject[i, subjectIndex] == 0) u[i] -= 1;
+                                if (registerSubject[i, subjectIndex] == 0)
+                                {
+                                    Console.WriteLine($"Minus in register subject: {subjectDic.First(x => x.Item1 == subjectIndex)} " +
+                                        $"- class {subject_class_className.First(x => x.Item2 == j).Item3}");
+                                    u[i] -= 1;
+                                }
 
                                 //Check độ hài lòng của register slot
-                                if (teacher_day_slot[i, k, l] == 0) u[i] -= 1;
+                                if (teacher_day_slot[i, k, l] == 0)
+                                {
+                                    Console.WriteLine($"Minus in teacher_day_slot: day{k} - slot {l}");
+                                    u[i] -= 1;
+                                }
 
                                
                             }
@@ -98,7 +115,7 @@ namespace AutoScheduling
                 {
                     u[i] += Math.Abs(count_num_teaching_class - d[i]);
                 }
-                Console.WriteLine($"u{i}: {u[i]} ## alphaIndex: {alphaIndexs[i]} ##value {i}: {u[i] * alphaIndexs[i]}");
+                Console.WriteLine($"u{i}: {u[i]}##{userDic.First(x => x.Item1 == i).Item3}  ## alphaIndex: {alphaIndexs[i]} ##value : {u[i] * alphaIndexs[i]}");
                 a += u[i] * alphaIndexs[i];
             }
             if (a > U)
@@ -120,7 +137,7 @@ namespace AutoScheduling
                 }
             }
 
-             Console.WriteLine($"Solution #{solutionCount_}: {U}");
+            Console.WriteLine($"Solution #{solutionCount_}: {U}");
             solutionCount_++;
             if (solutionCount_ >= solutionLimit_)
             {
