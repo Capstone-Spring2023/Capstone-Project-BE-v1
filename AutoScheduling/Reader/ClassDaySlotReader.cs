@@ -33,19 +33,10 @@ namespace AutoScheduling.Reader
                     int subjectIndex = subjectDic.First(x => x.Item2 == subjectName).Item1;
                     subject_class_className.Add((subjectIndex,classIndex,className));
 
+
+
                     int day, slot;
-                    
-                    string a = APx.Substring(1);
-                    day = (int.Parse(a) - 1) / 2;
-                    
-                    if (APx.StartsWith("A"))
-                    {
-                        slot = (int.Parse(a) + 1) % 2;
-                    }
-                    else
-                    {
-                        slot = (int.Parse(a) + 1) % 2 + 2;
-                    }
+                    APx_to_day_slot(APx, out day, out slot);
                     class_day_slot_list.Add((classIndex,day,slot));
 
                     //class_day_slot_list.Add((classIndex, day + 3, slot));
@@ -79,9 +70,9 @@ namespace AutoScheduling.Reader
                     string APx = parts[2];
 
                     if (!subjectsRaw.Exists(x => x.ToUpper().Trim() == subjectName.ToUpper().Trim())) subjectsRaw.Add(subjectName);
-
-                    var day_slot = APx_to_day_slot(APx);
-                    int day = day_slot.Item1, slot = day_slot.Item2;
+                    int day, slot;
+                     APx_to_day_slot(APx,out day ,out slot);
+                    
 
                     
 
@@ -93,22 +84,22 @@ namespace AutoScheduling.Reader
                 await writer.writeAvaialbleSubject_Class_Schedule(1, subjectsRaw, subject_class_day_slot_slotAx, startDate, 6);
             }
         }
-        public static (int,int) APx_to_day_slot(string APx)
+        public static void APx_to_day_slot(string APx, out int day, out int slot)
         {
-            int day, slot;
+            //int day, slot;
 
             string a = APx.Substring(1);
             day = (int.Parse(a) - 1) / 2;
 
             if (APx.StartsWith("A"))
             {
-                slot = (int.Parse(a)) % 2;
+                slot = (int.Parse(a) + 1 ) % 2;
             }
             else
             {
-                slot = (int.Parse(a)) % 2 + 2;
+                slot = (int.Parse(a) + 1) % 2 + 2;
             }
-            return (day, slot);
+            //return (day, slot);
         }
     }
 }
