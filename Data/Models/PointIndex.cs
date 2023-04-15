@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Data.Models
 {
@@ -11,8 +12,11 @@ namespace Data.Models
         public int? NumClass { get; set; }
         public int UserId { get; set; }
         public int SemesterId { get; set; }
+        public double? AlphaIndex { get; set; }
 
+        [JsonIgnore]
         public virtual Semester Semester { get; set; } = null!;
+        [JsonIgnore]
         public virtual User User { get; set; } = null!;
     }
 }

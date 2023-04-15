@@ -3,9 +3,31 @@ using Microsoft.AspNetCore.Mvc;
 using Data.Models;
 using API.Controllers.Schedules.Models;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using AutoScheduling.Reader;
 
 namespace API.Controllers.Schedules
 {
+    public class UpdateScheduleRequest
+    {
+        [Required]
+        public int oldUserId { get; set; }
+        [Required]
+        public int newUserId { get; set; }
+        [Required]
+        public int classId { get; set; }
+        [Required]
+        public int semesterId { get; set; }
+    }
+    public class CheckingUpdateResponse
+    {
+        [Required]
+        public double oldUserPercentAfterChange { get; set; }
+        [Required]
+        public double newUserPercentAfterChange { get; set; }
+        [Required]
+        public double average { get; set; }
+    }
     public class UserAlphaResponse
     {
         public int UserId { get; set; } 
@@ -21,6 +43,117 @@ namespace API.Controllers.Schedules
         public ScheduleController(CFManagementContext context)
         {
             _context = context;
+        }
+        [HttpPost("/update-checking")]
+        public async Task<ObjectResult> UpdateSchedule(UpdateScheduleRequest request)
+        {
+            Class @class = _context.Classes.First(x => x.ClassId == request.classId);
+            
+            var oldUserRegisterSlots = _context.RegisterSlots.Where(x => x.UserId == request.oldUserId && x.SemesterId == request.semesterId)
+                .ToList();
+            var oldUserRegisterSubjects = _context.RegisterSubjects
+                .Include(x => x.AvailableSubject)
+                .Where(x => x.UserId == request.oldUserId && x.AvailableSubject.SemesterId == request.semesterId && x.IsRegistered == true)
+                .ToList();
+            var oldUserClass = _context.Classes
+                .Where(x => x.RegisterSubject.UserId == request.oldUserId && x.ClassAsubjects.First().Asubject.SemesterId == request.semesterId)
+                .ToList();
+            var oldDNum = _context.Users.First(x => x.UserId == request.oldUserId).NumMinClass;
+            oldUserClass.Remove(oldUserClass.First(x=> x.ClassId == request.classId));
+
+            var oldUserPointIndex = _context.PointIndices.First(x=> x.UserId == request.oldUserId && x.SemesterId == request.semesterId);
+
+            var newUserRegisterSlots = _context.RegisterSlots.Where(x => x.UserId == request.newUserId && x.SemesterId == request.semesterId)
+                .ToList();
+            var newUserRegisterSubjects = _context.RegisterSubjects
+                .Include(x=> x.AvailableSubject)
+                .Where(x => x.UserId == request.newUserId && x.AvailableSubject.SemesterId == request.semesterId && x.IsRegistered ==true)
+                .ToList();
+            var newUserClass = _context.Classes
+                .Where(x => x.RegisterSubject.UserId == request.newUserId && x.ClassAsubjects.First().Asubject.SemesterId == request.semesterId)
+                .ToList();
+            var newDNum = _context.Users.First(x => x.UserId == request.newUserId).NumMinClass;
+            newUserClass.Add(@class);
+
+            var newUserPointIndex = _context.PointIndices.First(x => x.UserId == request.newUserId && x.SemesterId == request.semesterId);
+
+            
+            var sumPoint = _context.PointIndices.First(x=> x.UserId == -1 && x.SemesterId == request.semesterId);
+            sumPoint.UPoint -= (oldUserPointIndex.UPoint + newUserPointIndex.UPoint);
+
+            var oldUserUPoint_AfterChange = calculateUi(request.oldUserId, oldUserRegisterSlots, oldUserRegisterSubjects, oldUserClass, oldUserPointIndex,(int)oldDNum);
+            var newUserUPoint_AfterChange = calculateUi(request.newUserId, newUserRegisterSlots, newUserRegisterSubjects, newUserClass, newUserPointIndex,(int)newDNum);
+            
+            sumPoint.UPoint += (oldUserUPoint_AfterChange + newUserUPoint_AfterChange);
+
+            CheckingUpdateResponse response = new CheckingUpdateResponse()
+            {
+                oldUserPercentAfterChange = oldUserUPoint_AfterChange / (double)sumPoint.UPoint * 100,
+                newUserPercentAfterChange = newUserUPoint_AfterChange / (double)sumPoint.UPoint *100,
+                average = 32 / 100
+
+            };
+            return new ObjectResult(response)
+            {
+                StatusCode = 200,
+            };
+        }
+
+        private  double calculateUi(int userId,List<RegisterSlot> registerSlots, List<RegisterSubject> registerSubjects, List<Class> classes, PointIndex pointIndex, int d)
+        {
+            //var oldU = pointIndex.UPoint / pointIndex.AlphaIndex;
+            List<(string, string)> list = new List<(string, string)>()
+            {
+                ("A1","A2"),("P1","P2"),
+                ("A3","A4"),("P3","P4"),
+                ("A5","A6"),("P5","P6")
+            };
+            double u = 20;
+            foreach(var a in classes)
+            {
+                //Check register Subject
+                var subjectName = a.ClassCode.Split('_')[0];
+                if (! registerSubjects.Exists(x=> x.AvailableSubject.SubjectName == subjectName))
+                {
+                    u--;
+                }
+                // Check register slots
+                var slot = list.First(x=> x.Item1 == a.Slot || x.Item2 == a.Slot).Item1;
+                if (!registerSlots.Exists(x=> x.Slot == slot))
+                {
+                    u--;
+                }
+            }
+            var day_slots = new List<(int, int)>();
+            foreach (var a in classes)
+            {
+                int day, slot;
+                ClassDaySlotReader.APx_to_day_slot(a.Slot, out day, out slot);
+                day_slots.Add((day, slot));
+            }
+            day_slots = day_slots.OrderBy(x => (x.Item1, x.Item2)).ToList();
+            int previous_day = -1, previous_slot = -1;
+            //check độ khít
+            foreach (var day_slot in day_slots)
+            {
+                if (previous_day != -1 && previous_day == day_slot.Item1)
+                {
+                    u = u - (day_slot.Item2 - previous_slot) + 1;
+                }
+                previous_day = day_slot.Item1;
+                previous_slot = day_slot.Item2;
+            }
+
+            int count_num_teaching_class = classes.Count();
+            if (count_num_teaching_class < d || count_num_teaching_class > 10)
+            {
+                u -= Math.Abs(count_num_teaching_class - d);
+            }
+            else
+            {
+                u += Math.Abs(count_num_teaching_class - d);
+            }
+            return u * (double)pointIndex.AlphaIndex;
         }
         [HttpGet("alpha-index-and-min-class")]
         public async Task<ObjectResult> getAlpha()

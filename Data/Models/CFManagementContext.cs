@@ -266,6 +266,8 @@ namespace Data.Models
 
                 entity.ToTable("PointIndex");
 
+                entity.Property(e => e.AlphaIndex).HasColumnName("alphaIndex");
+
                 entity.Property(e => e.NumClass).HasColumnName("numClass");
 
                 entity.Property(e => e.UPoint).HasColumnName("uPoint");
