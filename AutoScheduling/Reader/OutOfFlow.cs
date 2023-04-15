@@ -1,4 +1,5 @@
 ﻿using Data.Models;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,10 +9,10 @@ namespace AutoScheduling.Reader
 {
     public class OutOfFlow
     {
-        public async Task createRegisterSubjectDatabaseFromFile()
+        public async Task createRegisterSubjectDatabaseFromFile(IFormFile file)
         {
             RegisterSubjectReader reader = new RegisterSubjectReader(); 
-            var list = reader.readRegisterSubjectFile(null);
+            var list = reader.readRegisterSubjectFile(file);
             using(CFManagementContext _context = new CFManagementContext())
             {
                 foreach (var a in list)
@@ -37,6 +38,7 @@ namespace AutoScheduling.Reader
                             ClassId = 123,
                             RegisterDate = DateTime.Now,
                             Status = true,
+                            IsRegistered = true,
                         };
                         _context.Add(registerSubject);
                         

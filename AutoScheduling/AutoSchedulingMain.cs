@@ -1,5 +1,4 @@
 ﻿using Google.OrTools.Sat;
-using AutoScheduling.Algorithm;
 using AutoScheduling.DataLayer;
 using AutoScheduling.Reader;
 using System.Diagnostics;

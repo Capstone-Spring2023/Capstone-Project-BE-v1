@@ -25,6 +25,16 @@ namespace API.Controllers.Schedules
             await classDaySlotReader.readClassDaySlotCsvToDb(csvFile);
             return Ok("Create Success");
         }
+        [HttpPost("out-of-flow")]
+        [SwaggerOperation(Summary = "Import csv file register subject vào database (ngược với flow hiện tại)")]
+        public async Task<IActionResult> outOfFlow(IFormFile[] file)
+        {
+
+            OutOfFlow outOfFlow = new OutOfFlow();
+            
+            await outOfFlow.createRegisterSubjectDatabaseFromFile(file[0]);
+            return Ok("Kê");
+        }
         [HttpGet("get-file")]
         [SwaggerOperation(Summary = "Lấy csv file đăng ký từ hệ thống")]
         public async Task<ObjectResult> registerSubjectReaderAPi()

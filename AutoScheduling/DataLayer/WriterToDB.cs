@@ -85,14 +85,18 @@ namespace AutoScheduling.DataLayer
                 //Create Class_ASubject
                 foreach(var a in subjectName_AsubjectId)
                 {
-                    var classId = subject_classId.First(x => x.Item1.ToLower().Trim() == a.Item1.ToLower().Trim()).Item2;
-                    ClassAsubject classAsubject = new ClassAsubject()
+                    var classIds = subject_classId.Where(x => x.Item1.ToLower().Trim() == a.Item1.ToLower().Trim())
+                        .Select(x=> x.Item2).ToList();
+                    foreach (var classId in classIds)
                     {
-                        ClassId = classId,
-                        AsubjectId = a.Item2,
-                        SubjectName = a.Item1,
-                    };
-                    context.Add(classAsubject);
+                        ClassAsubject classAsubject = new ClassAsubject()
+                        {
+                            ClassId = classId,
+                            AsubjectId = a.Item2,
+                            SubjectName = a.Item1,
+                        };
+                        context.Add(classAsubject);
+                    }
                     await context.SaveChangesAsync();
                 }
             }
