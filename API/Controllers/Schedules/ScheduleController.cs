@@ -5,6 +5,7 @@ using API.Controllers.Schedules.Models;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using AutoScheduling.Reader;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace API.Controllers.Schedules
 {
@@ -24,7 +25,11 @@ namespace API.Controllers.Schedules
         [Required]
         public double oldUserPercentAfterChange { get; set; }
         [Required]
+        public double oldUserPointAfterChange { get; set; }
+        [Required]
         public double newUserPercentAfterChange { get; set; }
+        [Required]
+        public double newUserPointAfterChange { get; set; }
         [Required]
         public double average { get; set; }
     }
@@ -47,6 +52,8 @@ namespace API.Controllers.Schedules
         [HttpPost("/update-checking")]
         public async Task<ObjectResult> UpdateSchedule(UpdateScheduleRequest request)
         {
+
+
             Class @class = _context.Classes.First(x => x.ClassId == request.classId);
             
             var oldUserRegisterSlots = _context.RegisterSlots.Where(x => x.UserId == request.oldUserId && x.SemesterId == request.semesterId)
@@ -65,6 +72,7 @@ namespace API.Controllers.Schedules
 
             var newUserRegisterSlots = _context.RegisterSlots.Where(x => x.UserId == request.newUserId && x.SemesterId == request.semesterId)
                 .ToList();
+            
             var newUserRegisterSubjects = _context.RegisterSubjects
                 .Include(x=> x.AvailableSubject)
                 .Where(x => x.UserId == request.newUserId && x.AvailableSubject.SemesterId == request.semesterId && x.IsRegistered ==true)
@@ -72,6 +80,14 @@ namespace API.Controllers.Schedules
             var newUserClass = _context.Classes
                 .Where(x => x.RegisterSubject.UserId == request.newUserId && x.ClassAsubjects.First().Asubject.SemesterId == request.semesterId)
                 .ToList();
+            if (newUserClass.Exists(x => x.Slot == @class.Slot))
+            {
+                return new ObjectResult("Duplicate slot in new user")
+                {
+                    StatusCode = 400
+                };
+            }
+
             var newDNum = _context.Users.First(x => x.UserId == request.newUserId).NumMinClass;
             newUserClass.Add(@class);
 
@@ -86,10 +102,15 @@ namespace API.Controllers.Schedules
             
             sumPoint.UPoint += (oldUserUPoint_AfterChange + newUserUPoint_AfterChange);
 
+
+
             CheckingUpdateResponse response = new CheckingUpdateResponse()
             {
+
                 oldUserPercentAfterChange = oldUserUPoint_AfterChange / (double)sumPoint.UPoint * 100,
-                newUserPercentAfterChange = newUserUPoint_AfterChange / (double)sumPoint.UPoint *100,
+                oldUserPointAfterChange = oldUserUPoint_AfterChange,
+                newUserPointAfterChange = newUserUPoint_AfterChange,
+                newUserPercentAfterChange = newUserUPoint_AfterChange / (double)sumPoint.UPoint * 100,
                 average = 32 / 100
 
             };
@@ -115,13 +136,16 @@ namespace API.Controllers.Schedules
                 var subjectName = a.ClassCode.Split('_')[0];
                 if (! registerSubjects.Exists(x=> x.AvailableSubject.SubjectName == subjectName))
                 {
+                    
                     u--;
+                    Console.WriteLine($"Minus on subject {subjectName} - u: {u}");
                 }
                 // Check register slots
                 var slot = list.First(x=> x.Item1 == a.Slot || x.Item2 == a.Slot).Item1;
                 if (!registerSlots.Exists(x=> x.Slot == slot))
                 {
                     u--;
+                    Console.WriteLine($"Minus on subject {slot} - u: {u}");
                 }
             }
             var day_slots = new List<(int, int)>();
@@ -139,6 +163,7 @@ namespace API.Controllers.Schedules
                 if (previous_day != -1 && previous_day == day_slot.Item1)
                 {
                     u = u - (day_slot.Item2 - previous_slot) + 1;
+                    Console.WriteLine($"Minus on day_slot- day: {day_slot.Item1} - slot: {day_slot.Item2} - u: {u}");
                 }
                 previous_day = day_slot.Item1;
                 previous_slot = day_slot.Item2;
@@ -148,10 +173,12 @@ namespace API.Controllers.Schedules
             if (count_num_teaching_class < d || count_num_teaching_class > 10)
             {
                 u -= Math.Abs(count_num_teaching_class - d);
+                Console.WriteLine($"Minus on numClass - u: {u}");
             }
             else
             {
                 u += Math.Abs(count_num_teaching_class - d);
+                Console.WriteLine($"Plus on numClass - u: {u}");
             }
             return u * (double)pointIndex.AlphaIndex;
         }
@@ -175,6 +202,12 @@ namespace API.Controllers.Schedules
             var list = new List<RegisterSubject>();
             foreach (var i in registerSubjectSlot.availableSubjectIds)
             {
+                var a = _context.RegisterSubjects.FirstOrDefault(x => x.AvailableSubjectId == i && x.UserId == registerSubjectSlot.userId);
+                if (a != null)
+                {
+                    continue;
+                }
+                
                 RegisterSubject registerSubject = new RegisterSubject()
                 {
                     UserId = registerSubjectSlot.userId,
@@ -189,8 +222,16 @@ namespace API.Controllers.Schedules
             _context.AddRange(list);
             await _context.SaveChangesAsync();
             var list1 = new List<RegisterSlot>();
+            var mess = new String("");
             foreach(var a in registerSubjectSlot.registerSlots)
             {
+                var b = _context.RegisterSlots
+                    .FirstOrDefault(x => x.UserId == registerSubjectSlot.userId && x.SemesterId == registerSubjectSlot.semesterId && x.Slot == a);
+                if (b != null)
+                {
+                    mess = mess + $",{a}";
+                    continue;
+                }
                 RegisterSlot registerSlot = new RegisterSlot()
                 {
                     SemesterId = 1,
@@ -202,7 +243,15 @@ namespace API.Controllers.Schedules
             }
             _context.AddRange(list1);
             await _context.SaveChangesAsync();
-            return new ObjectResult("Create Success")
+            if (String.IsNullOrEmpty(mess))
+            {
+                mess = "Create Success";
+            }
+            else
+            {
+                mess = "Slot " + mess + " is already registered";
+            }
+            return new ObjectResult(mess)
             {
                 StatusCode = 200,
             };
@@ -246,5 +295,24 @@ namespace API.Controllers.Schedules
                 StatusCode = 200,
             };
         }
+        [HttpGet("/api/user/{userId}/semester/{semesterId}/available-subject")]
+        [SwaggerOperation(Summary = "Lấy Avaialble Subject list mà User CHƯA đăng ký")]
+        public async Task<ObjectResult> getAvailableSubjectByUserId([FromRoute]int userId, [FromRoute] int semesterId)
+        {
+            var res = await _context.AvailableSubjects
+                .Include(x=> x.RegisterSubjects)
+                .Where(x => x.SemesterId == semesterId)
+                .ToListAsync();
+            res = res.Where(x => !x.RegisterSubjects.ToList().Exists(x => x.UserId == userId)).ToList();
+            if (res.Count() == 0)
+            {
+                return new ObjectResult("Lecturer register all subject in this semester");
+            }
+            else
+            {
+                return new ObjectResult(res);
+            }
+        }
+        
     }
 }

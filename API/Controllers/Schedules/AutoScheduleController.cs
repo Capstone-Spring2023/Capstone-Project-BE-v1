@@ -41,7 +41,9 @@ namespace API.Controllers.Schedules
         {
             
             RegisterSubjectReader registerSubjectReader = new RegisterSubjectReader();
+
              registerSubjectReader.createRegisterSubjectFileFromDatabase();
+            
             //await classDaySlotReader.readClassDaySlotCsvToDb(csvFile);
             string filePath = @"register_subject_v1.csv";
             var stream = new MemoryStream(System.IO.File.ReadAllBytes(filePath).ToArray());

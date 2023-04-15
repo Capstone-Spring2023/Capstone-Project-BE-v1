@@ -39,7 +39,7 @@ namespace API.Controllers.AvailableSubjects
             PagingRequest pagingRequest = new PagingRequest()
             {
                 PageIndex = 1,
-                PageSize = 20
+                PageSize = 40
             };
             var response = await _availableSubjectService.GetAvailableSubjects(x => x.Status == true, pagingRequest);
             return Ok(response.Value);
