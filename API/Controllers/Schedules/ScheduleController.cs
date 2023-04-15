@@ -28,6 +28,7 @@ namespace API.Controllers.Schedules
                     ClassId = 123,
                     RegisterDate = DateTime.Now,
                     Status = true,
+                    IsRegistered = true,
                 };
                 list.Add(registerSubject);
             }
