@@ -51,6 +51,7 @@ namespace API.Controllers.Schedules
             _context = context;
         }
         [HttpPost("/update-checking")]
+        [SwaggerOperation(Summary = "Check xem có đổi được lịch không và hiện ra statistic info sau khi đổi(nếu có confirm đổi)")]
         public async Task<ObjectResult> UpdateScheduleChecking(UpdateScheduleRequest request)
         {
 
@@ -117,6 +118,7 @@ namespace API.Controllers.Schedules
             };
         }
         [HttpPut]
+        [SwaggerOperation(Summary = "UPdate Schedule, đổi từ lecturer này  -> lecturer khác")]
         public async Task<ObjectResult> UpdateSchedule(UpdateScheduleRequest request)
         {
             Class @class = _context.Classes.First(x => x.ClassId == request.classId);
@@ -280,6 +282,7 @@ namespace API.Controllers.Schedules
         }
 
         [HttpPost("register-subject-slot")]
+        [SwaggerOperation(Summary = "Register Subject + Slot")]
         public async Task<ObjectResult> register(RegisterSubjectSlot registerSubjectSlot)
         {
             var list = new List<RegisterSubject>();
@@ -340,6 +343,7 @@ namespace API.Controllers.Schedules
             };
         }
         [HttpGet("lecturer/{lecturerId}")]
+        [SwaggerOperation(Summary = "Lấy Schedule list thuộc 1 lecturer")]
         public async Task<ObjectResult> getScheduleByLecturer([FromRoute] int lecturerId)
         {
             var a = _context.Schedules
@@ -359,7 +363,9 @@ namespace API.Controllers.Schedules
                 StatusCode = 200
             };
         }
+        /*
         [HttpPut("lecturer")]
+        [SwaggerOperation(Summary = "Update")]
         public async Task<ObjectResult> updateSchedule([FromBody] ScheduleUpdateRequest request)
         {
             
@@ -378,6 +384,7 @@ namespace API.Controllers.Schedules
                 StatusCode = 200,
             };
         }
+        */
         [HttpGet("/api/user/{userId}/semester/{semesterId}/available-subject")]
         [SwaggerOperation(Summary = "Lấy Avaialble Subject list mà User CHƯA đăng ký")]
         public async Task<ObjectResult> getAvailableSubjectByUserId([FromRoute]int userId, [FromRoute] int semesterId)
