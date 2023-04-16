@@ -5,6 +5,16 @@ using System.ComponentModel.DataAnnotations;
 
 namespace API.Controllers.Statistic
 {
+    public class StatisticResponse
+    {
+        public double? PercentPoint { get; set; }
+        public double? UPoint { get; set; }
+        public int? NumClass { get; set; }
+        public int UserId { get; set; }
+        public int SemesterId { get; set; }
+        public double? AlphaIndex { get; set; }
+        public double percentAlphaIndex { get; set; }   
+    }
     
     [Route("api/statistic")]
     [ApiController]
@@ -22,11 +32,17 @@ namespace API.Controllers.Statistic
                 .Where( x=> x.SemesterId == semesterId & x.UserId != -1)
                 .ToList();
             var a = _context.PointIndices.First(x=> x.SemesterId == semesterId && x.UserId == -1);
-            foreach (var item in res)
+            var res1 = res.Select(x => new StatisticResponse()
             {
-                item.PercentPoint = (double)a.UPoint / (double)item.UPoint;
-            }
-            return new ObjectResult(res)
+                UPoint = x.UPoint,
+                NumClass = x.NumClass,
+                AlphaIndex = x.AlphaIndex,
+                SemesterId = x.SemesterId,
+                UserId  = x.UserId,
+                PercentPoint = ((double)x.UPoint/ (double)a.UPoint ) * 100,
+                percentAlphaIndex = ((double)x.AlphaIndex/(double)a.AlphaIndex) * 100
+            }).ToList();
+            return new ObjectResult(res1)
             {
                 StatusCode = 200,
             };
@@ -34,8 +50,18 @@ namespace API.Controllers.Statistic
         [HttpGet("user/{userId}/semester/{semesterId}")]
         public async Task<ObjectResult> GetStatistic([FromRoute] int userId, [FromRoute]int semesterId)
         {
-            var res = _context.PointIndices.FirstOrDefault(x=> x.UserId == userId && x.SemesterId == semesterId);
+            var x = _context.PointIndices.FirstOrDefault(x=> x.UserId == userId && x.SemesterId == semesterId);
             var a = _context.PointIndices.First(x => x.SemesterId == semesterId && x.UserId == -1);
+            var res = new StatisticResponse()
+            {
+                UserId = userId,
+                SemesterId = semesterId,
+                AlphaIndex = x.AlphaIndex,
+                NumClass = x.NumClass,
+                UPoint = x.UPoint,
+                PercentPoint = ((double)x.UPoint / (double)a.UPoint) * 100,
+                percentAlphaIndex = ((double)x.AlphaIndex / (double)a.AlphaIndex) * 100
+            };
             if (res== null)
             {
                 return new ObjectResult("Not Found")

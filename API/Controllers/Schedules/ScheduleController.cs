@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using AutoScheduling.Reader;
 using Swashbuckle.AspNetCore.Annotations;
+using AutoScheduling;
 
 namespace API.Controllers.Schedules
 {
@@ -50,36 +51,32 @@ namespace API.Controllers.Schedules
             _context = context;
         }
         [HttpPost("/update-checking")]
-        public async Task<ObjectResult> UpdateSchedule(UpdateScheduleRequest request)
+        public async Task<ObjectResult> UpdateScheduleChecking(UpdateScheduleRequest request)
         {
 
 
             Class @class = _context.Classes.First(x => x.ClassId == request.classId);
-            
-            var oldUserRegisterSlots = _context.RegisterSlots.Where(x => x.UserId == request.oldUserId && x.SemesterId == request.semesterId)
-                .ToList();
-            var oldUserRegisterSubjects = _context.RegisterSubjects
-                .Include(x => x.AvailableSubject)
-                .Where(x => x.UserId == request.oldUserId && x.AvailableSubject.SemesterId == request.semesterId && x.IsRegistered == true)
-                .ToList();
-            var oldUserClass = _context.Classes
-                .Where(x => x.RegisterSubject.UserId == request.oldUserId && x.ClassAsubjects.First().Asubject.SemesterId == request.semesterId)
-                .ToList();
-            var oldDNum = _context.Users.First(x => x.UserId == request.oldUserId).NumMinClass;
+
+            List<RegisterSlot> oldUserRegisterSlots;
+            List<RegisterSubject> oldUserRegisterSubjects;
+            List<Class> oldUserClass;
+            int oldDNum;
+            PointIndex oldUserPointIndex;
+            GetUserPointData(request.oldUserId, request.semesterId, out oldUserRegisterSlots, out oldUserRegisterSubjects,
+                out oldUserClass, out oldDNum, out oldUserPointIndex);
             oldUserClass.Remove(oldUserClass.First(x=> x.ClassId == request.classId));
 
-            var oldUserPointIndex = _context.PointIndices.First(x=> x.UserId == request.oldUserId && x.SemesterId == request.semesterId);
 
-            var newUserRegisterSlots = _context.RegisterSlots.Where(x => x.UserId == request.newUserId && x.SemesterId == request.semesterId)
-                .ToList();
-            
-            var newUserRegisterSubjects = _context.RegisterSubjects
-                .Include(x=> x.AvailableSubject)
-                .Where(x => x.UserId == request.newUserId && x.AvailableSubject.SemesterId == request.semesterId && x.IsRegistered ==true)
-                .ToList();
-            var newUserClass = _context.Classes
-                .Where(x => x.RegisterSubject.UserId == request.newUserId && x.ClassAsubjects.First().Asubject.SemesterId == request.semesterId)
-                .ToList();
+
+            List<RegisterSlot> newUserRegisterSlots;
+
+            List<RegisterSubject> newUserRegisterSubjects;
+            List<Class> newUserClass;
+            int newDNum ;
+            PointIndex newUserPointIndex;
+            GetUserPointData(request.newUserId, request.semesterId,out newUserRegisterSlots, out newUserRegisterSubjects, out newUserClass,
+                out newDNum, out newUserPointIndex);
+
             if (newUserClass.Exists(x => x.Slot == @class.Slot))
             {
                 return new ObjectResult("Duplicate slot in new user")
@@ -88,10 +85,10 @@ namespace API.Controllers.Schedules
                 };
             }
 
-            var newDNum = _context.Users.First(x => x.UserId == request.newUserId).NumMinClass;
+            
             newUserClass.Add(@class);
 
-            var newUserPointIndex = _context.PointIndices.First(x => x.UserId == request.newUserId && x.SemesterId == request.semesterId);
+            
 
             
             var sumPoint = _context.PointIndices.First(x=> x.UserId == -1 && x.SemesterId == request.semesterId);
@@ -119,6 +116,101 @@ namespace API.Controllers.Schedules
                 StatusCode = 200,
             };
         }
+        [HttpPut]
+        public async Task<ObjectResult> UpdateSchedule(UpdateScheduleRequest request)
+        {
+            Class @class = _context.Classes.First(x => x.ClassId == request.classId);
+
+
+            List<RegisterSlot> oldUserRegisterSlots;
+            List<RegisterSubject> oldUserRegisterSubjects;
+            List<Class> oldUserClass;
+            int oldDNum;
+            PointIndex oldUserPointIndex;
+            GetUserPointData(request.oldUserId, request.semesterId, out oldUserRegisterSlots, out oldUserRegisterSubjects,
+                out oldUserClass, out oldDNum, out oldUserPointIndex);
+            oldUserClass.Remove(oldUserClass.First(x => x.ClassId == request.classId));
+
+
+
+            List<RegisterSlot> newUserRegisterSlots;
+
+            List<RegisterSubject> newUserRegisterSubjects;
+            List<Class> newUserClass;
+            int newDNum;
+            PointIndex newUserPointIndex;
+            GetUserPointData(request.newUserId, request.semesterId, out newUserRegisterSlots, out newUserRegisterSubjects, out newUserClass,
+                out newDNum, out newUserPointIndex);
+
+            if (newUserClass.Exists(x => x.Slot == @class.Slot))
+            {
+                return new ObjectResult("Duplicate slot in new user")
+                {
+                    StatusCode = 400
+                };
+            }
+            newUserClass.Add(@class);
+            var sumPoint = _context.PointIndices.First(x => x.UserId == -1 && x.SemesterId == request.semesterId);
+            sumPoint.UPoint -= (oldUserPointIndex.UPoint + newUserPointIndex.UPoint);
+
+            var oldUserUPoint_AfterChange = calculateUi(request.oldUserId, oldUserRegisterSlots, oldUserRegisterSubjects, oldUserClass, oldUserPointIndex, (int)oldDNum);
+            var newUserUPoint_AfterChange = calculateUi(request.newUserId, newUserRegisterSlots, newUserRegisterSubjects, newUserClass, newUserPointIndex, (int)newDNum);
+
+            sumPoint.UPoint += (oldUserUPoint_AfterChange + newUserUPoint_AfterChange);
+            oldUserPointIndex.UPoint = oldUserUPoint_AfterChange;
+            oldUserPointIndex.NumClass = oldUserClass.Count();
+            newUserPointIndex.UPoint = newUserUPoint_AfterChange;
+            newUserPointIndex.NumClass = newUserClass.Count();
+            await _context.SaveChangesAsync();
+
+            ClassAsubject classAsubject = _context.ClassAsubjects.First(y => y.ClassId == @class.ClassId);
+            int registerSubjectId;
+            if (!newUserRegisterSubjects.Exists(x => x.AvailableSubjectId == classAsubject.AsubjectId))
+            {
+                var registerSubject = new RegisterSubject()
+                {
+                    AvailableSubjectId = classAsubject.AsubjectId,
+                    ClassId = 123,
+                    IsRegistered = false,
+                    RegisterDate = DateTime.Now,
+                    Status = true,
+                    UserId = request.newUserId
+                };
+                _context.RegisterSubjects.Add(registerSubject);
+                await _context.SaveChangesAsync();
+                registerSubjectId = registerSubject.RegisterSubjectId;
+            }
+            else
+            {
+                var registerSubject = newUserRegisterSubjects.First(x=> x.AvailableSubjectId == classAsubject.AsubjectId);
+                if (!registerSubject.Status)
+                {
+                    registerSubject.Status = true;
+                    await _context.SaveChangesAsync();
+                }
+                registerSubjectId = registerSubject.RegisterSubjectId;
+            }
+            @class.RegisterSubjectId = registerSubjectId;
+            var track = _context.Attach(@class);
+            track.State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return new ObjectResult("OK");
+        }
+        private void GetUserPointData(int userId, int semesterId, out List<RegisterSlot> UserRegisterSlots, out List<RegisterSubject> UserRegisterSubjects
+            ,out List<Class> UserClass, out int DNum, out PointIndex UserPointIndex)
+        {
+            UserRegisterSlots = _context.RegisterSlots.Where(x => x.UserId == userId && x.SemesterId == semesterId)
+                .ToList();
+            UserRegisterSubjects = _context.RegisterSubjects
+                .Include(x => x.AvailableSubject)
+                .Where(x => x.UserId == userId && x.AvailableSubject.SemesterId == semesterId && x.IsRegistered == true)
+                .ToList();
+            UserClass = _context.Classes
+                .Where(x => x.RegisterSubject.UserId == userId && x.ClassAsubjects.First().Asubject.SemesterId == semesterId)
+                .ToList();
+            DNum = (int) _context.Users.First(x => x.UserId == userId).NumMinClass;
+            UserPointIndex = _context.PointIndices.First(x => x.UserId == userId && x.SemesterId == semesterId);
+        }
 
         private  double calculateUi(int userId,List<RegisterSlot> registerSlots, List<RegisterSubject> registerSubjects, List<Class> classes, PointIndex pointIndex, int d)
         {
@@ -129,23 +221,27 @@ namespace API.Controllers.Schedules
                 ("A3","A4"),("P3","P4"),
                 ("A5","A6"),("P5","P6")
             };
-            double u = 20;
+            double u = Constant.POINT;
+            List<string> subjectNamesAlreadyMinus = new List<string>();
             foreach(var a in classes)
             {
                 //Check register Subject
                 var subjectName = a.ClassCode.Split('_')[0];
                 if (! registerSubjects.Exists(x=> x.AvailableSubject.SubjectName == subjectName))
                 {
-                    
-                    u--;
-                    Console.WriteLine($"Minus on subject {subjectName} - u: {u}");
+                    if (!subjectNamesAlreadyMinus.Contains(subjectName))
+                    {
+                        subjectNamesAlreadyMinus.Add(subjectName);
+                        u -= 2;
+                        Console.WriteLine($"Minus on subject: {subjectName} - u: {u}");
+                    }
                 }
                 // Check register slots
                 var slot = list.First(x=> x.Item1 == a.Slot || x.Item2 == a.Slot).Item1;
                 if (!registerSlots.Exists(x=> x.Slot == slot))
                 {
                     u--;
-                    Console.WriteLine($"Minus on subject {slot} - u: {u}");
+                    Console.WriteLine($"Minus on slot: {slot} - u: {u}");
                 }
             }
             var day_slots = new List<(int, int)>();
@@ -163,7 +259,7 @@ namespace API.Controllers.Schedules
                 if (previous_day != -1 && previous_day == day_slot.Item1)
                 {
                     u = u - (day_slot.Item2 - previous_slot) + 1;
-                    Console.WriteLine($"Minus on day_slot- day: {day_slot.Item1} - slot: {day_slot.Item2} - u: {u}");
+                    Console.WriteLine($"Minus on day_slot - day: {day_slot.Item1} - slot: {day_slot.Item2} - u: {u}");
                 }
                 previous_day = day_slot.Item1;
                 previous_slot = day_slot.Item2;
@@ -182,20 +278,7 @@ namespace API.Controllers.Schedules
             }
             return u * (double)pointIndex.AlphaIndex;
         }
-        [HttpGet("alpha-index-and-min-class")]
-        public async Task<ObjectResult> getAlpha()
-        {
-            var users = await _context.Users.Skip(1).ToListAsync();
-            var sum = users.Sum(x => x.AlphaIndex);
-            var res = users.Select(x => new UserAlphaResponse()
-            {
-                UserId = x.UserId,
-                alphaIndex =(double) x.AlphaIndex,
-                numMinClass = (int) x.NumMinClass,
-                percent = ((double)x.AlphaIndex / (double)sum) *100
-            });
-            return new ObjectResult(res);
-        }
+
         [HttpPost("register-subject-slot")]
         public async Task<ObjectResult> register(RegisterSubjectSlot registerSubjectSlot)
         {

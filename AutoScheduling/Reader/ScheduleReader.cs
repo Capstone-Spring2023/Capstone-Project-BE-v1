@@ -89,7 +89,7 @@ namespace AutoScheduling.Reader
             {
                 foreach (var a in registerSubjectAndSlots)
                 {
-                    u.Add(a.userId, 20);
+                    u.Add(a.userId, Constant.POINT);
                     //Lấy register Subject and slot tương ứng với user\
                     var registerSubjects = a.RegisterSubjects;
                     var registerSlots = a.RegisterSlots;
@@ -100,6 +100,7 @@ namespace AutoScheduling.Reader
                     int previous_day = -1, previous_slot = -1;
                     Console.WriteLine("------------------------------------------------------------");
                     Console.WriteLine($"UserId: {userDic_andD.Item1.First(x => x.Item2 == a.userId).Item3}");
+                    List<string> subjectCodeAlreadyMinus = new List<string>();
                     foreach (var userId_subjectCode_Slot_item in userList)
                     {
                         
@@ -107,9 +108,13 @@ namespace AutoScheduling.Reader
                         //Check Register Ssubject
                         if (!registerSubjects.Exists(x => x.AvailableSubject.SubjectName.ToUpper() == userId_subjectCode_Slot_item.Item2.Trim()))
                         {
+                            if (!subjectCodeAlreadyMinus.Contains(userId_subjectCode_Slot_item.Item2.Trim()))
+                            {
+                                subjectCodeAlreadyMinus.Add(userId_subjectCode_Slot_item.Item2.Trim());
+                                ui -= 2;
+                                Console.WriteLine($"Minus register Subject by subject: {userId_subjectCode_Slot_item.Item2} - new value: {ui}");
+                            }
                             
-                            ui--;
-                            Console.WriteLine($"Minus register Subject by subject: {userId_subjectCode_Slot_item.Item2} - new value: {ui}");
                         }
                         //Check Register Slot
                         var slotAPx = list.First(x => x.Item1 == userId_subjectCode_Slot_item.Item3
@@ -159,10 +164,12 @@ namespace AutoScheduling.Reader
                     pointIndex.AlphaIndex = alphaIndex;
                     await _context.SaveChangesAsync();
                 }
-                var sum_uPoint = _context.PointIndices.Where(x=> x.UserId != -1 && x.SemesterId == semesterid) .Sum(x => x.UPoint);
-                var sum_numClass = _context.PointIndices.Where(x => x.UserId != -1 && x.SemesterId == semesterid).Sum(_x => _x.NumClass);
-
                 var Indices = _context.PointIndices.Where(x => x.UserId != -1 && x.SemesterId == semesterid).ToList();
+
+                var sum_uPoint = Indices.Sum(x => x.UPoint);
+                var sum_numClass = Indices.Sum(_x => _x.NumClass);
+                var sum_alphaIndex = Indices.Sum(_x => _x.AlphaIndex);
+                
                 foreach (var a in Indices )
                 {
                     a.PercentPoint = (a.UPoint / sum_uPoint) * 100;
@@ -172,6 +179,29 @@ namespace AutoScheduling.Reader
                 sumPointIndex.NumClass = sum_numClass;
                 sumPointIndex.UPoint = sum_uPoint;
                 sumPointIndex.PercentPoint = 100;
+                sumPointIndex.AlphaIndex=sum_alphaIndex;
+
+                await _context.SaveChangesAsync();
+
+                //chỉnh lại các register subject nhưng k dạy = false
+                foreach(var a in registerSubjectAndSlots)
+                {
+                    var registerSubjects = a.RegisterSubjects;
+                    foreach(var rs in registerSubjects)
+                    {
+                        var find = _context.Classes.FirstOrDefault(x=> x.RegisterSubjectId == rs.RegisterSubjectId);
+                        if (find == null)
+                        {
+                            rs.Status = false;
+                        }
+                        var track = _context.Attach(rs);
+                        track.State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+
+                       
+                    }
+                    
+                }
+
                 await _context.SaveChangesAsync();
             }
         }

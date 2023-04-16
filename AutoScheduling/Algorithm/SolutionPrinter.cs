@@ -62,59 +62,63 @@ namespace AutoScheduling
             float a = 0;
             for (int i = 0; i < num_lecturers; i++)
             {
-                u[i] = 20;
+                u[i] = Constant.POINT;
                 Console.WriteLine($"+++++++++++++++++++++++++++++++++++++++++++++");
                 Console.WriteLine($"u{i} - {userDic.First(x => x.Item1 == i).Item3}");
                 int count_num_teaching_class = 0;
-               
-                
-                    for (int k = 0; k < num_days; k++)
-                    {
+                var subjectIndexAlreadyMinus = new List<int>(); 
 
-                        int previous_slot = -1;
-                        for (int l = 0; l < num_slots_per_day; l++)
+                for (int k = 0; k < num_days; k++)
+                {
+
+                    int previous_slot = -1;
+                    for (int l = 0; l < num_slots_per_day; l++)
+                    {
+                        for (int j = 0; j < num_classes; j++)
                         {
-                            for (int j = 0; j < num_classes; j++)
+
+                            if (Value(f[i, j, k, l]) == 1)
                             {
-                               
-                                if (Value(f[i, j, k, l]) == 1)
+                                // Check độ hài lòng ở slot dạy
+                                //Console.WriteLine($"************ day: {k} - slot: {l}");
+                                if (previous_slot != -1 && l - previous_slot > 1)
                                 {
-                                    // Check độ hài lòng ở slot dạy
-                                    //Console.WriteLine($"************ day: {k} - slot: {l}");
-                                    if (previous_slot != -1 && l - previous_slot > 1)
-                                    {
-                                        
-                                        u[i] -= (l - previous_slot - 1);
+
+                                    u[i] -= (l - previous_slot - 1);
                                     Console.WriteLine($"Minus in tight slot. day {k} previous slot: {previous_slot}, current slot: {l}, u[i] = {u[i]}");
                                 }
-                                    previous_slot = l;
-                                    count_num_teaching_class++;
+                                previous_slot = l;
+                                count_num_teaching_class++;
 
-                                    // Check độ hài lòng với register subject
-                                    int subjectIndex = subject_class_className.First(x => x.Item2 == j).Item1;
-                                    if (registerSubject[i, subjectIndex] == 0)
+                                // Check độ hài lòng với register subject
+                                int subjectIndex = subject_class_className.First(x => x.Item2 == j).Item1;
+                                if (registerSubject[i, subjectIndex] == 0)
+                                {
+                                    if (!subjectIndexAlreadyMinus.Contains(subjectIndex))
                                     {
-                                        
-                                        u[i] -= 1;
+                                        subjectIndexAlreadyMinus.Add(subjectIndex);
+                                        u[i] -= 2;
                                         Console.WriteLine($"Minus in register subject: {subjectDic.First(x => x.Item1 == subjectIndex)} " +
                                             $"- class {subject_class_className.First(x => x.Item2 == j).Item3} - u[i] = {u[i]}");
-                                }
-
-                                    //Check độ hài lòng của register slot
-                                    if (teacher_day_slot[i, k, l] == 0)
-                                    {
-                                       
-                                        u[i] -= 1;
-                                        Console.WriteLine($"Minus in teacher_day_slot: day{k} - slot {l} - u[i] = {u[i]}");
                                     }
-
-
+                                    
                                 }
+
+                                //Check độ hài lòng của register slot
+                                if (teacher_day_slot[i, k, l] == 0)
+                                {
+
+                                    u[i] -= 1;
+                                    Console.WriteLine($"Minus in teacher_day_slot: day{k} - slot {l} - u[i] = {u[i]}");
+                                }
+
+
                             }
-                        } 
+                        }
+                    }
                 }
                 // Check đô hài lòng với d[i]
-                
+
                 if (count_num_teaching_class < d[i] || count_num_teaching_class > 10)
                 {
                     u[i] -= Math.Abs(count_num_teaching_class - d[i]);

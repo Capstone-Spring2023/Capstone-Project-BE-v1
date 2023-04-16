@@ -10,6 +10,6 @@ namespace AutoScheduling
     {
         public static readonly string REGISTER_SUBJECT_FILE = @"register_subject_v1.csv";
         public static readonly string SCHEDULE_FILE = @"schedule.csv";
-
+        public static readonly int POINT = 15;
     }
 }
