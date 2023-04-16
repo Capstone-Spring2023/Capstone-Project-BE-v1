@@ -159,13 +159,13 @@ namespace AutoScheduling
         }
         public static string day_slot_to_APx(int day, int slot)
         {
-            
-            if ( slot  <= 2)
+
+            if (slot < 2)
             {
-                int index = day * 2 + slot +1 ;
-                return "A" +index.ToString();
+                int index = day * 2 + slot + 1;
+                return "A" + index.ToString();
             }
-            else 
+            else
             {
                 int index = day * 2 + slot - 1;
                 return "P" + index.ToString();

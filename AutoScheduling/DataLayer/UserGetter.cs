@@ -9,19 +9,24 @@ namespace AutoScheduling.DataLayer
 {
     public class Getter
     {
-        public List<(int,int,string)> getAllUser()
+        public (List<(int,int,string)>,List<int>,List<float>) getAllUser()
         {
+            
             using ( CFManagementContext context  = new CFManagementContext())
             {
-                var users = context.Users.ToList();
+                var users = context.Users.Where(x => x.UserId != -1).ToList();
                 int userIndex = 0;
                 List<(int,int,string)> result = new List<(int,int,string)> ();
+                List<int> d = new List<int>();
+                List<float> alphas = new List<float>(); 
                 foreach (var user in users)
                 {
                     result.Add((userIndex,user.UserId,user.FullName));
+                    d.Add((int) user.NumMinClass);
+                    alphas.Add((float)user.AlphaIndex);
                     userIndex++;
                 }
-                return result;
+                return (result, d, alphas);
             }
         }
         public List<(int,string)> getAllSubject(int semesterId)

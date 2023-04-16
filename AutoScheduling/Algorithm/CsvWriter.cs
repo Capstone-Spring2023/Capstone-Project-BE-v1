@@ -74,7 +74,7 @@ namespace AutoScheduling
 
         public static void writeScheduleFileV2(int num_slots, int num_days, int num_lecturers, int num_classes
             , int num_subjects, int[,] subject_class, List<(int, int, string)> subject_class_className, List<(int, int, string)> userDic,
-                CpSolver solver, IntVar[,,,] f)
+                CpSolver solver, int[,,,] res)
         {
             var csvSchedule = new StringBuilder();
             csvSchedule.AppendLine("LecturerId,Lecturer,Subject,Class,Slot");
@@ -82,10 +82,10 @@ namespace AutoScheduling
             {
                 string lecturerName = userDic.First(x=> x.Item1 == i).Item3;
                 for (int j = 0; j < num_classes; j++)
-                    for (int k = 0; k < num_days / 2 ; k++)
+                    for (int k = 0; k < num_days ; k++)
                         for (int l = 0; l < num_slots; l++)
                         {
-                            if (solver.Value(f[i,j,k,l]) == 1)
+                            if (res[i,j,k,l] == 1)
                             {
                                 string className = subject_class_className.First(x => x.Item2 == j).Item3;
                                 string subjectName = className.Split('_')[0];

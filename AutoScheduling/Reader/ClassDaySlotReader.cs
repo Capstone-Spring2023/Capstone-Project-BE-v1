@@ -33,19 +33,10 @@ namespace AutoScheduling.Reader
                     int subjectIndex = subjectDic.First(x => x.Item2 == subjectName).Item1;
                     subject_class_className.Add((subjectIndex,classIndex,className));
 
+
+
                     int day, slot;
-                    
-                    string a = APx.Substring(1);
-                    day = (int.Parse(a) - 1) / 2;
-                    
-                    if (APx.StartsWith("A"))
-                    {
-                        slot = (int.Parse(a) + 1) % 2;
-                    }
-                    else
-                    {
-                        slot = (int.Parse(a) + 1) % 2 + 2;
-                    }
+                    APx_to_day_slot(APx, out day, out slot);
                     class_day_slot_list.Add((classIndex,day,slot));
 
                     //class_day_slot_list.Add((classIndex, day + 3, slot));
@@ -79,21 +70,11 @@ namespace AutoScheduling.Reader
                     string APx = parts[2];
 
                     if (!subjectsRaw.Exists(x => x.ToUpper().Trim() == subjectName.ToUpper().Trim())) subjectsRaw.Add(subjectName);
+                    int day, slot;
+                     APx_to_day_slot(APx,out day ,out slot);
+                    
 
                     
-                    int day, slot;
-
-                    string a = APx.Substring(1);
-                    day = (int.Parse(a) - 1) / 2;
-
-                    if (APx.StartsWith("A"))
-                    {
-                        slot = (int.Parse(a)) % 2 ;
-                    }
-                    else
-                    {
-                        slot = (int.Parse(a)) % 2 + 2;
-                    }
 
                     subject_class_day_slot_slotAx.Add((subjectName, className, day, slot,APx));
                     //class_day_slot_list.Add((classIndex, day + 3, slot));
@@ -102,6 +83,23 @@ namespace AutoScheduling.Reader
                 DateTime startDate = DateTime.Parse("05-08-2023");
                 await writer.writeAvaialbleSubject_Class_Schedule(1, subjectsRaw, subject_class_day_slot_slotAx, startDate, 6);
             }
+        }
+        public static void APx_to_day_slot(string APx, out int day, out int slot)
+        {
+            //int day, slot;
+
+            string a = APx.Substring(1);
+            day = (int.Parse(a) - 1) / 2;
+
+            if (APx.StartsWith("A"))
+            {
+                slot = (int.Parse(a) + 1 ) % 2;
+            }
+            else
+            {
+                slot = (int.Parse(a) + 1) % 2 + 2;
+            }
+            //return (day, slot);
         }
     }
 }
