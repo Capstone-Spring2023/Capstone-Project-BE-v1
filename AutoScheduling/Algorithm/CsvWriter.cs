@@ -11,7 +11,7 @@ namespace AutoScheduling
     {
         public static void writeScheduleFile(int num_slots,int num_days,int num_lecturers, int num_classes
             ,int num_subjects,int[,] subject_class,List<(int,int,string)> subject_class_className, List<(int,int,string)> userDic,
-                CpSolver solver,IntVar[,,,] f )
+                int[,,,] res )
         {
             var csvSchedule = new StringBuilder();
             csvSchedule.AppendLine("Slot,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday");
@@ -26,7 +26,7 @@ namespace AutoScheduling
                 for (int i = 0; i < num_lecturers; i++)
                     for (int j = 0; j < num_classes; j++)
                         for (int k = 0; k < num_days; k++)
-                            if (solver.Value(f[i, j, k, l]) == 1)
+                            if (res[i, j, k, l] == 1)
                             {
                                 int subjectId = 0;
                                 string className = subject_class_className.First(x => x.Item2 == j).Item3;
@@ -68,13 +68,12 @@ namespace AutoScheduling
 
 
             //string filePath = "/"
-            string filePath = @"D:\Schedule\schedule.csv";
+            string filePath = @"schedule.csv";
             File.WriteAllText(filePath, csvSchedule.ToString());
         }
 
         public static void writeScheduleFileV2(int num_slots, int num_days, int num_lecturers, int num_classes
-            , int num_subjects, int[,] subject_class, List<(int, int, string)> subject_class_className, List<(int, int, string)> userDic,
-                CpSolver solver, int[,,,] res)
+            , int num_subjects, int[,] subject_class, List<(int, int, string)> subject_class_className, List<(int, int, string)> userDic, int[,,,] res)
         {
             var csvSchedule = new StringBuilder();
             csvSchedule.AppendLine("LecturerId,Lecturer,Subject,Class,Slot");

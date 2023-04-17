@@ -10,6 +10,11 @@ namespace AutoScheduling
 {
     public delegate void Last_Constraint(int num_lecturers, int num_classes, int num_days, int num_slots
             , int[,,] class_day_slot, IntVar[,,,] f, CpModel model);
+    public class Best
+    {
+        public int index { get; set; } 
+        public float bestSol { get; set; }
+    }
     public class AutoSchedulingMain
     {
         const int num_days = 3;
@@ -83,15 +88,30 @@ namespace AutoScheduling
             {
                 subject_class[a.Item1, a.Item2] = 1; 
             }
-            bool check = MainFlow1a(num_lecturers,num_subject,num_classes,class_day_slot, registerSubject, subject_class, teacher_day_slot,subject_class_className,subjectDic,userDic,
+            var res = MainFlow1a(num_lecturers,num_subject,num_classes,class_day_slot, registerSubject, subject_class, teacher_day_slot,subject_class_className,subjectDic,userDic,
                 d,alphaIndexs, @delegate);
-            return check;
+            var res1b = MainFlow1b(num_lecturers, num_subject, num_classes, class_day_slot, registerSubject, subject_class, teacher_day_slot, subject_class_className, subjectDic, userDic,
+                d, alphaIndexs, @delegate, res.Item1, res.Item2);
+            int count = 0;
+            while (count < 25)
+            {
+                res1b = MainFlow1b(num_lecturers, num_subject, num_classes, class_day_slot, registerSubject, subject_class, teacher_day_slot, subject_class_className, subjectDic, userDic,
+                d, alphaIndexs, @delegate, res.Item1,  res.Item2);
+                if (!res1b.Item3) count++;
+                else count = 0;
+            }
+            Best best = res1b.Item2;
+            Console.WriteLine("********** Solution best U is : " + best.bestSol);
+            CsvWriter.writeScheduleFileV2(num_slots_per_day,num_days,num_lecturers,num_classes,num_subject,subject_class,subject_class_className,userDic
+                ,res1b.Item1[best.index]);
+            return res.Item1.Count() > 0;
         }
-        public  bool MainFlow1a(int num_lecturers,int num_subjects,int num_classes,int[,,] class_day_slot, int[,] registerSubject, int[,] subject_class,
+        public (List<int[,,,]>, Best) MainFlow1a(int num_lecturers, int num_subjects, int num_classes, int[,,] class_day_slot, int[,] registerSubject, int[,] subject_class,
            int[,,] teacher_day_slot, List<(int, int, string)> subject_class_className, List<(int, string)> subjectDic,
            List<(int, int, string)> userDic,
            int[] d, float[] alphaIndexs, Last_Constraint @delegate)
         {
+            Console.WriteLine("MAIN FLOW 1A");
             CpModel model = new CpModel();
             IntVar[,,,] f = new IntVar[num_lecturers, num_classes, num_days, num_slots_per_day];
             MainFlowFunctions.generateFirstConstraint(num_lecturers, num_subjects, num_classes, num_days, num_slots_per_day
@@ -99,18 +119,18 @@ namespace AutoScheduling
 
             //Mỗi gv phải được dạy ít nhất số slot họ mong muốn
             //
-            //MainFlowFunctions.teacher_teaching_mustEqualOrMoreThan_di(num_lecturers, num_classes, num_days, num_slots_per_day, d, f, model);
+            MainFlowFunctions.teacher_teaching_mustEqualOrMoreThan_di(num_lecturers, num_classes, num_days, num_slots_per_day, d, f, model);
 
             //Mỗi gv khi dạy 1 lớp 1 slot phải dạy slot còn lại 
             //MainFlowFunctions.teachAllSlotOfAClass(num_lecturers, num_classes, num_days, num_slots_per_day, f, model);
             // Đảm bảo tất cả các lớp đều có người dạy
-            //MainFlowFunctions.everyClassHaveTeacher(num_lecturers, num_classes, num_days, num_slots_per_day, class_day_slot, f, model);
+            MainFlowFunctions.everyClassHaveTeacher(num_lecturers, num_classes, num_days, num_slots_per_day, class_day_slot, f, model);
 
             @delegate.Invoke(num_lecturers, num_classes, num_days, num_slots_per_day, class_day_slot, f, model);
-            //MainFlowFunctions.noDuplicateClass(num_lecturers, num_classes, num_days, num_slots_per_day, class_day_slot, f, model);
-            //MainFlowFunctions.noDuplicateClass(num_lecturers, num_classes, num_days, num_slots_per_day, class_day_slot, f, model);
+            MainFlowFunctions.noDuplicateClass(num_lecturers, num_classes, num_days, num_slots_per_day, class_day_slot, f, model);
 
             //Đảm bảo 1 người dạy 1 slot ở 1 ngày
+
             for (int i = 0; i < num_lecturers; i++)
                 for (int k = 0; k < num_days; k++)
                     for (int l = 0; l < num_slots_per_day; l++)
@@ -120,12 +140,18 @@ namespace AutoScheduling
                         {
                             slotsTaken[j] = f[i, j, k, l];
                         }
-                        model.AddLinearConstraint(LinearExpr.Sum(slotsTaken) ,0, 1);
+                        model.AddLinearConstraint(LinearExpr.Sum(slotsTaken), 0, 1);
                     }
-            int[,,,] res;
+
+            List<int[,,,]> res = new List<int[,,,]>();
+            Best best1 = new Best()
+            {
+                index = -1,
+                bestSol = - 99999
+            };
             CpSolver solver = new CpSolver();
             var cb = new SolutionPrinter(f,num_lecturers, num_subjects, num_classes, class_day_slot, registerSubject, subject_class
-                , teacher_day_slot, subject_class_className, subjectDic, userDic,d,alphaIndexs, 500, out res);
+                , teacher_day_slot, subject_class_className, subjectDic, userDic,d,alphaIndexs, 500,  res,  best1);
 
             
             CpSolverStatus status = solver.Solve(model, cb);
@@ -135,32 +161,96 @@ namespace AutoScheduling
             Console.WriteLine($"  conflicts: {solver.NumConflicts()}");
             Console.WriteLine($"  branches : {solver.NumBranches()}");
             Console.WriteLine($"  wall time: {solver.WallTime()}s");
-
-            if (status.Equals(CpSolverStatus.Optimal))
+            Console.WriteLine($"  Best Solution: {best1.bestSol}");
+            for (int i = 0; i < num_lecturers; i++)
             {
-                for (int i = 0; i < num_lecturers; i++)
-                {
-                    int count = 0;
-                    for (int j = 0; j < num_classes; j++)
-                        for (int k = 0; k < num_days; k++)
-                            for (int l = 0; l < num_slots_per_day; l++)
-                            {
-                                count += (int)res[i, j, k, l];
-                            }
-                    var lecturerName = userDic.First(x => x.Item1 == i).Item3;
-                    Console.WriteLine($"id:{i}_name:{lecturerName}_numslots:{count}");
-                }
-                CsvWriter.writeScheduleFileV2(num_slots_per_day, num_days, num_lecturers, num_classes, num_subjects, subject_class,
-                    subject_class_className, userDic, solver, res);
-                return true;
+                int count = 0;
+                for (int j = 0; j < num_classes; j++)
+                    for (int k = 0; k < num_days; k++)
+                        for (int l = 0; l < num_slots_per_day; l++)
+                        {
+                            count += (int)res[best1.index][i, j, k, l];
+                        }
+                var lecturerName = userDic.First(x => x.Item1 == i).Item3;
+                Console.WriteLine($"id:{i}_name:{lecturerName}_numslots:{count}");
             }
-            else
-            {
-                return false;
-            }
+            
+            return (res,best1);
 
         }
-       
+        public (List<int[,,,]>,Best, bool) MainFlow1b(int num_lecturers, int num_subjects, int num_classes, int[,,] class_day_slot, int[,] registerSubject, int[,] subject_class,
+           int[,,] teacher_day_slot, List<(int, int, string)> subject_class_className, List<(int, string)> subjectDic,
+           List<(int, int, string)> userDic,
+           int[] d, float[] alphaIndexs, Last_Constraint @delegate, List<int[,,,]> res,Best best)
+        {
+            Console.WriteLine("-------------------MAIN FLOW 1B--------------");
+            CpModel model = new CpModel();
+            IntVar[,,,] f = new IntVar[num_lecturers, num_classes, num_days, num_slots_per_day];
+            MainFlowFunctions.generateFirstConstraint(num_lecturers, num_subjects, num_classes, num_days, num_slots_per_day
+                , subject_class, class_day_slot, registerSubject, teacher_day_slot, model, f);
+
+            //Mỗi gv phải được dạy ít nhất số slot họ mong muốn
+            //
+            MainFlowFunctions.teacher_teaching_mustEqualOrMoreThan_di(num_lecturers, num_classes, num_days, num_slots_per_day, d, f, model);
+
+            //Mỗi gv khi dạy 1 lớp 1 slot phải dạy slot còn lại 
+            //MainFlowFunctions.teachAllSlotOfAClass(num_lecturers, num_classes, num_days, num_slots_per_day, f, model);
+            // Đảm bảo tất cả các lớp đều có người dạy
+            MainFlowFunctions.everyClassHaveTeacher(num_lecturers, num_classes, num_days, num_slots_per_day, class_day_slot, f, model);
+
+            @delegate.Invoke(num_lecturers, num_classes, num_days, num_slots_per_day, class_day_slot, f, model);
+            MainFlowFunctions.noDuplicateClass(num_lecturers, num_classes, num_days, num_slots_per_day, class_day_slot, f, model);
+
+            //Đảm bảo 1 người dạy 1 slot ở 1 ngày
+
+            for (int i = 0; i < num_lecturers; i++)
+                for (int k = 0; k < num_days; k++)
+                    for (int l = 0; l < num_slots_per_day; l++)
+                    {
+                        IntVar[] slotsTaken = new IntVar[num_classes];
+                        for (int j = 0; j < num_classes; j++)
+                        {
+                            slotsTaken[j] = f[i, j, k, l];
+                        }
+                        model.AddLinearConstraint(LinearExpr.Sum(slotsTaken), 0, 1);
+                    }
+            foreach (var a in res)
+            {
+                for (int i = 0; i < num_lecturers; i++)
+                    for (int k = 0; k < num_days; k++)
+                        for (int l = 0; l < num_slots_per_day; l++)
+                        {
+                            for (int j = 0; j < num_classes; j++)
+                            {
+                                if (a[i,j,k,l] == 1)
+                                {
+                                    model.Add(f[i, j, k, l] == 0);
+                                }
+                            }
+                            
+                        }
+            }
+            CpSolver solver = new CpSolver();
+            var cb = new SolutionPrinter(f, num_lecturers, num_subjects, num_classes, class_day_slot, registerSubject, subject_class
+                , teacher_day_slot, subject_class_className, subjectDic, userDic, d, alphaIndexs, 500, res,  best);
+
+            var bestSolBefore = best.bestSol;
+            CpSolverStatus status = solver.Solve(model, cb);
+            Console.WriteLine($"Solve status: {status}");
+            bool check = true;
+            if (status == CpSolverStatus.Infeasible) check = false;
+            if (bestSolBefore >= best.bestSol) check = false;
+
+            Console.WriteLine("Statistics");
+            Console.WriteLine($"  conflicts: {solver.NumConflicts()}");
+            Console.WriteLine($"  branches : {solver.NumBranches()}");
+            Console.WriteLine($"  wall time: {solver.WallTime()}s");
+            Console.WriteLine($"  Best Solution: {best.bestSol}");
+            
+
+            return (res, best,check);
+        }
+
     }
 
 }

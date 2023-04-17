@@ -13,6 +13,7 @@ namespace AutoScheduling
             int num_classes, int num_days, int num_slots, int[,] subject_class
             , int[,,] class_day_slot, int[,] registerSubject, int[,,] teacher_day_slot, CpModel model, IntVar[,,,] f)
         {
+            model.Model.Variables.Capacity = num_lecturers * num_classes * num_days * num_slots;
             for (int i = 0; i < num_lecturers; i++)
                 for (int j = 0; j < num_classes; j++)
                 {
@@ -22,7 +23,7 @@ namespace AutoScheduling
                         {
                             if (class_day_slot[j, k, l] == 1)
                             {
-                                f[i, j, k, l] = model.NewIntVar(0, 1, $"lecturer: {i} - class: {j} - day: {k} - slot: {l}");
+                                f[i, j, k, l] = model.NewIntVar(0, 10, $"lecturer: {i} - class: {j} - day: {k} - slot: {l}");
                             }
                             else
                             {
@@ -48,16 +49,17 @@ namespace AutoScheduling
                             count++;
                         }
                 LinearExpr linearExpr = LinearExpr.Sum(teach_num_classes);
-                if (d[i] > 0)
+                
                     //model.Add(linearExpr >= d[i]);
                     //model.Add(linearExpr <= 15);
-                    model.AddLinearConstraint(linearExpr, d[i], 15);
-                else model.AddLinearConstraint(linearExpr, 0, 0);
+                    model.AddLinearConstraint(linearExpr, d[i], 12);
+               
             }
         }
         public static void everyClassHaveTeacher(int num_lecturers, int num_classes, int num_days, int num_slots
             , int[,,] class_day_slot, IntVar[,,,] f, CpModel model)
         {
+            List<IntVar> b = new List<IntVar>();
             for (int j = 0; j < num_classes; j++)
                 for (int k = 0; k < num_days; k++)
                     for (int l = 0; l < num_slots; l++)
@@ -66,10 +68,12 @@ namespace AutoScheduling
                             IntVar[] a = new IntVar[num_lecturers];
                             for (int i = 0; i < num_lecturers; i++)
                             {
-                                a[i] = f[i, j, k, l];
+                                //a[i] = f[i, j, k, l];
+                                b.Add(f[i, j, k, l]);
                             }
-                            model.Add(LinearExpr.Sum(a) == 1);
+                            //model.Add(LinearExpr.Sum(a) == 1);
                         }
+            model.Add(LinearExpr.Sum(b) >= num_classes);
         }
         public static void noDuplicateClass(int num_lecturers, int num_classes, int num_days, int num_slots
             , int[,,] class_day_slot, IntVar[,,,] f, CpModel model)

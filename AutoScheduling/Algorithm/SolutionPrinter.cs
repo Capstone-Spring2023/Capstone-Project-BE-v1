@@ -28,12 +28,12 @@ namespace AutoScheduling
         private float[] alphaIndexs;
         private int solutionLimit_;
         private float[] u;
-        private float U = -9999999;
-        int[,,,] res;
+        List< int[,,,]> res;
+        Best best;
         public SolutionPrinter(IntVar[,,,] f,int num_lecturers, int num_subjects, int num_classes, int[,,] class_day_slot, int[,] registerSubject, int[,] subject_class,
            int[,,] teacher_day_slot, List<(int, int, string)> subject_class_className, List<(int, string)> subjectDic,
            List<(int, int, string)> userDic,
-           int[] d, float[] alphaIndexs, int limit,out int[,,,] res)
+           int[] d, float[] alphaIndexs, int limit, List<int[,,,]> res,Best best)
         {
             this.f = f;
             this.num_lecturers = num_lecturers; 
@@ -48,10 +48,10 @@ namespace AutoScheduling
             this.userDic = userDic;
             this.d = d;
             this.alphaIndexs = alphaIndexs;
-            res = new int[num_lecturers, num_classes, num_days, num_slots_per_day];
             this.res = res;
             solutionLimit_ = limit;
             u = new float[num_lecturers];
+            this.best = best;
         }
 
         public override void OnSolutionCallback()
@@ -63,8 +63,8 @@ namespace AutoScheduling
             for (int i = 0; i < num_lecturers; i++)
             {
                 u[i] = Constant.POINT;
-                Console.WriteLine($"+++++++++++++++++++++++++++++++++++++++++++++");
-                Console.WriteLine($"u{i} - {userDic.First(x => x.Item1 == i).Item3}");
+               // Console.WriteLine($"+++++++++++++++++++++++++++++++++++++++++++++");
+                //Console.WriteLine($"u{i} - {userDic.First(x => x.Item1 == i).Item3}");
                 int count_num_teaching_class = 0;
                 var subjectIndexAlreadyMinus = new List<int>(); 
 
@@ -85,7 +85,7 @@ namespace AutoScheduling
                                 {
 
                                     u[i] -= (l - previous_slot - 1);
-                                    Console.WriteLine($"Minus in tight slot. day {k} previous slot: {previous_slot}, current slot: {l}, u[i] = {u[i]}");
+                                    //Console.WriteLine($"Minus in tight slot. day {k} previous slot: {previous_slot}, current slot: {l}, u[i] = {u[i]}");
                                 }
                                 previous_slot = l;
                                 count_num_teaching_class++;
@@ -98,8 +98,8 @@ namespace AutoScheduling
                                     {
                                         subjectIndexAlreadyMinus.Add(subjectIndex);
                                         u[i] -= 2;
-                                        Console.WriteLine($"Minus in register subject: {subjectDic.First(x => x.Item1 == subjectIndex)} " +
-                                            $"- class {subject_class_className.First(x => x.Item2 == j).Item3} - u[i] = {u[i]}");
+                                        //Console.WriteLine($"Minus in register subject: {subjectDic.First(x => x.Item1 == subjectIndex)} " +
+                                        //    $"- class {subject_class_className.First(x => x.Item2 == j).Item3} - u[i] = {u[i]}");
                                     }
                                     
                                 }
@@ -109,7 +109,7 @@ namespace AutoScheduling
                                 {
 
                                     u[i] -= 1;
-                                    Console.WriteLine($"Minus in teacher_day_slot: day{k} - slot {l} - u[i] = {u[i]}");
+                                    //Console.WriteLine($"Minus in teacher_day_slot: day{k} - slot {l} - u[i] = {u[i]}");
                                 }
 
 
@@ -130,26 +130,30 @@ namespace AutoScheduling
                 Console.WriteLine($"u{i}: {u[i]}##{userDic.First(x => x.Item1 == i).Item3}  ## alphaIndex: {alphaIndexs[i]} ##value : {u[i] * alphaIndexs[i]}");
                 a += u[i] * alphaIndexs[i];
             }
-            if (a > U)
+            int[,,,] sol = new int[num_lecturers, num_classes, num_days, num_slots_per_day];
+            for (int i = 0; i < num_lecturers; i++)
             {
-                U = a;
-                for (int i = 0; i < num_lecturers; i++)
+                for (int j = 0; j < num_classes; j++)
                 {
-                    for (int j = 0; j< num_classes; j++)
+                    for (int k = 0; k < num_days; k++)
                     {
-                        for (int k = 0; k < num_days; k++)
+                        for (int l = 0; l < num_slots_per_day; l++)
                         {
-                            for (int l = 0; l < num_slots_per_day; l++)
-                            {
-                                res[i, j, k, l] = (int) Value(f[i, j, k, l]);
+                            sol[i, j, k, l] = (int)Value(f[i, j, k, l]);
 
-                            }
                         }
                     }
                 }
             }
+            res.Add(sol);   
+            if (a > best.bestSol)
+            {
+                best.bestSol = a;
+                best.index = res.Count() - 1;
+            }
 
-            Console.WriteLine($"Solution #{solutionCount_}: {U}");
+
+            Console.WriteLine($"Solution #{solutionCount_}: {a}");
             solutionCount_++;
             if (solutionCount_ >= solutionLimit_)
             {
