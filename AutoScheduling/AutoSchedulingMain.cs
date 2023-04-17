@@ -99,7 +99,7 @@ namespace AutoScheduling
 
             //Mỗi gv phải được dạy ít nhất số slot họ mong muốn
             //
-            MainFlowFunctions.teacher_teaching_mustEqualOrMoreThan_di(num_lecturers, num_classes, num_days, num_slots_per_day, d, f, model);
+            //MainFlowFunctions.teacher_teaching_mustEqualOrMoreThan_di(num_lecturers, num_classes, num_days, num_slots_per_day, d, f, model);
 
             //Mỗi gv khi dạy 1 lớp 1 slot phải dạy slot còn lại 
             //MainFlowFunctions.teachAllSlotOfAClass(num_lecturers, num_classes, num_days, num_slots_per_day, f, model);
@@ -107,6 +107,7 @@ namespace AutoScheduling
             //MainFlowFunctions.everyClassHaveTeacher(num_lecturers, num_classes, num_days, num_slots_per_day, class_day_slot, f, model);
 
             @delegate.Invoke(num_lecturers, num_classes, num_days, num_slots_per_day, class_day_slot, f, model);
+            //MainFlowFunctions.noDuplicateClass(num_lecturers, num_classes, num_days, num_slots_per_day, class_day_slot, f, model);
             //MainFlowFunctions.noDuplicateClass(num_lecturers, num_classes, num_days, num_slots_per_day, class_day_slot, f, model);
 
             //Đảm bảo 1 người dạy 1 slot ở 1 ngày

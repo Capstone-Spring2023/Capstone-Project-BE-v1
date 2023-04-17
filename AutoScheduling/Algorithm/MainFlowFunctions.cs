@@ -16,23 +16,17 @@ namespace AutoScheduling
             for (int i = 0; i < num_lecturers; i++)
                 for (int j = 0; j < num_classes; j++)
                 {
-                    int subjectId = 0;
-                    for (int k = 0; k < num_subjects; k++)
-                        if (subject_class[k, j] == 1)
-                        {
-                            subjectId = k;
-                            break;
-                        }
+
                     for (int k = 0; k < num_days; k++)
                         for (int l = 0; l < num_slots; l++)
                         {
                             if (class_day_slot[j, k, l] == 1)
                             {
-                                f[i, j, k, l] = model.NewIntVar(0, 1, "");
+                                f[i, j, k, l] = model.NewIntVar(0, 1, $"lecturer: {i} - class: {j} - day: {k} - slot: {l}");
                             }
                             else
                             {
-                                f[i, j, k, l] = model.NewIntVar(0, 0, "");
+                                f[i, j, k, l] = model.NewIntVar(0, 0, $"lecturer: {i} - class: {j} - day: {k} - slot: {l}");
                             }
                         }
                 }
