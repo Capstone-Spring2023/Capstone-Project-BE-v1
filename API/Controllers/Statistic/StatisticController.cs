@@ -1,18 +1,21 @@
 ﻿using Data.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace API.Controllers.Statistic
 {
     public class StatisticResponse
     {
-        public double? PercentPoint { get; set; }
-        public double? UPoint { get; set; }
-        public int? NumClass { get; set; }
         public int UserId { get; set; }
+        public string fullName { get; set; }
+        public int NumNotRegisteredSubject { get; set; }
+        public int? NumClass { get; set; }
+        public double? UPoint { get; set; }
         public int SemesterId { get; set; }
         public double? AlphaIndex { get; set; }
+        public double? PercentPoint { get; set; }
         public double percentAlphaIndex { get; set; }   
     }
     
@@ -29,11 +32,13 @@ namespace API.Controllers.Statistic
         public async Task<ObjectResult> GetStatistics([FromRoute]int semesterId)
         {
             var res = _context.PointIndices
+                .Include(x=> x.User)
                 .Where( x=> x.SemesterId == semesterId & x.UserId != -1)
                 .ToList();
             var a = _context.PointIndices.First(x=> x.SemesterId == semesterId && x.UserId == -1);
             var res1 = res.Select(x => new StatisticResponse()
             {
+                fullName = x.User.FullName,
                 UPoint = x.UPoint,
                 NumClass = x.NumClass,
                 AlphaIndex = x.AlphaIndex,
@@ -42,6 +47,13 @@ namespace API.Controllers.Statistic
                 PercentPoint = ((double)x.UPoint/ (double)a.UPoint ) * 100,
                 percentAlphaIndex = ((double)x.AlphaIndex/(double)a.AlphaIndex) * 100
             }).ToList();
+            foreach(var item in res1)
+            {
+                var numNotRegistered = _context.RegisterSubjects
+                    .Where(x => x.UserId == item.UserId && x.IsRegistered == false && x.Status == true  && x.AvailableSubject.SemesterId == 1 )
+                    .Count();
+                item.NumNotRegisteredSubject = numNotRegistered;
+            }
             return new ObjectResult(res1)
             {
                 StatusCode = 200,
