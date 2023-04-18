@@ -105,22 +105,22 @@ namespace Business.ExamSchedule.Implements
                             StatusCode = (int)Business.Constants.StatusCode.BADREQUEST                           
                         };
                     }
-                    if (registerSubject.UserId != createExamScheduleModel.LeaderId && registerSubject.UserId != createExamScheduleModel.AppovalUserId)
+                    if (registerSubject.UserId != createExamScheduleModel.LeaderId)
                     {
 
                         //Create Request
                         var examScheduleModel = _mapper.Map<Data.Models.ExamSchedule>(createExamScheduleModel);
-                    int typeId = _context.Subjects.Find(availableSubject.SubjectId).TypeId;
+                        int typeId = _context.Subjects.Find(availableSubject.SubjectId).TypeId;
 
-                    examScheduleModel.TypeId = typeId;
-                    examScheduleModel.RegisterSubjectId = registerSubject.RegisterSubjectId;
-                    var Subject = _context.Subjects.Where(x => x.SubjectId == availableSubject.SubjectId && x.Status).FirstOrDefault();
-                    examScheduleModel.TypeId= Subject.TypeId;
-                    examScheduleModel.AvailableSubjectId = availableSubject.AvailableSubjectId;
-                    examScheduleModel.Status = true;
+                        examScheduleModel.TypeId = typeId;
+                        examScheduleModel.RegisterSubjectId = registerSubject.RegisterSubjectId;
+                        var Subject = _context.Subjects.Where(x => x.SubjectId == availableSubject.SubjectId && x.Status).FirstOrDefault();
+                        examScheduleModel.TypeId= Subject.TypeId;
+                        examScheduleModel.AvailableSubjectId = availableSubject.AvailableSubjectId;
+                        examScheduleModel.Status = true;
 
-                    await _examScheduleRepository.CreateScheduleExam(examScheduleModel);
-                    var notification = _mapper.Map<Notification>(createExamScheduleModel);
+                        await _examScheduleRepository.CreateScheduleExam(examScheduleModel);
+                        var notification = _mapper.Map<Notification>(createExamScheduleModel);
                     
                         notification.UserId = registerSubject.UserId;
                         notification.Sender = _context.Users.Find(createExamScheduleModel.LeaderId).FullName;

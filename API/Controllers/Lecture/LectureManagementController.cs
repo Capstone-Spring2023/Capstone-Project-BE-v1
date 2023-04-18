@@ -47,7 +47,6 @@ namespace API.Controllers
             return Ok(response);
         }
 
-        
     }
 
 
