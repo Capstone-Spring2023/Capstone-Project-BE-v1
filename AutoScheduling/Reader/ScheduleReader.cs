@@ -13,7 +13,7 @@ namespace AutoScheduling.Reader
     public class ScheduleReader
     {
         //private readonly string filePath = @"D:\Schedule\schedule.csv";
-        public async Task fromScheduleFile_writeToDatabase(IFormFile file,int semesterid)
+        public async Task fromScheduleFile_writeToDatabase(IFormFile file, IFormFile registerFile, int semesterid)
         {
             var userId_subjectCode_Slot_day_slot = new List<(int, string, string, int, int)>();
             List<(string, string)> list = new List<(string, string)>()
@@ -73,40 +73,55 @@ namespace AutoScheduling.Reader
                 
 
             }
-           
+            var registerSubjectReader = new RegisterSubjectReader();
+            var register_subject_list_raw = registerSubjectReader.readRegisterSubjectFile(registerFile);
+
+
             Getter UserGetter = new Getter();
 
             var userDic_andD = UserGetter.getAllUser();
             var alphaIndexs = userDic_andD.Item3.ToArray();
             var d = userDic_andD.Item2;
+            var userDic = userDic_andD.Item1;
+
             var getter = new RegisterSubjectGetter();
             var registerSubjectAndSlots = getter.readRegisterSubject();
 
+            var subjectDic = UserGetter.getAllSubject(1);
+
+            
+            int[,] registerSubjects;//= new int[num_lecturers, num_subject];
+            registerSubjectReader.createRegisterSubjectFromFile(userDic, subjectDic, register_subject_list_raw, out registerSubjects);
+
+            int[,,] teacher_day_slot;
+            registerSubjectReader.createTeacher_Day_Slot(userDic, register_subject_list_raw, registerSubjects, out teacher_day_slot);
+
             var u = new Dictionary<int, double>();
 
+            //UserDic : userIndex, userId, User Fullname
 
             using (var _context = new CFManagementContext())
             {
-                foreach (var a in registerSubjectAndSlots)
+                foreach (var a in userDic)
                 {
-                    u.Add(a.userId, Constant.POINT);
+                    u.Add(a.Item2, Constant.POINT);
                     //Lấy register Subject and slot tương ứng với user\
-                    var registerSubjects = a.RegisterSubjects;
-                    var registerSlots = a.RegisterSlots;
+                   
                     var userList = userId_subjectCode_Slot_day_slot
-                        .Where(x => x.Item1 == a.userId)
+                        .Where(x => x.Item1 == a.Item2)
                         .OrderBy(x => (x.Item4, x.Item5));
                     //.ToList();
                     int previous_day = -1, previous_slot = -1;
                     Console.WriteLine("------------------------------------------------------------");
-                    Console.WriteLine($"UserId: {userDic_andD.Item1.First(x => x.Item2 == a.userId).Item3}");
+                    Console.WriteLine($"UserId: {userDic_andD.Item1.First(x => x.Item2 == a.Item2).Item3}");
                     List<string> subjectCodeAlreadyMinus = new List<string>();
                     foreach (var userId_subjectCode_Slot_item in userList)
                     {
                         
-                        var ui = u[a.userId];
+                        var ui = u[a.Item2];
+                        var subject = subjectDic.First(x => x.Item2 == userId_subjectCode_Slot_item.Item2.Trim());
                         //Check Register Ssubject
-                        if (!registerSubjects.Exists(x => x.AvailableSubject.SubjectName.ToUpper() == userId_subjectCode_Slot_item.Item2.Trim()))
+                        if (registerSubjects[a.Item1,subject.Item1] == 0)
                         {
                             if (!subjectCodeAlreadyMinus.Contains(userId_subjectCode_Slot_item.Item2.Trim()))
                             {
@@ -119,16 +134,17 @@ namespace AutoScheduling.Reader
                         //Check Register Slot
                         var slotAPx = list.First(x => x.Item1 == userId_subjectCode_Slot_item.Item3
                                             || x.Item2 == userId_subjectCode_Slot_item.Item3);
-                        if (!registerSlots.Exists(x => x.Slot == slotAPx.Item1))
+                        int day, slot;
+                        ClassDaySlotReader.APx_to_day_slot(userId_subjectCode_Slot_item.Item3, out day, out slot);
+                        if (teacher_day_slot[a.Item1,day,slot] == 0)
                         {
-                            
+                           
                             ui--;
                             Console.WriteLine($"Minus register slot by slot: {userId_subjectCode_Slot_item.Item3} - new value: {ui}");
                         }
                         
                         //check độ khít của slot
-                        int day = userId_subjectCode_Slot_item.Item4;
-                        int slot = userId_subjectCode_Slot_item.Item5;
+                        
                         Console.WriteLine($"*************** - day: {day} - slot: {slot}");
                         if (previous_day != -1 && previous_day == day)
                         {
@@ -139,12 +155,12 @@ namespace AutoScheduling.Reader
                         }
                         previous_day = day;
                         previous_slot = slot;
-                        u[a.userId] = ui;
+                        u[a.Item2] = ui;
 
                     }
-                    int userIndex = userDic_andD.Item1.First(x => x.Item2 == a.userId).Item1;
+                    int userIndex = userDic_andD.Item1.First(x => x.Item2 == a.Item2).Item1;
                     var alphaIndex = userDic_andD.Item3[userIndex];
-                    var ui_tmp = u[a.userId];
+                    var ui_tmp = u[a.Item2];
                     int count_num_teaching_class = userList.Count();
                     Console.WriteLine($"d[i]: {d[userIndex]} - numClass: {count_num_teaching_class} - value: {ui_tmp}");
                     if (count_num_teaching_class < d[userIndex] || count_num_teaching_class > 10)
@@ -158,10 +174,39 @@ namespace AutoScheduling.Reader
                     Console.WriteLine($"After Calculated - value: {ui_tmp}");
                     ui_tmp = ui_tmp * alphaIndex;
 
-                    var pointIndex = _context.PointIndices.First(x => x.UserId == a.userId && x.SemesterId == semesterid);
-                    pointIndex.NumClass = userList.Count();
-                    pointIndex.UPoint = ui_tmp;
-                    pointIndex.AlphaIndex = alphaIndex;
+                    var pointIndex = _context.PointIndices.FirstOrDefault(x => x.UserId == a.Item2 && x.SemesterId == semesterid);
+                    int NumMinClass = -1;
+                    var check = false;
+                    if (register_subject_list_raw.Exists(x=> x.Item1 == a.Item2))
+                    {
+                        var r = register_subject_list_raw.FirstOrDefault(x => x.Item1 == a.Item2);
+                        NumMinClass = r.Item11;
+                        check = true;
+                    }
+
+                    if (pointIndex != null)
+                    {
+                        pointIndex.NumClass = userList.Count();
+                        pointIndex.UPoint = ui_tmp;
+                        pointIndex.AlphaIndex = alphaIndex;
+                        if (check)
+                        {
+                            pointIndex.NumMinClass = NumMinClass;
+                        }
+                    }
+                    else
+                    {
+                        PointIndex point = new PointIndex()
+                        {
+                            UserId = a.Item2,
+                            SemesterId = semesterid,
+                            NumClass = userList.Count(),
+                            UPoint = ui_tmp,
+                            AlphaIndex = alphaIndex
+                        };
+                        if (check) point.NumMinClass = NumMinClass;
+                        _context.PointIndices.Add(point);   
+                    }
                     await _context.SaveChangesAsync();
                 }
                 var Indices = _context.PointIndices.Where(x => x.UserId != -1 && x.SemesterId == semesterid).ToList();
@@ -175,7 +220,17 @@ namespace AutoScheduling.Reader
                     a.PercentPoint = (a.UPoint / sum_uPoint) * 100;
                     await _context.SaveChangesAsync();
                 }
-                var sumPointIndex = _context.PointIndices.First(x=> x.UserId == -1 && x.SemesterId == semesterid);
+                var sumPointIndex = _context.PointIndices.FirstOrDefault(x=> x.UserId == -1 && x.SemesterId == semesterid);
+                if (sumPointIndex == null)
+                {
+                    sumPointIndex = new PointIndex()
+                    {
+                        UserId = -1,
+                        SemesterId = semesterid,
+
+                    };
+                    _context.PointIndices.Add(sumPointIndex);
+                }
                 sumPointIndex.NumClass = sum_numClass;
                 sumPointIndex.UPoint = sum_uPoint;
                 sumPointIndex.PercentPoint = 100;
@@ -186,8 +241,8 @@ namespace AutoScheduling.Reader
                 //chỉnh lại các register subject nhưng k dạy = false
                 foreach(var a in registerSubjectAndSlots)
                 {
-                    var registerSubjects = a.RegisterSubjects;
-                    foreach(var rs in registerSubjects)
+                    var registerSubjects1 = a.RegisterSubjects;
+                    foreach(var rs in registerSubjects1)
                     {
                         var find = _context.Classes.FirstOrDefault(x=> x.RegisterSubjectId == rs.RegisterSubjectId);
                         if (find == null)

@@ -13,11 +13,11 @@ namespace AutoScheduling.Reader
     {
         private readonly string fileName = Constant.REGISTER_SUBJECT_FILE;
             // @"\tmp\register_subject_1.csv";
-        public List<(int, string, List<string>, bool, bool, bool, bool, bool, bool)> readRegisterSubjectFile(IFormFile file)
+        public List<(int, string, List<string>, bool, bool, bool, bool, bool, bool,bool,int)> readRegisterSubjectFile(IFormFile file)
         {
             using (var reader = new StreamReader(file.OpenReadStream()))
             {
-                var list = new List<(int,string,List<string>,bool,bool,bool,bool,bool,bool)>();
+                var list = new List<(int,string,List<string>,bool,bool,bool,bool,bool,bool,bool,int)>();
                 for (int i = 0; i< 3; i++ ) reader.ReadLine();
 
                 while (!reader.EndOfStream)
@@ -40,7 +40,7 @@ namespace AutoScheduling.Reader
                     }
                     //Lấy lịch expect
                     string[] thirdPart = parts[2].Split(",");
-                    bool A1, A2, A3, A4, A5, A6;
+                    bool A1, A2, A3, A4, A5, A6,isColab;
 
 
                     //A1
@@ -71,7 +71,12 @@ namespace AutoScheduling.Reader
                     if (check.Equals("x", StringComparison.OrdinalIgnoreCase)) A6 = true;
                     else A6 = false;
 
-                    list.Add((lecturerId, lecturerName, subjects, A1, A2, A3, A4, A5, A6));
+                    check = thirdPart[7];
+                    if (check.Equals("x", StringComparison.OrdinalIgnoreCase)) isColab = true;
+                    else isColab = false;
+
+                    int di = int.Parse(thirdPart[8]);
+                    list.Add((lecturerId, lecturerName, subjects, A1, A2, A3, A4, A5, A6,isColab,di));
 
                 }
                 return list;
@@ -80,7 +85,7 @@ namespace AutoScheduling.Reader
 
         //UserDic: item1 is UserIndex, item2 is userId in database
         public void createRegisterSubjectFromFile(List<(int,int,string)> userDic , List<(int,string)> subjectDic,
-            List<(int, string, List<string>, bool, bool, bool, bool, bool, bool)> list,out  int[,] registerSubject)
+            List<(int, string, List<string>, bool, bool, bool, bool, bool, bool,bool,int)> list,out  int[,] registerSubject)
         {
 
             registerSubject = new int[userDic.Count, subjectDic.Count];
@@ -95,7 +100,7 @@ namespace AutoScheduling.Reader
                 }
             }
         }
-        public void createTeacher_Day_Slot(List<(int, int,string)> userDic,List<(int, string, List<string>, bool, bool, bool, bool, bool, bool)> list, int[,] registerSubject,
+        public void createTeacher_Day_Slot(List<(int, int,string)> userDic,List<(int, string, List<string>, bool, bool, bool, bool, bool, bool, bool,int)> list, int[,] registerSubject,
              out int[,,] teacher_day_slot)
         {
             teacher_day_slot = new int[userDic.Count, 3, 4];
@@ -141,6 +146,16 @@ namespace AutoScheduling.Reader
             }
         }
         
+        public void create_teacher_iscollab(List<(int, int, string)> userDic, List<(int, string, List<string>, bool, bool, bool, bool, bool, bool, bool,int)> list,
+            out bool[] userIndex_isColab)
+        {
+            userIndex_isColab = new bool[userDic.Count];
+            foreach(var a in list)
+            {
+                int userIndex = userDic.First(x => x.Item2 == a.Item1).Item1;
+                userIndex_isColab[userIndex] = a.Item10;
+            }
+        }
         public void createRegisterSubjectFileFromDatabase()
         {
             string filePath = fileName;
@@ -149,7 +164,7 @@ namespace AutoScheduling.Reader
             var csv = new StringBuilder();
             csv.AppendLine(",,Please use a comma to separate 2 subjects");
             csv.AppendLine(",,See courses list sheet to choose combo with (A & P) course to register");
-            csv.AppendLine("No.,LecturerId,Lecturer,Subjects,\"Morning 2,5\",\"Afternoon 2,5\",\"Morning 3,6\",\"Afternoon 3,6\",\"Morning 4,7\",\"Afternoon 4,7\"");
+            csv.AppendLine("No.,LecturerId,Lecturer,Subjects,\"Morning 2,5\",\"Afternoon 2,5\",\"Morning 3,6\",\"Afternoon 3,6\",\"Morning 4,7\",\"Afternoon 4,7\",Is Collaborator, Min Num Class");
             List<(string, string)> list = new List<(string, string)>()
             {
                 ("A1","A2"),("P1","P2"),
@@ -185,6 +200,15 @@ namespace AutoScheduling.Reader
                         registerSubjects.Append(",");
                     }
                 }
+                if (a.User.IsColab == true)
+                {
+                    registerSubjects.Append(",x");
+                }
+                else
+                {
+                    registerSubjects.Append(",");
+                }
+                registerSubjects.Append($",{a.User.NumMinClass}");
                 csv.AppendLine(registerSubjects.ToString());
             }
             File.WriteAllText(filePath, csv.ToString());

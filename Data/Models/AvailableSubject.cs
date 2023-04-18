@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace Data.Models
 {
@@ -20,15 +19,10 @@ namespace Data.Models
         public string? LeaderName { get; set; }
         public bool Status { get; set; }
 
-        [JsonIgnore]
         public virtual User Leader { get; set; } = null!;
-        [JsonIgnore]
         public virtual Semester Semester { get; set; } = null!;
-        [JsonIgnore]
         public virtual Subject Subject { get; set; } = null!;
-        [JsonIgnore]
         public virtual ICollection<ClassAsubject> ClassAsubjects { get; set; }
-        [JsonIgnore]
         public virtual ICollection<RegisterSubject> RegisterSubjects { get; set; }
     }
 }
