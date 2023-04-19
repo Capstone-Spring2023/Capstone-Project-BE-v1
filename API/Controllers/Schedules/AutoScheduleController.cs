@@ -13,10 +13,16 @@ namespace API.Controllers.Schedules
     [ApiController]
     public class AutoScheduleController : ControllerBase
     {
-        [HttpPost("import-file")]
+        [HttpPost("import-file/semester/{semesterId}")]
         [SwaggerOperation(Summary = "Import csv file từ phòng đào tạo")]
-        public async Task<IActionResult> ClassDaySlotReaderAPI([FromForm] IFormFile[] files)
+        public async Task<IActionResult> ClassDaySlotReaderAPI([FromForm] IFormFile[] files, [FromRoute] int semesterId)
         {
+            Checker checker = new Checker();    
+            var check =checker.checkIfThereAlreadyAvailableSubject(semesterId);
+            if (check)
+            {
+                return BadRequest("Schedule have already imported");
+            }
             ClassDaySlotReader classDaySlotReader = new ClassDaySlotReader();
             var csvFile = files[0];
             if (csvFile == null)
