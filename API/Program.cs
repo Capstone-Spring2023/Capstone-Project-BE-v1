@@ -142,6 +142,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     };
                 });
 builder.Services.AddScoped<LoginService>(x => new LoginService(Configuration, x.GetRequiredService<CFManagementContext>()));
+builder.WebHost.ConfigureKestrel(c =>
+{
+    c.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(15);
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
