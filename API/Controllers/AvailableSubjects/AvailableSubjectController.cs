@@ -44,11 +44,5 @@ namespace API.Controllers.AvailableSubjects
             var response = await _availableSubjectService.GetAvailableSubjects(x => x.Status == true, pagingRequest);
             return Ok(response.Value);
         }
-
-        [HttpGet("/getUserByAvailbaleSubjectId/{availableSubjectId}")]
-        public async Task<IActionResult> getUserByAvailbaleSubjectId(int availableSubjectId)
-        {
-
-        }
     }
 }
