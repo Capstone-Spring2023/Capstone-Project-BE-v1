@@ -37,6 +37,7 @@ namespace Data.Repositories.implement
             var user = await _context.Users.Where(x => x.Email == email).FirstOrDefaultAsync();
             return user;
         }
+
         
     }
 }

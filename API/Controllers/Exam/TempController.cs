@@ -89,6 +89,43 @@ namespace API.Controllers.Exam
                 StatusCode = 200,
             };
         }
+
+        [HttpGet("AppovalUser/{appovalUserId}/exam-submission-pending")]
+        [SwaggerOperation(Summary = "API lấy ra danh sách Pending của Approval User")]
+        public async Task<ObjectResult> getExamPaperPendingByAppovalUserId([FromRoute] int appovalUserId)
+        {
+            var ExamPapers = await _context.ExamPapers
+                .Where(x => x.Status == ExamPaperStatus.PENDING && x.ExamSchedule.AppovalUserId == appovalUserId)
+                .ToListAsync();
+            List<ExamResponseModel> datas = ExamPapers.Select(x => _mapper.Map<ExamResponseModel>(x)).ToList();
+            foreach (var data in datas)
+            {
+                var examSchedule = _context.ExamSchedules.FirstOrDefault(x => x.ExamScheduleId == data.ExamScheduleId);
+                var ASubject = _context.AvailableSubjects.FirstOrDefault(x => x.AvailableSubjectId == examSchedule.AvailableSubjectId);
+                data.SubjectName = ASubject.SubjectName;
+                data.Tittle = examSchedule.Tittle;
+
+                int typeId = _context.Subjects.First(x => x.SubjectId == ASubject.SubjectId).TypeId;
+                data.Type = _context.Types.First(x => x.TypeId == typeId).TypeName;
+                var register = _context.RegisterSubjects.Find(examSchedule.RegisterSubjectId);
+                data.LecturerName = _context.Users.Find(register.UserId).FullName;
+
+                var comment = ExamPapers.FirstOrDefault(x => x.ExamPaperId == data.ExamPaperId).Comments.FirstOrDefault();
+                if (comment == null)
+                {
+                    data.Comment = "";
+                }
+                else
+                {
+                    data.Comment = comment.CommentContent.Trim();
+                }
+            }
+            return new ObjectResult(datas)
+            {
+                StatusCode = 200,
+            };
+        }
+
         [HttpGet("user/{userId}/exam-schedule/available-subject")]
         [SwaggerOperation(Summary = "API lấy ra danh sách môn mà user đó có request")]
         public async Task<ObjectResult> getAvailableSubjectWithExamScheduleByUserId([FromRoute] int userId)
@@ -130,11 +167,9 @@ namespace API.Controllers.Exam
         public async Task<ObjectResult> getRegisterSubjects([FromRoute] int userId)
         {
             var registerSubjects = await _context.RegisterSubjects
-                .Include(x => x.AvailableSubject)
                 .Where(x => x.UserId == userId)
                 .Select(x => _mapper.Map<RegisterSubjectResponse>(x))
                 .ToListAsync();
-            List<RegisterSubjectResponse> registerSubjectResponses = new List<RegisterSubjectResponse>();
             
             var registerSlots = _context.RegisterSlots.Where(x => x.UserId == userId)
                 .Select(x => _mapper.Map<RegisterSlotResponse>(x)).ToList();
@@ -151,6 +186,78 @@ namespace API.Controllers.Exam
                 StatusCode = 200
             };
          
+        }
+
+        [HttpGet("leader/{leaderId}/exam-submission-approved")]
+        [SwaggerOperation(Summary = "API lấy ra danh sách approved của Leader")]
+        public async Task<ObjectResult> getExamPaperApprovedByLeaderId([FromRoute] int leaderId)
+        {
+            var ExamPapers = await _context.ExamPapers
+                .Where(x => x.Status == ExamPaperStatus.APPROVED && x.ExamSchedule.LeaderId == leaderId)
+                .ToListAsync();
+            List<ExamResponseModel> datas = ExamPapers.Select(x => _mapper.Map<ExamResponseModel>(x)).ToList();
+            foreach (var data in datas)
+            {
+                var examSchedule = _context.ExamSchedules.FirstOrDefault(x => x.ExamScheduleId == data.ExamScheduleId);
+                var ASubject = _context.AvailableSubjects.FirstOrDefault(x => x.AvailableSubjectId == examSchedule.AvailableSubjectId);
+                data.SubjectName = ASubject.SubjectName;
+                data.Tittle = examSchedule.Tittle;
+
+                int typeId = _context.Subjects.First(x => x.SubjectId == ASubject.SubjectId).TypeId;
+                data.Type = _context.Types.First(x => x.TypeId == typeId).TypeName;
+                var register = _context.RegisterSubjects.Find(examSchedule.RegisterSubjectId);
+                data.LecturerName = _context.Users.Find(register.UserId).FullName;
+
+                var comment = ExamPapers.FirstOrDefault(x => x.ExamPaperId == data.ExamPaperId).Comments.FirstOrDefault();
+                if (comment == null)
+                {
+                    data.Comment = "";
+                }
+                else
+                {
+                    data.Comment = comment.CommentContent.Trim();
+                }
+            }
+            return new ObjectResult(datas)
+            {
+                StatusCode = 200,
+            };
+        }
+
+        [HttpGet("AppovalUser/{appovalUserId}/exam-submission-approved")]
+        [SwaggerOperation(Summary = "API lấy ra danh sách approved của Approval User")]
+        public async Task<ObjectResult> getExamPaperApprovedByAppovalUserId([FromRoute] int appovalUserId)
+        {
+            var ExamPapers = await _context.ExamPapers
+                .Where(x => x.Status == ExamPaperStatus.APPROVED && x.ExamSchedule.AppovalUserId == appovalUserId)
+                .ToListAsync();
+            List<ExamResponseModel> datas = ExamPapers.Select(x => _mapper.Map<ExamResponseModel>(x)).ToList();
+            foreach (var data in datas)
+            {
+                var examSchedule = _context.ExamSchedules.FirstOrDefault(x => x.ExamScheduleId == data.ExamScheduleId);
+                var ASubject = _context.AvailableSubjects.FirstOrDefault(x => x.AvailableSubjectId == examSchedule.AvailableSubjectId);
+                data.SubjectName = ASubject.SubjectName;
+                data.Tittle = examSchedule.Tittle;
+
+                int typeId = _context.Subjects.First(x => x.SubjectId == ASubject.SubjectId).TypeId;
+                data.Type = _context.Types.First(x => x.TypeId == typeId).TypeName;
+                var register = _context.RegisterSubjects.Find(examSchedule.RegisterSubjectId);
+                data.LecturerName = _context.Users.Find(register.UserId).FullName;
+
+                var comment = ExamPapers.FirstOrDefault(x => x.ExamPaperId == data.ExamPaperId).Comments.FirstOrDefault();
+                if (comment == null)
+                {
+                    data.Comment = "";
+                }
+                else
+                {
+                    data.Comment = comment.CommentContent.Trim();
+                }
+            }
+            return new ObjectResult(datas)
+            {
+                StatusCode = 200,
+            };
         }
     }
 }

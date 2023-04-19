@@ -40,7 +40,7 @@ namespace Data.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Data Source=13.212.106.245,1433;Initial Catalog=CFManagement_1;User ID=sa;Password=1234567890Aa");
+                optionsBuilder.UseSqlServer("Data Source=13.212.106.245,1433;Initial Catalog=CFManagement;User ID=sa;Password=1234567890Aa");
             }
         }
 
@@ -270,6 +270,8 @@ namespace Data.Models
 
                 entity.Property(e => e.NumClass).HasColumnName("numClass");
 
+                entity.Property(e => e.NumMinClass).HasColumnName("numMinClass");
+
                 entity.Property(e => e.UPoint).HasColumnName("uPoint");
 
                 entity.HasOne(d => d.Semester)
@@ -432,6 +434,8 @@ namespace Data.Models
                     .HasMaxLength(50)
                     .HasColumnName("fullName");
 
+                entity.Property(e => e.IsColab).HasColumnName("isColab");
+
                 entity.Property(e => e.Phone)
                     .HasMaxLength(20)
                     .HasColumnName("phone");
@@ -444,10 +448,6 @@ namespace Data.Models
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("userCode");
-
-                entity.Property(e => e.UserCodeMustEliminate)
-                    .HasMaxLength(50)
-                    .HasColumnName("userCode-mustEliminate");
 
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.Users)

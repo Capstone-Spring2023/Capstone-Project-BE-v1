@@ -73,7 +73,7 @@ namespace AutoScheduling
         }
 
         public static void writeScheduleFileV2(int num_slots, int num_days, int num_lecturers, int num_classes
-            , int num_subjects, int[,] subject_class, List<(int, int, string)> subject_class_className, List<(int, int, string)> userDic, int[,,,] res)
+            , int num_subjects, List<(int, int, string)> subject_class_className, List<(int, int, string)> userDic, int[,,,] res)
         {
             var csvSchedule = new StringBuilder();
             csvSchedule.AppendLine("LecturerId,Lecturer,Subject,Class,Slot");

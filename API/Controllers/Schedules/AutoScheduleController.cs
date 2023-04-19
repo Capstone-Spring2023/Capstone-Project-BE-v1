@@ -5,6 +5,7 @@ using AutoScheduling.Reader;
 using Swashbuckle.AspNetCore.Annotations;
 using AutoScheduling;
 using System.ComponentModel.DataAnnotations;
+using AutoScheduling.DataLayer;
 
 namespace API.Controllers.Schedules
 {
@@ -70,12 +71,14 @@ namespace API.Controllers.Schedules
                 var formFile = new FormFile(stream, 0, stream.Length, "file", filePath.Split(@"\").Last());
                 //Response.SendFileAsync((Microsoft.Extensions.FileProviders.IFileInfo)file);
                 var link = await uploadFile(formFile);
+
+
                 return Ok(link);
             }
         }
         [HttpPost("main-flow-full")]
         [SwaggerOperation(Summary = "Tạo lịch nhưng với điều kiện TẤT CẢ các lớp đều có người dạy")]
-        public async Task<IActionResult> mainFlowButFull(IFormFile[] file)
+        public async Task<IActionResult> mainFlowButFull(IFormFile[] file, [Required][FromQuery] int semesterId)
         {
             if (file.Length < 2) return BadRequest();
             AutoSchedulingMain a = new AutoSchedulingMain();
@@ -91,6 +94,10 @@ namespace API.Controllers.Schedules
                 var formFile = new FormFile(stream, 0, stream.Length, "file", filePath.Split(@"\").Last());
                 //Response.SendFileAsync((Microsoft.Extensions.FileProviders.IFileInfo)file);
                 var link = await uploadFile(formFile);
+                ScheduleReader reader = new ScheduleReader();
+                await reader.fromScheduleFile_writeToDatabase(formFile, file[0], semesterId);
+                Updater updater = new Updater();
+                updater.DeleteRedundantRegisterSubject();
                 return Ok(link);
             }
         }
@@ -98,11 +105,11 @@ namespace API.Controllers.Schedules
         [SwaggerOperation(Summary = "Import lịch schedule.csv ở 1 trong 2 api trên vào")]
         public async Task<IActionResult> importSchedule([FromForm]IFormFile[] file,[Required] [FromQuery] int semesterId)
         {
-            if (file.Length == 0) return BadRequest();
+            if (file.Length <= 1) return BadRequest();
             ScheduleReader reader = new ScheduleReader();
             try
             {
-                await reader.fromScheduleFile_writeToDatabase(file[0],semesterId);
+                await reader.fromScheduleFile_writeToDatabase(file[0],file[1],semesterId);
             }catch (Exception ex)
             {
                 return BadRequest(ex.Message);
