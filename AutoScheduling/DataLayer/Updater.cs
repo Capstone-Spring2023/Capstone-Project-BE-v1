@@ -17,15 +17,18 @@ namespace AutoScheduling.DataLayer
                 _context.SaveChanges();
             }
         }
-        public void UpdateDNumber(int semesterId, List<(int, string, List<string>, bool, bool, bool, bool, bool, bool, bool, int)> list)
+        public void UpdateDNumberAndIsCollab(int semesterId, List<(int, string, List<string>, bool, bool, bool, bool, bool, bool, bool, int)> list)
         {
             using(CFManagementContext _context = new CFManagementContext())
             {
                 foreach (var a in list)
                 {
-                    var user = _context.PointIndices.First(x => a.Item1 == x.UserId && x.SemesterId == semesterId);
+                    var user = _context.Users.First(x => a.Item1 == x.UserId);
+                    user.IsColab = a.Item10;
+                    user.NumMinClass = a.Item11;
                     
                 }
+                _context.SaveChanges();
             }
         }
     }

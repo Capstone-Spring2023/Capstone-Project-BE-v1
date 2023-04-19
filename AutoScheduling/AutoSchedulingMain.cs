@@ -26,6 +26,9 @@ namespace AutoScheduling
             const int num_slots_per_day = 4;
             RegisterSubjectReader registerSubjectReader = new RegisterSubjectReader();
             ClassDaySlotReader classDaySlotReader = new ClassDaySlotReader();
+            var register_subject_list_raw = registerSubjectReader.readRegisterSubjectFile(register_subject_file);
+            Updater updater = new Updater();
+            updater.UpdateDNumberAndIsCollab(1, register_subject_list_raw);
             Getter getter = new Getter();
 
             var userDic_andD = getter.getAllUser();
@@ -38,7 +41,7 @@ namespace AutoScheduling
             num_subject = subjectDic.Count;
             num_lecturers = userDic.Count;
 
-            var register_subject_list_raw = registerSubjectReader.readRegisterSubjectFile(register_subject_file);
+            
             //tạo register_subject
             int[,] registerSubject;//= new int[num_lecturers, num_subject];
             registerSubjectReader.createRegisterSubjectFromFile(userDic, subjectDic, register_subject_list_raw, out registerSubject);
@@ -49,6 +52,7 @@ namespace AutoScheduling
             //check xem gv có phải collaborator hay không
             bool[] userIndex_isColab;
             registerSubjectReader.create_teacher_iscollab(userDic, register_subject_list_raw,out  userIndex_isColab);
+
             // tạo class_day_slot
             List < (int, int, string)> subject_class_className;
             // Tạo Class_day_slot  + subject_class_className
