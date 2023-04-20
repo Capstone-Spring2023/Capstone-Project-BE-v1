@@ -167,6 +167,7 @@ namespace API.Controllers.Exam
         public async Task<ObjectResult> getRegisterSubjects([FromRoute] int userId)
         {
             var registerSubjects = await _context.RegisterSubjects
+                .Include(x=> x.AvailableSubject)
                 .Where(x => x.UserId == userId)
                 .Select(x => _mapper.Map<RegisterSubjectResponse>(x))
                 .ToListAsync();
