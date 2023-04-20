@@ -41,6 +41,7 @@ namespace API.Controllers.Schedules
         public int numMinClass { get; set; } = 0;
         public double percent { get; set; }
     }
+    
     [Route("api/schedule")]
     [ApiController]
     public class ScheduleController : ControllerBase
@@ -392,17 +393,29 @@ namespace API.Controllers.Schedules
             var res = await _context.AvailableSubjects
                 .Include(x=> x.RegisterSubjects)
                 .Where(x => x.SemesterId == semesterId)
+                
                 .ToListAsync();
-            res = res.Where(x => !x.RegisterSubjects.ToList().Exists(x => x.UserId == userId)).ToList();
-            if (res.Count() == 0)
+            var res1 = res.Where(x => !x.RegisterSubjects.ToList().Exists(x => x.UserId == userId))
+                .Select(x => new AvailableSubjectResponse()
+                {
+                    AvailableSubjectId = x.AvailableSubjectId,
+                    SubjectName = x.SubjectName,
+                })
+                .ToList();
+            if (res1.Count() == 0)
             {
                 return new ObjectResult("Lecturer register all subject in this semester");
             }
             else
             {
-                return new ObjectResult(res);
+                return new ObjectResult(res1);
             }
         }
         
+    }
+    public class AvailableSubjectResponse
+    {
+        public int AvailableSubjectId { get; set; }
+        public string SubjectName { get; set; }
     }
 }
