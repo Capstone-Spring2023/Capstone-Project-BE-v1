@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Business.Constants;
+using Business.ExamSchedule.Models;
 using Business.UserService.Interfaces;
 using Business.UserService.Models;
 using Data.Models;
+using Data.Repositories.implement;
 using Data.Repositories.Interface;
 using Microsoft.EntityFrameworkCore;
 using System.Net.WebSockets;
@@ -162,6 +164,47 @@ namespace Business.UserService.Implements
             {
                 StatusCode = 200,
                 Data = listResponse
+            };
+        }
+
+        public async Task<ResponseModel> SetLeader(SetLeaderModel model)
+        {
+            var availableSubject = _context.AvailableSubjects.Find(model.AvailableSubjectId);
+            var user = _context.Users.Find(model.UserId);
+            if(user.RoleId != 1)
+            {
+                var oldLeader = _context.Users.Find(availableSubject.LeaderId);
+                user.RoleId = 2;
+                availableSubject.LeaderId = user.UserId;
+                _context.Users.Update(user);
+                _context.AvailableSubjects.Update(availableSubject);
+                await _context.SaveChangesAsync();
+                var check = _context.AvailableSubjects.Where(x => x.LeaderId == oldLeader.UserId && x.Status).ToList();
+                if(check == null || !check.Any())
+                {
+                    oldLeader.RoleId = 3;
+                    _context.Users.Update(oldLeader);
+                }
+                var notification = new Notification();
+                notification.Type = "subjectLead";
+                notification.UserId = model.UserId;
+                var subjectName = _context.Subjects.Find(availableSubject.SubjectId).SubjectName;
+                notification.Message = "you have been leader for " + subjectName;
+                notification.Sender = _context.Users.Find(model.UserIdOfHeader).FullName;
+                notification.SubjectCode = null;
+                notification.Status = "Unread";
+                _context.Notifications.Add(notification);
+                await _context.SaveChangesAsync();
+                return new()
+                {
+                    StatusCode = 200,
+                    Data = "Set Leader Success"
+                };
+            }
+            return new()
+            {
+                StatusCode = 500,
+                Data = "Something wrong"
             };
         }
     }

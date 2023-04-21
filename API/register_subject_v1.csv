@@ -1,36 +1,36 @@
 ,,Please use a comma to separate 2 subjects
 ,,See courses list sheet to choose combo with (A & P) course to register
 No.,LecturerId,Lecturer,Subjects,"Morning 2,5","Afternoon 2,5","Morning 3,6","Afternoon 3,6","Morning 4,7","Afternoon 4,7",Is Collaborator, Min Num Class
-1,1,Đoàn Nguyễn Thanh Hòa,"PRO192,CSD201",,,,,,,,6
-1,2,Kiều Trọng Khánh,"OSG202,PRO192,PRF192,PRJ301",,,,,,,,6
-1,3,Nguyễn Tấn Danh,"OSG202,CSD201,DBI202",,,,,,,,5
-1,4,Vũ Thị Thùy Dương,"DBI202,LAB211,PRF192",,,,,,,,5
-1,6,Hồ Hoàn Kiếm,"LAB211,PRF192,CSD203,CSD201,IOT102",,,,,,,,5
-1,8,Nguyễn Trúc Mai Anh,"CEA201",,,,,,,,1
-1,9,Lê Võ Minh Thư,"OSG202,CSD201,CSI104",,,,,,,,5
-1,10,Lê Hồng Kỳ,"DBI202,LAB211,OSG202,CEA201",,,,,,,,5
-1,11,Đặng Ngọc Minh Đức,"PRO192,DBI202,LAB211,CSI105",,,,,,,,5
-1,12,Bùi Thị Thu Thủy,"OSG202",,,,,,,,1
-1,13,HanPTN16,"OSG202,CSD201,DBI202,CSI104",,,,,,,,5
-1,14,HuynhTT,"OSG202,CSD201,DBI202,CSI104,PRF192,PRJ301",,,,,,,,5
-1,16,VinhDP,"CSD201,ADY201M,LAB211",,,,,,,,5
-1,17,NgocNN7,"PRN292",,,,,,,,1
-1,18,VinhDP,"CSD201,LAB211,DBI202,PRJ301",,,,,,,,5
-1,19,TruongLV23,"OSG202,CSD201,DBI202,CSI104",,,,,,,,5
-1,20,PhutLV,"OSG202,PRO192,DBI202,CEA201,PRF192,IOT102,CSD301",,,,,,,,5
-1,21,DuongLA3,"OSG202,CSD201,PRF192,IOT102,CSD301",,,,,,,,5
-1,22,TienNV55,"PRO192,DBI202,LAB211,CEA201,CSD203,OSG202,IOT102",,,,,,,,5
-1,23,BinhNV,"OSG202,LAB211,CSD201,DBI202,CEA201,PRJ301",,,,,,,,5
-1,24,LamTD8,"DBI202",,,,,,,,1
-1,25,BinhVN12,"CSD201,LAB211,PRF192,OSG202,IOT102",,,,,,,,5
-1,26,Bao Leader,"PRO192,LAB211,CSI104,ADY201M",,,,,,,,5
-1,27,Bao Lecturer,"PRO192,OSG202,DBI202,LAB231",,,,,,,,5
-1,29,Nguyen Tan Phat,"PRO192,OSG202,CEA201,PRJ301,PFP191,LAB221",,,,,,,,5
-1,30,Nguyen Tan Phat Lead,"OSG202,PRO192,DBI202,LAB211,CSD201,CSI104,IOT102",,,,,,,,5
-1,31,Tuan,"OSG202,PRO192,LAB211,DBI202,CSD201",,,,,,,,5
-1,35,Nguyen Hoang Tan Phat,"PRO192,CSD201,LAB211,DBI202",,,,,,,,5
-1,36,Phat Lecturer,"IOT102",,,,,,,,1
-1,38,Bao Header,"PRJ301",,,,,,,,1
-1,39,Dat trinh,"PRO192",,,,,,,,1
-1,40,Mr Nobody,"PRO192,DBI202,CSD201,LAB211,CSI104,CEA201",,,,,,,,5
-1,41,Nguyen Tan Phat Head,"PRO192,DBI202,LAB211,PRF192,CEA201,ADY201M",,,,,,,,5
+1,1,Đoàn Nguyễn Thanh Hòa,"",,,,,,,x,6
+1,2,Kiều Trọng Khánh,"",,,,,,,,5
+1,3,Nguyễn Tấn Danh,"",,,,,,,,5
+1,4,Vũ Thị Thùy Dương,"",,,,,,,,5
+1,6,Hồ Hoàn Kiếm,"",,,,,,,x,5
+1,8,Nguyễn Trúc Mai Anh,"",,,,,,,x,0
+1,9,Lê Võ Minh Thư,"",,,,,,,,5
+1,10,Lê Hồng Kỳ,"",,,,,,,,5
+1,11,Đặng Ngọc Minh Đức,"",,,,,,,,5
+1,12,Bùi Thị Thu Thủy,"",,,,,,,x,1
+1,13,HanPTN16,"",,,,,,,,5
+1,14,HuynhTT,"",,,,,,,,5
+1,16,VinhDP,"",,,,,,,,5
+1,17,NgocNN7,"",,,,,,,x,1
+1,18,VinhDP,"",,,,,,,x,5
+1,19,TruongLV23,"",,,,,,,,5
+1,20,PhutLV,"",,,,,,,,5
+1,21,DuongLA3,"",,,,,,,,5
+1,22,TienNV55,"",,,,,,,,5
+1,23,BinhNV,"",,,,,,,,5
+1,24,LamTD8,"",,,,,,,x,1
+1,25,BinhVN12,"",,,,,,,,5
+1,26,Bao Leader,"",,,,,,,,5
+1,27,Bao Lecturer,"",,,,,,,,5
+1,29,Nguyen Tan Phat,"",,,,,,,,5
+1,30,Nguyen Tan Phat Lead,"",,,,,,,,5
+1,31,Tuan,"",,,,,,,,5
+1,35,Nguyen Hoang Tan Phat,"",,,,,,,,5
+1,36,Phat Lecturer,"",,,,,,,x,1
+1,38,Bao Header,"",,,,,,,x,1
+1,39,Dat trinh,"",,,,,,,x,1
+1,40,Mr Nobody,"",,,,,,,,5
+1,41,Nguyen Tan Phat Head,"",,,,,,,,5

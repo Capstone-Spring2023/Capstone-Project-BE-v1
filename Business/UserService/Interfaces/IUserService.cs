@@ -19,5 +19,6 @@ namespace Business.UserService.Interfaces
         public Task<ResponseModel> getAllDepartmentByHeader(int userId);
         public Task<ResponseModel> GetLecturersHaveRegisterSubjectByAvailableSubjectId(int availableSubjectId);
         public Task<ResponseModel> GetAllLecturerHaveRegisterSubject();
+        public Task<ResponseModel> SetLeader(SetLeaderModel model);
     }
 }

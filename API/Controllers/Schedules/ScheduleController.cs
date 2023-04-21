@@ -411,7 +411,57 @@ namespace API.Controllers.Schedules
                 return new ObjectResult(res1);
             }
         }
-        
+        [HttpGet("deadline-checking")]
+        [SwaggerOperation(Summary = "Check xem còn hạn đăng ký không")]
+        public async Task<ObjectResult> getDeadlineCheck([FromQuery] [Required] int semesterId)
+        {
+            var a = _context.RegisterDeadlines.FirstOrDefault(x => x.SemesterId == semesterId);
+            if (a == null)
+            {
+                return new ObjectResult("Dead line not set")
+                {
+                    StatusCode = 400
+                };
+                
+            }
+            var b = new DeadlineCheckingResponse()
+            {
+                Deadline = a.Deadline,
+                IsAvailable = a.Deadline >= DateTime.Now
+            };
+            return new ObjectResult(b);
+        }
+        [HttpPost("deadline")]
+        [SwaggerOperation(Summary = "Tạo Deadline")]
+        public async Task<ObjectResult> createDeadLine([FromBody][Required] DeadlineCheckingRequest request)
+        {
+            var a = _context.RegisterDeadlines.FirstOrDefault();
+            int id = 1;
+            if (a != null)
+            {
+                id = a.Id + 1;
+            }
+            var deadline = new RegisterDeadline()
+            {
+                Id = id,
+                Deadline = request.Deadline,
+                SemesterId = request.semesterId
+            };
+            _context.RegisterDeadlines.Add(deadline);
+            await _context.SaveChangesAsync();
+            return new ObjectResult(deadline);
+        }
+
+    }
+    public class DeadlineCheckingResponse
+    {
+        public bool IsAvailable { get; set; }    
+        public DateTime Deadline { get; set; }
+    }
+    public class DeadlineCheckingRequest
+    {
+        public int semesterId { get; set; }
+        public DateTime Deadline { get; set; }
     }
     public class AvailableSubjectResponse
     {
