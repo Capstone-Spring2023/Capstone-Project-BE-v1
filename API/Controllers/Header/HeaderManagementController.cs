@@ -87,6 +87,14 @@ namespace API.Controllers
             return Ok(response);
         }
 
+        [HttpPut]
+        [Route("api/header/SetLeader")]
+        public async Task<IActionResult> SetLeader(SetLeaderModel model)
+        {
+            var response = await _userService.SetLeader(model);
+            return Ok(response);
+        }
+
     }
 
 

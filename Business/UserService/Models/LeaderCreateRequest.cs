@@ -11,4 +11,11 @@ namespace Business.UserService.Models
         public int AvailableSubjectId { get; set; }
         public int UserId { get; set; }
     }
+
+    public class SetLeaderModel
+    {
+        public int AvailableSubjectId { get; set; }
+        public int UserId { get; set; }
+        public int UserIdOfHeader { get; set; }
+    }
 }
