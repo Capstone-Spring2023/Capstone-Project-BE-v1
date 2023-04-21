@@ -432,7 +432,7 @@ namespace API.Controllers.Schedules
             return new ObjectResult(b);
         }
         [HttpPost("deadline")]
-        [SwaggerOperation(Summary = "Check xem còn hạn đăng ký không")]
+        [SwaggerOperation(Summary = "Tạo Deadline")]
         public async Task<ObjectResult> createDeadLine([FromBody][Required] DeadlineCheckingRequest request)
         {
             var a = _context.RegisterDeadlines.FirstOrDefault();
