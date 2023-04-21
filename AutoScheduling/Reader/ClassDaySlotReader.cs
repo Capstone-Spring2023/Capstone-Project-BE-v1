@@ -5,12 +5,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace AutoScheduling.Reader
 {
     public class ClassDaySlotReader
     {
-        //private readonly string fileName = @"D:\Schedule\Input\CF-Lịch-FA22.csv";
+        private readonly CFManagementContext _context;
+        public ClassDaySlotReader(CFManagementContext context)
+        {
+            _context = context;
+        }
+        public ClassDaySlotReader() { }
         public int[,,] readClassDaySlotCsv(IFormFile file,List<(int,string)> subjectDic,out List<(int,int,string)> subject_class_className)
         {
             using (var reader = new StreamReader(file.OpenReadStream()))
@@ -83,6 +90,20 @@ namespace AutoScheduling.Reader
                 DateTime startDate = DateTime.Parse("05-08-2023");
                 await writer.writeAvaialbleSubject_Class_Schedule(1, subjectsRaw, subject_class_day_slot_slotAx, startDate, 6);
             }
+            var listUserIdOfLecturerAndLeader = _context.Users.Where(x => x.RoleId == 2 || x.RoleId == 3).ToList();
+            foreach(var user in listUserIdOfLecturerAndLeader)
+            {
+                var notification = new Notification();
+                notification.Type = "schedule";
+                notification.UserId = user.UserId;
+                notification.Message = "has open class registration please register before deadline";
+                notification.Sender = null;
+                notification.SubjectCode = null;
+                notification.Status = "Unread";
+                _context.Notifications.Add(notification);
+                await _context.SaveChangesAsync();
+            }
+            
         }
         public static void APx_to_day_slot(string APx, out int day, out int slot)
         {
