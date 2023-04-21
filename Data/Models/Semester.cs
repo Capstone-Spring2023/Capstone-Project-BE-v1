@@ -10,6 +10,7 @@ namespace Data.Models
             AvailableSubjects = new HashSet<AvailableSubject>();
             CurrentHeaders = new HashSet<CurrentHeader>();
             PointIndices = new HashSet<PointIndex>();
+            RegisterDeadlines = new HashSet<RegisterDeadline>();
             RegisterSlots = new HashSet<RegisterSlot>();
         }
 
@@ -21,6 +22,7 @@ namespace Data.Models
         public virtual ICollection<AvailableSubject> AvailableSubjects { get; set; }
         public virtual ICollection<CurrentHeader> CurrentHeaders { get; set; }
         public virtual ICollection<PointIndex> PointIndices { get; set; }
+        public virtual ICollection<RegisterDeadline> RegisterDeadlines { get; set; }
         public virtual ICollection<RegisterSlot> RegisterSlots { get; set; }
     }
 }

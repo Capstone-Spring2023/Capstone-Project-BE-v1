@@ -26,6 +26,7 @@ namespace Data.Models
         public virtual DbSet<ExamSchedule> ExamSchedules { get; set; } = null!;
         public virtual DbSet<Notification> Notifications { get; set; } = null!;
         public virtual DbSet<PointIndex> PointIndices { get; set; } = null!;
+        public virtual DbSet<RegisterDeadline> RegisterDeadlines { get; set; } = null!;
         public virtual DbSet<RegisterSlot> RegisterSlots { get; set; } = null!;
         public virtual DbSet<RegisterSubject> RegisterSubjects { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
@@ -285,6 +286,21 @@ namespace Data.Models
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PointIndex_Users");
+            });
+
+            modelBuilder.Entity<RegisterDeadline>(entity =>
+            {
+                entity.ToTable("RegisterDeadline");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Deadline).HasColumnType("date");
+
+                entity.HasOne(d => d.Semester)
+                    .WithMany(p => p.RegisterDeadlines)
+                    .HasForeignKey(d => d.SemesterId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_RegisterDeadline_Semester");
             });
 
             modelBuilder.Entity<RegisterSlot>(entity =>
