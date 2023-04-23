@@ -121,6 +121,8 @@ namespace Data.Models
             {
                 entity.Property(e => e.CommentId).HasColumnName("commentId");
 
+                entity.Property(e => e.ApprovalUserName).HasMaxLength(150);
+
                 entity.Property(e => e.CommentContent).HasMaxLength(200);
 
                 entity.Property(e => e.LeaderId).HasColumnName("leaderId");

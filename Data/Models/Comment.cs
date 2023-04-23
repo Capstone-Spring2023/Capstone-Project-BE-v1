@@ -9,6 +9,7 @@ namespace Data.Models
         public int LeaderId { get; set; }
         public string? CommentContent { get; set; }
         public int ExamPaperId { get; set; }
+        public string? ApprovalUserName { get; set; }
 
         public virtual ExamPaper ExamPaper { get; set; } = null!;
     }
