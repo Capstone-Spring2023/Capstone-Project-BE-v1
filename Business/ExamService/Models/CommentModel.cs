@@ -9,6 +9,7 @@ namespace Business.ExamService.Models
     public class CommentModel
     {
         public int LeaderId { get; set; }
+        public int ApprovalUserId { get; set; }
         public int ExamPaperId { get; set; }
         public string? CommentContent { get; set; }
     }

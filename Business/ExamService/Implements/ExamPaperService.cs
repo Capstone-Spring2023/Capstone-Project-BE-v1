@@ -190,6 +190,18 @@ namespace Business.ExamPaperService.Implements
                     examPaper.Status = ExamPaperStatus.REJECTED;
                     var comment = mapper.Map<Comment>(commentModel);
                     await CommentRepository.Create(comment);
+                    var notification = new Notification();
+                    notification.Type = "Reject";
+                    var examSchedule = _context.ExamSchedules.Find(examPaper.ExamScheduleId);
+                    var registerSubject = _context.RegisterSubjects.Find(examSchedule.RegisterSubjectId);
+                    notification.UserId = registerSubject.UserId;
+                    notification.Message = "Your exam has been rejected";
+                    notification.Sender = null;
+                    var availableSubject = _context.AvailableSubjects.Find(examSchedule.AvailableSubjectId);
+                    notification.SubjectCode = _context.Subjects.Find(availableSubject.SubjectId).SubjectCode;
+                    notification.Status = "Unread";
+                    _context.Notifications.Add(notification);
+                    await _context.SaveChangesAsync();
                 }
                 
                 if (examUpdateModel.Status == "Approve")
@@ -197,12 +209,36 @@ namespace Business.ExamPaperService.Implements
                     if (examPaper.ExamSchedule.TypeId == 1) 
                     { 
                         examPaper.Status = ExamPaperStatus.APPROVED;
+                        var notification = new Notification();
+                        notification.Type = "Appprove";
+                        var examSchedule = _context.ExamSchedules.Find(examPaper.ExamScheduleId);
+                        var registerSubject = _context.RegisterSubjects.Find(examSchedule.RegisterSubjectId);
+                        notification.UserId = registerSubject.UserId;
+                        notification.Message = "Your exam has been approved";
+                        notification.Sender = null;
+                        var availableSubject = _context.AvailableSubjects.Find(examSchedule.AvailableSubjectId);
+                        notification.SubjectCode = _context.Subjects.Find(availableSubject.SubjectId).SubjectCode;
+                        notification.Status = "Unread";
+                        _context.Notifications.Add(notification);
+                        await _context.SaveChangesAsync();
                     }
                     if(examPaper.ExamSchedule.TypeId == 2)
                     {
                         if(examPaper.Status == ExamPaperStatus.PENDING)
                         {
                             examPaper.Status = ExamPaperStatus.APPROVED_MANUAL;
+                            var notification = new Notification();
+                            notification.Type = "Instruction";
+                            var examSchedule = _context.ExamSchedules.Find(examPaper.ExamScheduleId);
+                            var registerSubject = _context.RegisterSubjects.Find(examSchedule.RegisterSubjectId);
+                            notification.UserId = registerSubject.UserId;
+                            notification.Message = "Your exam has been submitted instruction for " + _context.AvailableSubjects.Find(registerSubject.AvailableSubjectId).SubjectName;
+                            notification.Sender = null;
+                            var availableSubject = _context.AvailableSubjects.Find(examSchedule.AvailableSubjectId);
+                            notification.SubjectCode = _context.Subjects.Find(availableSubject.SubjectId).SubjectCode;
+                            notification.Status = "Unread";
+                            _context.Notifications.Add(notification);
+                            await _context.SaveChangesAsync();
                         }
                         else if(examPaper.Status == ExamPaperStatus.APPROVED_MANUAL)
                         {
@@ -214,6 +250,7 @@ namespace Business.ExamPaperService.Implements
 
 
                 await ExamPaperRepository.Update(examPaper);
+
                 return new ObjectResult(examPaper)
                 {
                     StatusCode = 200

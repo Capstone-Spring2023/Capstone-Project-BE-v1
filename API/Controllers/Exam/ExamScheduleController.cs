@@ -124,5 +124,12 @@ namespace API.Controllers.Exam
             return await _avaibleSubjectService.GetTeachersBySubjectId(subjectId, pagingRequest);
         }
 
+        [HttpGet("api/exam-schedule/GetAllRequestByAvailableSubjectId/{availableSubjectId}")]
+        public async Task<IActionResult> GetAllRequestByAvailableSubjectId(int availableSubjectId)
+        {
+            var response = await _examManagementService.GetAllRequestByAvailableSubjectId(availableSubjectId);
+            return Ok(response);
+        }
+
     }
 }

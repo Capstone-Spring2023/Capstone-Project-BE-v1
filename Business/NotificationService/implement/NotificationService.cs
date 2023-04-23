@@ -39,11 +39,16 @@ namespace Business.NotificationService.implement
         public async Task<ResponseModel> GetAllNotificaionsByUserId(int userId)
         {
             var listNotification = await _notificationRepository.GetAllNotificationsByUserId(userId);
+            var listResponse = new List<ReponseNotificationModel>();
             var listResponseNotification = new List<ReponseNotificationModel>();
             foreach (var notification in listNotification)
             {
                 var responseNotification = _mapper.Map<ReponseNotificationModel>(notification);
-                listResponseNotification.Add(responseNotification);
+                listResponse.Add(responseNotification);
+            }
+            for(var i = listResponse.Count - 1; i >= 0; i--)
+            {
+                listResponseNotification.Add(listResponse[i]);
             }
             return new()
             {

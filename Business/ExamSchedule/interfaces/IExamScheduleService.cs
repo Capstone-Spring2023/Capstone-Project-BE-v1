@@ -18,5 +18,6 @@ namespace Business.ExamSchedule.interfaces
         Task<ObjectResult> UpdateExamSchedule(UpdateExamScheduleModel updateExamScheduleModel, int availableSubjectId);
         Task<ObjectResult> DeleteExamSchedule(int availableSubjectId);
         public Task<ResponseModel> GetDetailRequestExamSchedule(int availableSubjectId);
+        public Task<ResponseModel> GetAllRequestByAvailableSubjectId(int availableSubjectId);
     }
 }
