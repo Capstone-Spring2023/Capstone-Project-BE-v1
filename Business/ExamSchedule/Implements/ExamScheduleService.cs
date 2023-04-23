@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -228,6 +229,34 @@ namespace Business.ExamSchedule.Implements
             return new()
             {
                 StatusCode = 404,
+            };
+        }
+
+        public async Task<ResponseModel> GetAllRequestByAvailableSubjectId(int availableSubjectId)
+        {
+            var listRequestOfOneSubject = _context.ExamSchedules.Where(x => x.AvailableSubjectId == availableSubjectId && x.Status).ToList();
+            if(listRequestOfOneSubject == null || !listRequestOfOneSubject.Any())
+            {
+                return new()
+                {
+                    StatusCode = 404,
+                    Data = new List<Object>()
+                };
+            }
+            var response = new ResponseWhoHaveExamAndApprovalUser();
+            var approvalUserId = listRequestOfOneSubject.ElementAt(0);
+            response.ApprovalUserName = _context.Users.Find(approvalUserId).FullName;
+            var availableSubject = _context.AvailableSubjects.Find(availableSubjectId);
+            response.SubjectName = _context.Subjects.Find(availableSubject.SubjectId).SubjectName;
+            foreach (var request in listRequestOfOneSubject)
+            {
+                var registerSubject = _context.RegisterSubjects.Find(request.RegisterSubjectId);
+                response.Username.Add(_context.Users.Find(registerSubject.UserId).FullName);
+            }
+            return new()
+            {
+                StatusCode = 200,
+                Data = response
             };
         }
     }

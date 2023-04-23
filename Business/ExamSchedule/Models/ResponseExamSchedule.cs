@@ -20,4 +20,11 @@ namespace Business.ExamSchedule.Models
         public bool Status { get; set; }
         
     }
+
+    public class ResponseWhoHaveExamAndApprovalUser
+    {
+        public string ApprovalUserName { get; set; }
+        public List<string> Username { get; set; }
+        public string SubjectName { get; set; }
+    }
 }
