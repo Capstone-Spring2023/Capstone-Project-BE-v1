@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Business", "Business\Busine
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API", "API\API.csproj", "{25B8F352-4581-482F-851F-D90C508DE1A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoScheduling", "AutoScheduling\AutoScheduling.csproj", "{9E5678DA-AD7B-4310-BA1E-881CD4379EFC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoScheduling", "AutoScheduling\AutoScheduling.csproj", "{9E5678DA-AD7B-4310-BA1E-881CD4379EFC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

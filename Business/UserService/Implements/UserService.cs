@@ -133,8 +133,23 @@ namespace Business.UserService.Implements
                     {
                         isLeader = true;
                     }
+                    response.isCol = lecturer.IsColab;
                     response.isLeader = isLeader;
                     response.availableSubjectId = availableSubjectId;
+                    var examSchedule = _context.ExamSchedules.Where(x => x.RegisterSubjectId == registerSubject.RegisterSubjectId && x.Status).FirstOrDefault();
+                    var examPaper = _context.ExamPapers.Where(x => x.ExamScheduleId == examSchedule.ExamScheduleId && x.Status != ExamPaperStatus.REJECTED).FirstOrDefault();
+                    if(examPaper != null)
+                    {
+                        response.status = true;
+                        response.examLink = examPaper.ExamLink;
+                    }
+                    else
+                    {
+                        response.status = false;
+                    }
+  
+                    var approvalUserName = _context.Users.Find(examSchedule.AppovalUserId).FullName;
+                    response.approvalUserName = approvalUserName;
                     response.userId = lecturer.UserId;
                     listResponse.Add(response);
                 }
