@@ -10,6 +10,7 @@ namespace Business.UserService.Models
     {
         public string fullName { get; set; }
         public string semester { get; set; }
+        public int semesterId { get; set; }
         public string subjectName { get; set; }
         public bool isLeader { get; set; }
         public int userId { get; set; }
