@@ -1,5 +1,6 @@
 ﻿using Data.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,32 @@ namespace AutoScheduling.Reader
 {
     public class OutOfFlow
     {
+        public async Task createAbleSubjectDatabase(IFormFile file)
+        {
+            RegisterSubjectReader reader = new RegisterSubjectReader();
+            var list = reader.readRegisterSubjectFile(file);
+            using(CFManagementContext _context = new CFManagementContext())
+            {
+                var subjects = _context.Subjects.ToList();
+                foreach(var a in list)
+                {
+                    var userSubjects = a.Item3;
+                    var user = _context.Users
+                        .Include(x => x.Subjects)
+                        .First(x => x.UserId == a.Item1);
+                    var userSubjectsDb = user.Subjects;
+                    foreach(var userSubjectName in userSubjects)
+                    {
+                        if (!userSubjectsDb.Select(x=> x.SubjectName).Contains(userSubjectName))
+                        {
+                            var subject = _context.Subjects.FirstOrDefault(x=>x.SubjectName == userSubjectName);
+                            user.Subjects.Add(subject);
+                        }
+                    }
+                }
+                await _context.SaveChangesAsync();  
+            }
+        }
         public async Task createRegisterSubjectDatabaseFromFile(IFormFile file)
         {
             RegisterSubjectReader reader = new RegisterSubjectReader(); 

@@ -19,7 +19,7 @@ namespace AutoScheduling
     {
         const int num_days = 3;
         const int num_slots_per_day = 4;
-        public  bool MainFlow(IFormFile register_subject_file, IFormFile class_day_slot_file, Last_Constraint @delegate)
+        public  bool MainFlow(IFormFile register_subject_file, IFormFile class_day_slot_file, Last_Constraint @delegate, int semesterId)
         {
             int num_classes, num_subject, num_lecturers;
             const int num_days = 3;
@@ -30,13 +30,13 @@ namespace AutoScheduling
             Updater updater = new Updater();
             updater.UpdateDNumberAndIsCollab(1, register_subject_list_raw);
             Getter getter = new Getter();
-
+            var userAbleSubject = getter.getUserAndAvailableSubject(semesterId);
             var userDic_andD = getter.getAllUser();
 
             var userDic = userDic_andD.Item1;
             var d = userDic_andD.Item2.ToArray();
             var alphaIndexs = userDic_andD.Item3.ToArray();
-            var subjectDic = getter.getAllSubject(1);
+            var subjectDic = getter.getAllSubject(semesterId);
 
             num_subject = subjectDic.Count;
             num_lecturers = userDic.Count;
@@ -48,7 +48,9 @@ namespace AutoScheduling
             //tạo teacher_day_slot
             int[,,] teacher_day_slot;
             registerSubjectReader.createTeacher_Day_Slot(userDic, register_subject_list_raw, registerSubject, out teacher_day_slot);
-
+            //tạo AbleSubject
+            int[,] ableSubject;
+            registerSubjectReader.createAbleSubject(userDic, subjectDic, userAbleSubject,out ableSubject);
             //check xem gv có phải collaborator hay không
             bool[] userIndex_isColab;
             registerSubjectReader.create_teacher_iscollab(userDic, register_subject_list_raw,out  userIndex_isColab);
@@ -68,7 +70,7 @@ namespace AutoScheduling
                 subject_class.Add((a.Item1, a.Item2)); 
             }
             var res = MainFlow1a(num_lecturers,num_subject,num_classes,class_day_slot, registerSubject, subject_class, teacher_day_slot,subject_class_className,subjectDic,userDic,
-                d,alphaIndexs,userIndex_isColab, @delegate);
+                d,alphaIndexs,userIndex_isColab,ableSubject, @delegate);
             /*
             var res1b = MainFlow1b(num_lecturers, num_subject, num_classes, class_day_slot, registerSubject, subject_class, teacher_day_slot, subject_class_className, subjectDic, userDic,
                 d, alphaIndexs, @delegate, res.Item1, res.Item2);
@@ -92,7 +94,7 @@ namespace AutoScheduling
         public (int[,,,], Best) MainFlow1a(int num_lecturers, int num_subjects, int num_classes, int[,,] class_day_slot, int[,] registerSubject,List<(int,int)> subject_class,
            int[,,] teacher_day_slot, List<(int, int, string)> subject_class_className, List<(int, string)> subjectDic,
            List<(int, int, string)> userDic,
-           int[] d, float[] alphaIndexs, bool[] userIndex_isColab, Last_Constraint @delegate)
+           int[] d, float[] alphaIndexs, bool[] userIndex_isColab, int[,] ableSubject, Last_Constraint @delegate)
         {
             Console.WriteLine("MAIN FLOW 1A");
             CpModel model = new CpModel();
@@ -137,7 +139,7 @@ namespace AutoScheduling
             CpSolver solver = new CpSolver();
             solver.StringParameters += "linearization_level:1 " + "enumerate_all_solutions:true ";
             var cb = new SolutionPrinter(f,num_lecturers, num_subjects, num_classes, class_day_slot, registerSubject
-                , teacher_day_slot, subject_class_className, subjectDic, userDic,d,alphaIndexs, 760, ref res,  best1);
+                , teacher_day_slot, subject_class_className, subjectDic, userDic,d,alphaIndexs, 760,ableSubject, ref res,  best1);
 
             
             CpSolverStatus status = solver.Solve(model, cb);

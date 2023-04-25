@@ -390,12 +390,15 @@ namespace API.Controllers.Schedules
         [SwaggerOperation(Summary = "Lấy Avaialble Subject list mà User CHƯA đăng ký")]
         public async Task<ObjectResult> getAvailableSubjectByUserId([FromRoute]int userId, [FromRoute] int semesterId)
         {
-            var res = await _context.AvailableSubjects
-                .Include(x=> x.RegisterSubjects)
-                .Where(x => x.SemesterId == semesterId)
-                
-                .ToListAsync();
-            var res1 = res.Where(x => !x.RegisterSubjects.ToList().Exists(x => x.UserId == userId))
+            var registerSubjects = _context.RegisterSubjects.Where(x => x.UserId == userId);
+            var user = _context.Users
+                .Include(x=> x.Subjects)
+                .First(x => x.UserId == userId);
+            var subjectIds = user.Subjects.Select(x => x.SubjectId);
+            var availableSubjects = _context.AvailableSubjects
+                .Where(x => subjectIds.Contains(x.SubjectId) && !registerSubjects.Select(y => y.AvailableSubjectId).Contains(x.AvailableSubjectId))
+                .ToList();
+            var res1 = availableSubjects
                 .Select(x => new AvailableSubjectResponse()
                 {
                     AvailableSubjectId = x.AvailableSubjectId,

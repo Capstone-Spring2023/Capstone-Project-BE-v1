@@ -15,7 +15,7 @@ namespace API.Controllers.Schedules
     {
         [HttpPost("import-file/semester/{semesterId}")]
         [SwaggerOperation(Summary = "Import csv file từ phòng đào tạo")]
-        public async Task<IActionResult> ClassDaySlotReaderAPI([FromForm] IFormFile[] files, [FromRoute] int semesterId)
+        public async Task<IActionResult> ClassDaySlotReaderAPI([FromForm][Required] IFormFile[] files, [Required][FromRoute] int semesterId)
         {
             Checker checker = new Checker();    
             var check =checker.checkIfThereAlreadyAvailableSubject(semesterId);
@@ -29,7 +29,7 @@ namespace API.Controllers.Schedules
             {
                 return BadRequest();
             }
-            await classDaySlotReader.readClassDaySlotCsvToDb(csvFile);
+            await classDaySlotReader.readClassDaySlotCsvToDb(csvFile,semesterId);
             return Ok("Create Success");
         }
         [HttpPost("out-of-flow")]
@@ -42,14 +42,24 @@ namespace API.Controllers.Schedules
             await outOfFlow.createRegisterSubjectDatabaseFromFile(file[0]);
             return Ok("Kê");
         }
+        [HttpPost("out-of-flow-1")]
+        [SwaggerOperation(Summary = "Import csv file register subject vào database (ngược với flow hiện tại)")]
+        public async Task<IActionResult> outOfFlow1(IFormFile[] file)
+        {
+
+            OutOfFlow outOfFlow = new OutOfFlow();
+
+            await outOfFlow.createAbleSubjectDatabase(file[0]);
+            return Ok("Kê");
+        }
         [HttpGet("get-file")]
         [SwaggerOperation(Summary = "Lấy csv file đăng ký từ hệ thống")]
-        public async Task<ObjectResult> registerSubjectReaderAPi()
+        public async Task<ObjectResult> registerSubjectReaderAPi([Required][FromQuery] int semesterId)
         {
             
             RegisterSubjectReader registerSubjectReader = new RegisterSubjectReader();
 
-             registerSubjectReader.createRegisterSubjectFileFromDatabase();
+             registerSubjectReader.createRegisterSubjectFileFromDatabase(semesterId);
             
             //await classDaySlotReader.readClassDaySlotCsvToDb(csvFile);
             string filePath = @"register_subject_v1.csv";
@@ -59,29 +69,6 @@ namespace API.Controllers.Schedules
             var link = await uploadFile(formFile);
             return new ObjectResult(link);
         }
-        [HttpPost("main-flow")]
-        [SwaggerOperation(Summary = "Tạo lịch")]
-        public async Task<IActionResult> mainFlow(IFormFile[] file)
-        {
-            if (file.Length < 2) return BadRequest();
-            AutoSchedulingMain a = new AutoSchedulingMain();
-            Last_Constraint @delegate = new Last_Constraint(MainFlowFunctions.noDuplicateClass);
-
-            var check = a.MainFlow(file[0], file[1], @delegate);
-
-            if (!check) return BadRequest("Cannot create Schedule with this data");
-            else
-            {
-                var filePath = Constant.SCHEDULE_FILE;
-                var stream = new MemoryStream(System.IO.File.ReadAllBytes(filePath).ToArray());
-                var formFile = new FormFile(stream, 0, stream.Length, "file", filePath.Split(@"\").Last());
-                //Response.SendFileAsync((Microsoft.Extensions.FileProviders.IFileInfo)file);
-                var link = await uploadFile(formFile);
-
-
-                return Ok(link);
-            }
-        }
         [HttpPost("main-flow-full")]
         [SwaggerOperation(Summary = "Tạo lịch nhưng với điều kiện TẤT CẢ các lớp đều có người dạy")]
         public async Task<IActionResult> mainFlowButFull(IFormFile[] file, [Required][FromQuery] int semesterId)
@@ -90,7 +77,7 @@ namespace API.Controllers.Schedules
             AutoSchedulingMain a = new AutoSchedulingMain();
             Last_Constraint @delegate = new Last_Constraint(MainFlowFunctions.everyClassHaveTeacher);
 
-            var check = a.MainFlow(file[0], file[1], @delegate);
+            var check = a.MainFlow(file[0], file[1], @delegate,semesterId);
 
             if (!check) return BadRequest("Cannot create Schedule with this data");
             else

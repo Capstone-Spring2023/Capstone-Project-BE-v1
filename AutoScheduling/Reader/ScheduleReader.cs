@@ -85,7 +85,7 @@ namespace AutoScheduling.Reader
             var userDic = userDic_andD.Item1;
 
             var getter = new RegisterSubjectGetter();
-            var registerSubjectAndSlots = getter.readRegisterSubject();
+            var registerSubjectAndSlots = getter.readRegisterSubject(semesterid);
 
             var subjectDic = UserGetter.getAllSubject(1);
 

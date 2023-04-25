@@ -1,4 +1,5 @@
 ﻿using Data.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,9 @@ namespace AutoScheduling.DataLayer
             
             using ( CFManagementContext context  = new CFManagementContext())
             {
-                var users = context.Users.Where(x => x.UserId != -1).ToList();
+                var users = context.Users
+                    .Include(x => x.Subjects)
+                    .Where(x => x.UserId != -1).ToList();
                 int userIndex = 0;
                 List<(int,int,string)> result = new List<(int,int,string)> ();
                 List<int> d = new List<int>();
@@ -27,6 +30,23 @@ namespace AutoScheduling.DataLayer
                     userIndex++;
                 }
                 return (result, d, alphas);
+            }
+        }
+        public Dictionary<int,List<string>> getUserAndAvailableSubject(int semesterId)
+        {
+            using ( CFManagementContext context = new CFManagementContext())
+            {
+                var dic = new Dictionary<int,List<string>>();
+                var users = context.Users
+                 .Include(x => x.Subjects)
+                 .Where(x => x.UserId != -1).ToList();
+                var ASubjects = context.AvailableSubjects.Where(x=> x.SemesterId == semesterId);
+                foreach(var user in users)
+                {
+                    var Asubjects = ASubjects.Where(x => user.Subjects.Select(x => x.SubjectId).Contains(x.SubjectId));
+                    dic.Add(user.UserId, Asubjects.Select(x =>x.SubjectName).ToList());
+                }
+                return dic;
             }
         }
         public List<(int,string)> getAllSubject(int semesterId)

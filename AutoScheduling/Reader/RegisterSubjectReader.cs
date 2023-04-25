@@ -17,7 +17,7 @@ namespace AutoScheduling.Reader
         {
             using (var reader = new StreamReader(file.OpenReadStream()))
             {
-                var list = new List<(int,string,List<string>,bool,bool,bool,bool,bool,bool,bool,int)>();
+                var list = new List<(int, string, List<string>, bool, bool, bool, bool, bool, bool, bool, int)>();
                 for (int i = 0; i< 3; i++ ) reader.ReadLine();
 
                 while (!reader.EndOfStream)
@@ -142,6 +142,20 @@ namespace AutoScheduling.Reader
                 }
             }
         }
+        public void createAbleSubject(List<(int, int, string)> userDic, List<(int, string)> subjectDic, Dictionary<int,List<string>> userAblesubject
+            , out int[,] ableSubject)
+        {
+            ableSubject = new int[userDic.Count, subjectDic.Count];
+            foreach(var a in userAblesubject)
+            {
+                int userIndex = userDic.First(x => x.Item2 == a.Key).Item1;
+                foreach(var subjectName in a.Value)
+                {
+                    int subjectIndex = subjectDic.First(x => x.Item2 == subjectName).Item1;
+                    ableSubject[userIndex, subjectIndex] = 1;
+                }
+            }
+        }
         public void createTeacher_Day_Slot(List<(int, int,string)> userDic,List<(int, string, List<string>, bool, bool, bool, bool, bool, bool, bool,int)> list, int[,] registerSubject,
              out int[,,] teacher_day_slot)
         {
@@ -198,11 +212,11 @@ namespace AutoScheduling.Reader
                 userIndex_isColab[userIndex] = a.Item10;
             }
         }
-        public void createRegisterSubjectFileFromDatabase()
+        public void createRegisterSubjectFileFromDatabase(int semesterId)
         {
             string filePath = fileName;
             var getter = new RegisterSubjectGetter();
-            var register_subject_slot = getter.readRegisterSubject();
+            var register_subject_slot = getter.readRegisterSubject(semesterId);
             var csv = new StringBuilder();
             csv.AppendLine(",,Please use a comma to separate 2 subjects");
             csv.AppendLine(",,See courses list sheet to choose combo with (A & P) course to register");
