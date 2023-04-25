@@ -133,7 +133,7 @@ namespace Business.UserService.Implements
                     {
                         isLeader = true;
                     }
-                    response.isCol = lecturer.IsCol;
+                    response.isCol = lecturer.IsColab;
                     response.isLeader = isLeader;
                     response.availableSubjectId = availableSubjectId;
                     var examSchedule = _context.ExamSchedules.Where(x => x.RegisterSubjectId == registerSubject.RegisterSubjectId && x.Status).FirstOrDefault();
