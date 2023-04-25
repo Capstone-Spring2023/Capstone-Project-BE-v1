@@ -140,7 +140,7 @@ namespace Business.UserService.Implements
                     var examPaper = _context.ExamPapers.Where(x => x.ExamScheduleId == examSchedule.ExamScheduleId && x.Status != ExamPaperStatus.REJECTED).FirstOrDefault();
                     if(examPaper != null)
                     {
-                        response.status == true;
+                        response.status = true;
                         response.examLink = examPaper.ExamLink;
                     }
                     else
