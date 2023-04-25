@@ -14,5 +14,9 @@ namespace Business.UserService.Models
         public bool isLeader { get; set; }
         public int userId { get; set; }
         public int availableSubjectId { get; set; }
+        public string approvalUserName { get; set; }
+        public bool status { get; set; }
+        public string examLink { get; set; }
+        public bool isCol { get; set; }
     }
 }
