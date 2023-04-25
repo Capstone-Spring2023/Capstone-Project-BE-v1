@@ -24,7 +24,49 @@ namespace AutoScheduling.Reader
                 {
                     string line = reader.ReadLine();
                     string[] parts = line.Split('\"');
-                    if (parts.Length < 3) continue;
+                    bool A1, A2, A3, A4, A5, A6, isColab;
+                    if (parts.Length < 3)
+                    {
+                        string[] parts1 = line.Split(',');
+                        int lecturerId1 = int.Parse(parts1[1]);
+                        string lecturerName1 = parts1[2];
+                        var subjects1 = new List<String>();
+                        subjects1.Add(parts1[3].Trim());
+                        var check1 = parts1[4];
+                        if (check1.Equals("x", StringComparison.OrdinalIgnoreCase)) A1 = true;
+                        else A1 = false;
+                        //A2
+                        check1 = parts1[5];
+                        if (check1.Equals("x", StringComparison.OrdinalIgnoreCase)) A2 = true;
+                        else A2 = false;
+                        //A3
+                        check1 = parts1[6];
+                        if (check1.Equals("x", StringComparison.OrdinalIgnoreCase)) A3 = true;
+                        else A3 = false;
+
+                        //A4
+                        check1 = parts1[7];
+                        if (check1.Equals("x", StringComparison.OrdinalIgnoreCase)) A4 = true;
+                        else A4 = false;
+
+                        //A5
+                        check1 = parts1[8];
+                        if (check1.Equals("x", StringComparison.OrdinalIgnoreCase)) A5 = true;
+                        else A5 = false;
+
+                        //A6
+                        check1 = parts1[9];
+                        if (check1.Equals("x", StringComparison.OrdinalIgnoreCase)) A6 = true;
+                        else A6 = false;
+
+                        check1 = parts1[10];
+                        if (check1.Equals("x", StringComparison.OrdinalIgnoreCase)) isColab = true;
+                        else isColab = false;
+
+                        int di1 = int.Parse(parts1[11]);
+                        list.Add((lecturerId1, lecturerName1, subjects1, A1, A2, A3, A4, A5, A6, isColab, di1));
+                        continue;
+                    }
                     //Lấy lecturer 
                     string[] firstpart = parts[0].Split(',');
                     int lecturerId = int.Parse(firstpart[1]);
@@ -40,7 +82,7 @@ namespace AutoScheduling.Reader
                     }
                     //Lấy lịch expect
                     string[] thirdPart = parts[2].Split(",");
-                    bool A1, A2, A3, A4, A5, A6,isColab;
+                   
 
 
                     //A1

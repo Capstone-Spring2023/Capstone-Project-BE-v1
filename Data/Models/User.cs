@@ -12,6 +12,7 @@ namespace Data.Models
             PointIndices = new HashSet<PointIndex>();
             RegisterSlots = new HashSet<RegisterSlot>();
             RegisterSubjects = new HashSet<RegisterSubject>();
+            Subjects = new HashSet<Subject>();
         }
 
         public int UserId { get; set; }
@@ -32,5 +33,7 @@ namespace Data.Models
         public virtual ICollection<PointIndex> PointIndices { get; set; }
         public virtual ICollection<RegisterSlot> RegisterSlots { get; set; }
         public virtual ICollection<RegisterSubject> RegisterSubjects { get; set; }
+
+        public virtual ICollection<Subject> Subjects { get; set; }
     }
 }
