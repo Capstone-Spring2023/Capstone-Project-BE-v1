@@ -116,20 +116,20 @@ namespace Business.UserService.Implements
         {
             var listRegisterSubjects = await _context.RegisterSubjects.Where(x => x.AvailableSubjectId == availableSubjectId && x.Status).ToListAsync();
             var listResponse = new List<ResponseLecturerModel>();
-            var ASubject = _context.AvailableSubjects.Find(availableSubjectId);
             foreach (var registerSubject in listRegisterSubjects)
             {
                 var response = new ResponseLecturerModel();
                 var availableSubject = _context.AvailableSubjects.Find(availableSubjectId);
-                if(availableSubject != null && availableSubject.Status)
+                if (availableSubject != null && availableSubject.Status)
                 {
                     var semester = _context.Semesters.Find(availableSubject.SemesterId);
                     response.semester = semester.Name;
+                    response.semesterId = semester.SemesterId;
                     var lecturer = _context.Users.Where(x => x.UserId == registerSubject.UserId).FirstOrDefault();
                     response.fullName = lecturer.FullName;
-                    response.subjectName = ASubject.SubjectName;
+                    response.subjectName = availableSubject.SubjectName;
                     var isLeader = false;
-                    if(availableSubject.LeaderId == lecturer.UserId)
+                    if (availableSubject.LeaderId == lecturer.UserId)
                     {
                         isLeader = true;
                     }
@@ -137,23 +137,29 @@ namespace Business.UserService.Implements
                     response.isLeader = isLeader;
                     response.availableSubjectId = availableSubjectId;
                     var examSchedule = _context.ExamSchedules.Where(x => x.RegisterSubjectId == registerSubject.RegisterSubjectId && x.Status).FirstOrDefault();
-                    var examPaper = _context.ExamPapers.Where(x => x.ExamScheduleId == examSchedule.ExamScheduleId && x.Status != ExamPaperStatus.REJECTED).FirstOrDefault();
-                    if(examPaper != null)
+                    if(examSchedule != null)
                     {
-                        response.status = true;
-                        response.examLink = examPaper.ExamLink;
-                    }
-                    else
-                    {
-                        response.status = false;
-                    }
-  
-                    var approvalUserName = _context.Users.Find(examSchedule.AppovalUserId).FullName;
-                    response.approvalUserName = approvalUserName;
-                    response.userId = lecturer.UserId;
-                    listResponse.Add(response);
+                        var examPaper = _context.ExamPapers.Where(x => x.ExamScheduleId == examSchedule.ExamScheduleId && x.Status != ExamPaperStatus.REJECTED).FirstOrDefault();
+                        if (examPaper != null)
+                        {
+                            response.status = true;
+                            response.examLink = examPaper.ExamLink;
+                        }
+                        else
+                        {
+                            response.status = false;
+                        }
+                        if (examSchedule.AppovalUserId != null)
+                        {
+                            var approvalUserName = _context.Users.Find(examSchedule.AppovalUserId).FullName;
+                            response.approvalUserName = approvalUserName;
+                        }
+                        response.userId = lecturer.UserId;
+                        listResponse.Add(response);
+                    }                  
+                   
                 }
-                
+
             }
             return new()
             {
