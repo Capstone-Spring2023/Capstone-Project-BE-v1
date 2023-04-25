@@ -141,12 +141,13 @@ namespace Business.UserService.Implements
                     if(examPaper != null)
                     {
                         response.status == true;
+                        response.examLink = examPaper.ExamLink;
                     }
                     else
                     {
                         response.status = false;
                     }
-                    response.examLink = examPaper.ExamLink;
+  
                     var approvalUserName = _context.Users.Find(examSchedule.AppovalUserId).FullName;
                     response.approvalUserName = approvalUserName;
                     response.userId = lecturer.UserId;

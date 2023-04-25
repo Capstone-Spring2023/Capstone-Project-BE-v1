@@ -17,6 +17,6 @@ namespace Business.UserService.Models
         public string approvalUserName { get; set; }
         public bool status { get; set; }
         public string examLink { get; set; }
-        public bool isCol { get; set; }
+        public bool? isCol { get; set; }
     }
 }
