@@ -58,7 +58,7 @@ namespace AutoScheduling.Reader
                 return class_day_slot;
             }
         }
-        public async Task readClassDaySlotCsvToDb(IFormFile file)
+        public async Task readClassDaySlotCsvToDb(IFormFile file,int semesterId)
         {
             using (var reader = new StreamReader(file.OpenReadStream()))
             {
@@ -88,7 +88,7 @@ namespace AutoScheduling.Reader
                 }
                 WriterToDB writer = new WriterToDB();
                 DateTime startDate = DateTime.Parse("05-08-2023");
-                await writer.writeAvaialbleSubject_Class_Schedule(1, subjectsRaw, subject_class_day_slot_slotAx, startDate, 6);
+                await writer.writeAvaialbleSubject_Class_Schedule(semesterId, subjectsRaw, subject_class_day_slot_slotAx, startDate, 6);
             }
             var listUserIdOfLecturerAndLeader = _context.Users.Where(x => x.RoleId == 2 || x.RoleId == 3).ToList();
             foreach(var user in listUserIdOfLecturerAndLeader)

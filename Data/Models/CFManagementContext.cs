@@ -472,6 +472,19 @@ namespace Data.Models
                     .HasForeignKey(d => d.RoleId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Users_Roles");
+
+                entity.HasMany(d => d.Subjects)
+                    .WithMany(p => p.Lecturers)
+                    .UsingEntity<Dictionary<string, object>>(
+                        "TeachAbleSubject",
+                        l => l.HasOne<Subject>().WithMany().HasForeignKey("SubjectId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_AbleLecturerSubject_Subjects"),
+                        r => r.HasOne<User>().WithMany().HasForeignKey("LecturerId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_AbleLecturerSubject_Users"),
+                        j =>
+                        {
+                            j.HasKey("LecturerId", "SubjectId").HasName("PK_AbleLecturerSubject");
+
+                            j.ToTable("TeachAbleSubject");
+                        });
             });
 
             OnModelCreatingPartial(modelBuilder);

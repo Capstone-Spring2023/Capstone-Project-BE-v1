@@ -8,6 +8,7 @@ namespace Data.Models
         public Subject()
         {
             AvailableSubjects = new HashSet<AvailableSubject>();
+            Lecturers = new HashSet<User>();
         }
 
         public int SubjectId { get; set; }
@@ -21,5 +22,7 @@ namespace Data.Models
         public virtual Department Department { get; set; } = null!;
         public virtual Type Type { get; set; } = null!;
         public virtual ICollection<AvailableSubject> AvailableSubjects { get; set; }
+
+        public virtual ICollection<User> Lecturers { get; set; }
     }
 }

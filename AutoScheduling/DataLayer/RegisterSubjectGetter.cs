@@ -17,7 +17,7 @@ namespace AutoScheduling.DataLayer
     }
     public class RegisterSubjectGetter
     {
-        public List<UserRegisterSubjectAndSlot> readRegisterSubject()
+        public List<UserRegisterSubjectAndSlot> readRegisterSubject(int semesterId)
         {
             using (var context = new CFManagementContext())
             {
@@ -29,7 +29,7 @@ namespace AutoScheduling.DataLayer
                 {
                     var registerSubjects = context.RegisterSubjects
                         .Include(x => x.AvailableSubject)
-                        .Where(x => x.UserId == user.UserId && x.IsRegistered == true).ToList();
+                        .Where(x => x.UserId == user.UserId && x.IsRegistered == true && x.AvailableSubject.SemesterId ==semesterId).ToList();
                     var registerSlots = context.RegisterSlots.Where(x => x.UserId == user.UserId).ToList();
                     var a = new UserRegisterSubjectAndSlot()
                     {

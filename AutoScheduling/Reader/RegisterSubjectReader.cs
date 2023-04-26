@@ -17,14 +17,56 @@ namespace AutoScheduling.Reader
         {
             using (var reader = new StreamReader(file.OpenReadStream()))
             {
-                var list = new List<(int,string,List<string>,bool,bool,bool,bool,bool,bool,bool,int)>();
+                var list = new List<(int, string, List<string>, bool, bool, bool, bool, bool, bool, bool, int)>();
                 for (int i = 0; i< 3; i++ ) reader.ReadLine();
 
                 while (!reader.EndOfStream)
                 {
                     string line = reader.ReadLine();
                     string[] parts = line.Split('\"');
-                    if (parts.Length < 3) continue;
+                    bool A1, A2, A3, A4, A5, A6, isColab;
+                    if (parts.Length < 3)
+                    {
+                        string[] parts1 = line.Split(',');
+                        int lecturerId1 = int.Parse(parts1[1]);
+                        string lecturerName1 = parts1[2];
+                        var subjects1 = new List<String>();
+                        subjects1.Add(parts1[3].Trim());
+                        var check1 = parts1[4];
+                        if (check1.Equals("x", StringComparison.OrdinalIgnoreCase)) A1 = true;
+                        else A1 = false;
+                        //A2
+                        check1 = parts1[5];
+                        if (check1.Equals("x", StringComparison.OrdinalIgnoreCase)) A2 = true;
+                        else A2 = false;
+                        //A3
+                        check1 = parts1[6];
+                        if (check1.Equals("x", StringComparison.OrdinalIgnoreCase)) A3 = true;
+                        else A3 = false;
+
+                        //A4
+                        check1 = parts1[7];
+                        if (check1.Equals("x", StringComparison.OrdinalIgnoreCase)) A4 = true;
+                        else A4 = false;
+
+                        //A5
+                        check1 = parts1[8];
+                        if (check1.Equals("x", StringComparison.OrdinalIgnoreCase)) A5 = true;
+                        else A5 = false;
+
+                        //A6
+                        check1 = parts1[9];
+                        if (check1.Equals("x", StringComparison.OrdinalIgnoreCase)) A6 = true;
+                        else A6 = false;
+
+                        check1 = parts1[10];
+                        if (check1.Equals("x", StringComparison.OrdinalIgnoreCase)) isColab = true;
+                        else isColab = false;
+
+                        int di1 = int.Parse(parts1[11]);
+                        list.Add((lecturerId1, lecturerName1, subjects1, A1, A2, A3, A4, A5, A6, isColab, di1));
+                        continue;
+                    }
                     //Lấy lecturer 
                     string[] firstpart = parts[0].Split(',');
                     int lecturerId = int.Parse(firstpart[1]);
@@ -40,7 +82,7 @@ namespace AutoScheduling.Reader
                     }
                     //Lấy lịch expect
                     string[] thirdPart = parts[2].Split(",");
-                    bool A1, A2, A3, A4, A5, A6,isColab;
+                   
 
 
                     //A1
@@ -100,6 +142,20 @@ namespace AutoScheduling.Reader
                 }
             }
         }
+        public void createAbleSubject(List<(int, int, string)> userDic, List<(int, string)> subjectDic, Dictionary<int,List<string>> userAblesubject
+            , out int[,] ableSubject)
+        {
+            ableSubject = new int[userDic.Count, subjectDic.Count];
+            foreach(var a in userAblesubject)
+            {
+                int userIndex = userDic.First(x => x.Item2 == a.Key).Item1;
+                foreach(var subjectName in a.Value)
+                {
+                    int subjectIndex = subjectDic.First(x => x.Item2 == subjectName).Item1;
+                    ableSubject[userIndex, subjectIndex] = 1;
+                }
+            }
+        }
         public void createTeacher_Day_Slot(List<(int, int,string)> userDic,List<(int, string, List<string>, bool, bool, bool, bool, bool, bool, bool,int)> list, int[,] registerSubject,
              out int[,,] teacher_day_slot)
         {
@@ -156,11 +212,11 @@ namespace AutoScheduling.Reader
                 userIndex_isColab[userIndex] = a.Item10;
             }
         }
-        public void createRegisterSubjectFileFromDatabase()
+        public void createRegisterSubjectFileFromDatabase(int semesterId)
         {
             string filePath = fileName;
             var getter = new RegisterSubjectGetter();
-            var register_subject_slot = getter.readRegisterSubject();
+            var register_subject_slot = getter.readRegisterSubject(semesterId);
             var csv = new StringBuilder();
             csv.AppendLine(",,Please use a comma to separate 2 subjects");
             csv.AppendLine(",,See courses list sheet to choose combo with (A & P) course to register");
