@@ -227,5 +227,14 @@ namespace Business.UserService.Implements
                 Data = "Something wrong"
             };
         }
+        public async Task<ResponseModel> GetUserCanTeachByAvailableSubjectId(int availableSubjectId)
+        {
+            var listUser = await _context.Users.Include(x => x.Subjects).ToListAsync();    
+            return new()
+            {
+                StatusCode = 200,
+                Data = listUser
+            };
+        }
     }
 }

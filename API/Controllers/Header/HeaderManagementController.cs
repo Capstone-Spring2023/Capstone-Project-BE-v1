@@ -95,6 +95,13 @@ namespace API.Controllers
             return Ok(response);
         }
 
+        [HttpGet]
+        [Route("api/user/GetUserCanTeachByAvailableSubjectId/{availableSubjectId}")]
+        public async Task<IActionResult> GetUserCanTeachByAvailableSubjectId(int availableSubjectId)
+        {
+            var response = await _userService.GetUserCanTeachByAvailableSubjectId(availableSubjectId);
+            return Ok(response);
+        }
     }
 
 

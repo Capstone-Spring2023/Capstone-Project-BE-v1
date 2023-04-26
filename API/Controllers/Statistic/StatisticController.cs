@@ -93,7 +93,7 @@ namespace API.Controllers.Statistic
         public async Task<ObjectResult> GetAllSemester()
         {
             var listSemester = await _context.Semesters.ToListAsync();
-            return new OnjectResult(listSemester)
+            return new ObjectResult(listSemester)
             {
                 StatusCode = 200
             };
