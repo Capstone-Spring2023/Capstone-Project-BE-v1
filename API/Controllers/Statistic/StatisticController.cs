@@ -89,6 +89,14 @@ namespace API.Controllers.Statistic
                 };
             }
         }
-        
+        [HttpGet("Semester/getAll")]
+        public async Task<ObjectResult> GetAllSemester()
+        {
+            var listSemester = await _context.Semesters.ToListAsync();
+            return new OnjectResult(listSemester)
+            {
+                StatusCode = 200
+            };
+        }
     }
 }
