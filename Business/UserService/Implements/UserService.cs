@@ -229,12 +229,42 @@ namespace Business.UserService.Implements
         }
         public async Task<ResponseModel> GetUserCanTeachByAvailableSubjectId(int availableSubjectId)
         {
-            var listUser = await _context.Users.Include(x => x.Subjects).ToListAsync();    
-            return new()
+            try
             {
-                StatusCode = 200,
-                Data = listUser
-            };
+                var listUser = await _context.Users.Include(x => x.Subjects).ToListAsync();
+                var listResponse = new List<ResponseTeacher>();
+                if (listUser != null)
+                {
+                    var availableSubject = _context.AvailableSubjects.Find(availableSubjectId);
+                    if (availableSubject != null)
+                    {
+                        foreach (var user in listUser)
+                        {
+                            var response = new ResponseTeacher();
+                            response.UserId = user.UserId;
+                            response.FullName = user.FullName;
+                            response.Status = false;
+                            if (user.Subjects.Where(x => x.SubjectId == availableSubject.SubjectId).FirstOrDefault() != null)
+                            {
+                                response.Status = true;
+                            }
+                            listResponse.Add(response);
+                        }
+                    }
+                }
+                return new()
+                {
+                    StatusCode = 200,
+                    Data = listResponse
+                };
+            }catch(Exception ex)
+            {
+                return new()
+                {
+                    StatusCode = 500,
+                    Data = ex.Message
+                };
+            }
         }
     }
 }
