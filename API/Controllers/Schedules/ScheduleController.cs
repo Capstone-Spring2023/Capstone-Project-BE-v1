@@ -396,7 +396,8 @@ namespace API.Controllers.Schedules
                 .First(x => x.UserId == userId);
             var subjectIds = user.Subjects.Select(x => x.SubjectId);
             var availableSubjects = _context.AvailableSubjects
-                .Where(x => subjectIds.Contains(x.SubjectId) && !registerSubjects.Select(y => y.AvailableSubjectId).Contains(x.AvailableSubjectId))
+                .Where(x => subjectIds.Contains(x.SubjectId) && !registerSubjects.Select(y => y.AvailableSubjectId).Contains(x.AvailableSubjectId)
+                && x.SemesterId == semesterId)
                 .ToList();
             var res1 = availableSubjects
                 .Select(x => new AvailableSubjectResponse()
