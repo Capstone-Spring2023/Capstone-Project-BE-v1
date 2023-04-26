@@ -476,14 +476,14 @@ namespace Data.Models
                 entity.HasMany(d => d.Subjects)
                     .WithMany(p => p.Lecturers)
                     .UsingEntity<Dictionary<string, object>>(
-                        "AbleLecturerSubject",
+                        "TeachAbleSubject",
                         l => l.HasOne<Subject>().WithMany().HasForeignKey("SubjectId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_AbleLecturerSubject_Subjects"),
                         r => r.HasOne<User>().WithMany().HasForeignKey("LecturerId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_AbleLecturerSubject_Users"),
                         j =>
                         {
-                            j.HasKey("LecturerId", "SubjectId");
+                            j.HasKey("LecturerId", "SubjectId").HasName("PK_AbleLecturerSubject");
 
-                            j.ToTable("AbleLecturerSubject");
+                            j.ToTable("TeachAbleSubject");
                         });
             });
 
