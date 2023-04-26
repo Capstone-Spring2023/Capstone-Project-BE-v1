@@ -33,15 +33,15 @@ namespace API.Controllers.AvailableSubjects
             return Ok(response);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllAvailableSubjects()
+        [HttpGet("/Semester/{semesterId}")]
+        public async Task<IActionResult> GetAllAvailableSubjects(int semesterId)
         {
             PagingRequest pagingRequest = new PagingRequest()
             {
                 PageIndex = 1,
                 PageSize = 40
             };
-            var response = await _availableSubjectService.GetAvailableSubjects(x => x.Status == true, pagingRequest);
+            var response = await _availableSubjectService.GetAvailableSubjects(x => x.Status == true && x.SemesterId == semesterId, pagingRequest);
             return Ok(response.Value);
         }
     }
