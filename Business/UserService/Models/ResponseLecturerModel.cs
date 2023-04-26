@@ -20,4 +20,11 @@ namespace Business.UserService.Models
         public string examLink { get; set; }
         public bool? isCol { get; set; }
     }
+
+    public class ResponseTeacher
+    {
+        public int UserId { get; set; }
+        public string FullName { get; set; }
+        public bool Status { get; set; }
+    }
 }
