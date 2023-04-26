@@ -153,11 +153,10 @@ namespace Business.UserService.Implements
                         {
                             var approvalUserName = _context.Users.Find(examSchedule.AppovalUserId).FullName;
                             response.approvalUserName = approvalUserName;
-                        }
-                        response.userId = lecturer.UserId;
-                        listResponse.Add(response);
-                    }                  
-                   
+                        }                      
+                    }
+                    response.userId = lecturer.UserId;
+                    listResponse.Add(response);
                 }
 
             }
