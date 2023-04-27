@@ -62,6 +62,20 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
             return new ObjectResult("Created");
         }
+        [HttpDelete("api/user/able-subject")]
+        public async Task<ObjectResult> deleteAbleSubject(AbleSubjectRequest request)
+        {
+            var a = _context.Users
+                .Include(x => x.Subjects)
+                .First(x => x.UserId == request.userId);
+            if (a.Subjects.Select(x => x.SubjectId).Contains(request.subjectId))
+            {
+                var subject = a.Subjects.First(x=> x.SubjectId == request.subjectId);
+                a.Subjects.Remove(subject);
+            }
+            await _context.SaveChangesAsync();
+            return new ObjectResult("Deleted");
+        }
 
     }
 }
