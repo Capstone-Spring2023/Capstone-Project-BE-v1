@@ -8,6 +8,7 @@ using Data.Repositories.implement;
 using Data.Repositories.Interface;
 using Microsoft.EntityFrameworkCore;
 using System.Net.WebSockets;
+using System.Runtime.CompilerServices;
 using System.Xml.Xsl;
 
 namespace Business.UserService.Implements
@@ -240,6 +241,10 @@ namespace Business.UserService.Implements
                     {
                         foreach (var user in listUser)
                         {
+                            if(user.UserId == -1)
+                            {
+                                continue;
+                            }
                             var response = new ResponseTeacher();
                             response.UserId = user.UserId;
                             response.FullName = user.FullName;
