@@ -115,65 +115,77 @@ namespace Business.UserService.Implements
 
         public async Task<ResponseModel> GetLecturersHaveRegisterSubjectByAvailableSubjectId(int availableSubjectId)
         {
-            var listRegisterSubjects = await _context.RegisterSubjects.Where(x => x.AvailableSubjectId == availableSubjectId && x.Status).ToListAsync();
-            var listResponse = new List<ResponseLecturerModel>();
-            foreach (var registerSubject in listRegisterSubjects)
+            try
             {
-                var response = new ResponseLecturerModel();
-                var availableSubject = _context.AvailableSubjects.Find(availableSubjectId);
-                if (availableSubject != null && availableSubject.Status)
+                var listRegisterSubjects = await _context.RegisterSubjects.Where(x => x.AvailableSubjectId == availableSubjectId && x.Status).ToListAsync();
+                var listResponse = new List<ResponseLecturerModel>();
+                foreach (var registerSubject in listRegisterSubjects)
                 {
-                    var semester = _context.Semesters.Find(availableSubject.SemesterId);
-                    response.semester = semester.Name;
-                    response.semesterId = semester.SemesterId;
-                    var lecturer = _context.Users.Where(x => x.UserId == registerSubject.UserId).FirstOrDefault();
-                    response.fullName = lecturer.FullName;
-                    response.subjectName = availableSubject.SubjectName;
-                    var isLeader = false;
-                    if (availableSubject.LeaderId == lecturer.UserId)
+                    var response = new ResponseLecturerModel();
+                    var availableSubject = _context.AvailableSubjects.Find(availableSubjectId);
+                    if (availableSubject != null && availableSubject.Status)
                     {
-                        isLeader = true;
-                    }
-                    response.isCol = lecturer.IsColab;
-                    response.isLeader = isLeader;
-                    response.availableSubjectId = availableSubjectId;
-                    var examSchedule = _context.ExamSchedules.Where(x => x.RegisterSubjectId == registerSubject.RegisterSubjectId && x.Status).FirstOrDefault();
-                    if(examSchedule != null)
-                    {
-                        var examPaper = _context.ExamPapers.Where(x => x.ExamScheduleId == examSchedule.ExamScheduleId && x.Status != ExamPaperStatus.REJECTED).FirstOrDefault();
-                        if (examPaper != null)
+                        var semester = _context.Semesters.Find(availableSubject.SemesterId);
+                        response.semester = semester.Name;
+                        response.semesterId = semester.SemesterId;
+                        var lecturer = _context.Users.Where(x => x.UserId == registerSubject.UserId).FirstOrDefault();
+                        if (lecturer.RoleId != 1)
                         {
-                            if(examPaper.Status == ExamPaperStatus.PENDING)
+                            response.fullName = lecturer.FullName;
+                            response.subjectName = availableSubject.SubjectName;
+                            var isLeader = false;
+                            if (availableSubject.LeaderId == lecturer.UserId)
                             {
-                                response.status = "Pending Review";
-                            } 
-                            if(examPaper.Status == ExamPaperStatus.APPROVED || examPaper.Status == ExamPaperStatus.APPROVED_MANUAL)
-                            {
-                                response.status = "Approved";
+                                isLeader = true;
                             }
-                            response.examLink = examPaper.ExamLink;
+                            response.isCol = lecturer.IsColab;
+                            response.isLeader = isLeader;
+                            response.availableSubjectId = availableSubjectId;
+                            var examSchedule = _context.ExamSchedules.Where(x => x.RegisterSubjectId == registerSubject.RegisterSubjectId && x.Status).FirstOrDefault();
+                            if (examSchedule != null)
+                            {
+                                var examPaper = _context.ExamPapers.Where(x => x.ExamScheduleId == examSchedule.ExamScheduleId && x.Status != ExamPaperStatus.REJECTED).FirstOrDefault();
+                                if (examPaper != null)
+                                {
+                                    if (examPaper.Status == ExamPaperStatus.PENDING)
+                                    {
+                                        response.status = "Pending Review";
+                                    }
+                                    if (examPaper.Status == ExamPaperStatus.APPROVED || examPaper.Status == ExamPaperStatus.APPROVED_MANUAL)
+                                    {
+                                        response.status = "Approved";
+                                    }
+                                    response.examLink = examPaper.ExamLink;
+                                }
+                                else
+                                {
+                                    response.status = "Not Submit";
+                                }
+                                if (examSchedule.AppovalUserId != null)
+                                {
+                                    var approvalUserName = _context.Users.Find(examSchedule.AppovalUserId).FullName;
+                                    response.approvalUserName = approvalUserName;
+                                }
+                            }
+                            response.userId = lecturer.UserId;
+                            listResponse.Add(response);
                         }
-                        else
-                        {
-                            response.status = "Not Submit";
-                        }
-                        if (examSchedule.AppovalUserId != null)
-                        {
-                            var approvalUserName = _context.Users.Find(examSchedule.AppovalUserId).FullName;
-                            response.approvalUserName = approvalUserName;
-                        }                      
                     }
-                    response.userId = lecturer.UserId;
-                    listResponse.Add(response);
+
                 }
-
-            }
-            return new()
+                return new()
+                {
+                    StatusCode = 200,
+                    Data = listResponse
+                };
+            }catch(Exception ex)
             {
-                StatusCode = 200,
-                Data = listResponse
-            };
-
+                return new()
+                {
+                    StatusCode = 500,
+                    Data = "Something Wrong"
+                };
+            }
         }
 
         public async Task<ResponseModel> GetAllLecturerHaveRegisterSubject()
