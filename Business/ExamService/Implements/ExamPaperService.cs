@@ -185,19 +185,22 @@ namespace Business.ExamPaperService.Implements
             try
             {
                 var examPaper = await ExamPaperRepository.GetById(commentModel.ExamPaperId);
+                var senderName = _context.Users.Find(examUpdateModel.senderId).FullName;
+                var examSchedule = _context.ExamSchedules.Find(examPaper.ExamScheduleId);
+                var registerSubject = _context.RegisterSubjects.Find(examSchedule.RegisterSubjectId);
+                var availableSubject = _context.AvailableSubjects.Find(examSchedule.AvailableSubjectId);
                 if (examUpdateModel.Status == "Reject")
-                {
+                { 
                     examPaper.Status = ExamPaperStatus.REJECTED;
                     var comment = mapper.Map<Comment>(commentModel);
+                    comment.ApprovalUserName = senderName;
                     await CommentRepository.Create(comment);
+                    // notificatiion when Reject Exam
                     var notification = new Notification();
-                    notification.Type = "Reject";
-                    var examSchedule = _context.ExamSchedules.Find(examPaper.ExamScheduleId);
-                    var registerSubject = _context.RegisterSubjects.Find(examSchedule.RegisterSubjectId);
+                    notification.Type = "Reject";                  
                     notification.UserId = registerSubject.UserId;
-                    notification.Message = "Your exam has been rejected";
-                    notification.Sender = null;
-                    var availableSubject = _context.AvailableSubjects.Find(examSchedule.AvailableSubjectId);
+                    notification.Message = "Your exam has been rejected";                  
+                    notification.Sender = senderName;
                     notification.SubjectCode = _context.Subjects.Find(availableSubject.SubjectId).SubjectCode;
                     notification.Status = "Unread";
                     _context.Notifications.Add(notification);
@@ -211,12 +214,9 @@ namespace Business.ExamPaperService.Implements
                         examPaper.Status = ExamPaperStatus.APPROVED;
                         var notification = new Notification();
                         notification.Type = "Appprove";
-                        var examSchedule = _context.ExamSchedules.Find(examPaper.ExamScheduleId);
-                        var registerSubject = _context.RegisterSubjects.Find(examSchedule.RegisterSubjectId);
                         notification.UserId = registerSubject.UserId;
                         notification.Message = "Your exam has been approved";
-                        notification.Sender = null;
-                        var availableSubject = _context.AvailableSubjects.Find(examSchedule.AvailableSubjectId);
+                        notification.Sender = senderName;
                         notification.SubjectCode = _context.Subjects.Find(availableSubject.SubjectId).SubjectCode;
                         notification.Status = "Unread";
                         _context.Notifications.Add(notification);
@@ -229,12 +229,9 @@ namespace Business.ExamPaperService.Implements
                             examPaper.Status = ExamPaperStatus.APPROVED_MANUAL;
                             var notification = new Notification();
                             notification.Type = "Instruction";
-                            var examSchedule = _context.ExamSchedules.Find(examPaper.ExamScheduleId);
-                            var registerSubject = _context.RegisterSubjects.Find(examSchedule.RegisterSubjectId);
                             notification.UserId = registerSubject.UserId;
                             notification.Message = "Your exam has been submitted instruction for " + _context.AvailableSubjects.Find(registerSubject.AvailableSubjectId).SubjectName;
-                            notification.Sender = null;
-                            var availableSubject = _context.AvailableSubjects.Find(examSchedule.AvailableSubjectId);
+                            notification.Sender = senderName;
                             notification.SubjectCode = _context.Subjects.Find(availableSubject.SubjectId).SubjectCode;
                             notification.Status = "Unread";
                             _context.Notifications.Add(notification);
