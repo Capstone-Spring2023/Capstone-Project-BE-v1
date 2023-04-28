@@ -185,7 +185,7 @@ namespace Business.ExamPaperService.Implements
             try
             {
                 var examPaper = await ExamPaperRepository.GetById(commentModel.ExamPaperId);
-                var senderName = _context.Users.Find(examUpdateModel.senderId).FullName;
+                var senderName = _context.Users.Find(commentModel.ApprovalUserId).FullName;
                 var examSchedule = _context.ExamSchedules.Find(examPaper.ExamScheduleId);
                 var registerSubject = _context.RegisterSubjects.Find(examSchedule.RegisterSubjectId);
                 var availableSubject = _context.AvailableSubjects.Find(examSchedule.AvailableSubjectId);
