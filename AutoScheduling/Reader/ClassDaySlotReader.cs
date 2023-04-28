@@ -89,21 +89,20 @@ namespace AutoScheduling.Reader
                 WriterToDB writer = new WriterToDB();
                 DateTime startDate = DateTime.Parse("05-08-2023");
                 await writer.writeAvaialbleSubject_Class_Schedule(semesterId, subjectsRaw, subject_class_day_slot_slotAx, startDate, 6);
-            }
-            var listUserIdOfLecturerAndLeader = _context.Users.Where(x => x.RoleId == 2 || x.RoleId == 3).ToList();
-            foreach(var user in listUserIdOfLecturerAndLeader)
-            {
-                var notification = new Notification();
-                notification.Type = "schedule";
-                notification.UserId = user.UserId;
-                notification.Message = "has open class registration please register before deadline";
-                notification.Sender = null;
-                notification.SubjectCode = null;
-                notification.Status = "Unread";
-                _context.Notifications.Add(notification);
-                await _context.SaveChangesAsync();
-            }
-            
+                var listUserIdOfLecturerAndLeader = _context.Users.Where(x => x.RoleId == 2 || x.RoleId == 3).ToList();
+                foreach (var user in listUserIdOfLecturerAndLeader)
+                {
+                    var notification = new Notification();
+                    notification.Type = "schedule";
+                    notification.UserId = user.UserId;
+                    notification.Message = "has open class registration please register before deadline";
+                    notification.Sender = null;
+                    notification.SubjectCode = null;
+                    notification.Status = "Unread";
+                    _context.Notifications.Add(notification);
+                    await _context.SaveChangesAsync();
+                }
+            }          
         }
         public static void APx_to_day_slot(string APx, out int day, out int slot)
         {
