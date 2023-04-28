@@ -204,6 +204,7 @@ namespace Business.UserService.Implements
                 var oldLeader = _context.Users.Find(availableSubject.LeaderId);
                 user.RoleId = 2;
                 availableSubject.LeaderId = user.UserId;
+                availableSubject.LeaderName = user.FullName;
                 _context.Users.Update(user);
                 _context.AvailableSubjects.Update(availableSubject);
                 await _context.SaveChangesAsync();

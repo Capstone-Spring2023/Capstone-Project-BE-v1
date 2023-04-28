@@ -6,6 +6,7 @@ using Swashbuckle.AspNetCore.Annotations;
 using AutoScheduling;
 using System.ComponentModel.DataAnnotations;
 using AutoScheduling.DataLayer;
+using Data.Models;
 
 namespace API.Controllers.Schedules
 {
@@ -13,6 +14,11 @@ namespace API.Controllers.Schedules
     [ApiController]
     public class AutoScheduleController : ControllerBase
     {
+        private readonly CFManagementContext _context;
+        public AutoScheduleController(CFManagementContext context)
+        {
+            _context = context;
+        }
         [HttpPost("import-file/semester/{semesterId}")]
         [SwaggerOperation(Summary = "Import csv file từ phòng đào tạo")]
         public async Task<IActionResult> ClassDaySlotReaderAPI([FromForm][Required] IFormFile[] files, [Required][FromRoute] int semesterId)
@@ -30,6 +36,19 @@ namespace API.Controllers.Schedules
                 return BadRequest();
             }
             await classDaySlotReader.readClassDaySlotCsvToDb(csvFile,semesterId);
+            var listUserIdOfLecturerAndLeader = _context.Users.Where(x => x.RoleId == 2 || x.RoleId == 3).ToList();
+            foreach (var user in listUserIdOfLecturerAndLeader)
+            {
+                var notification = new Notification();
+                notification.Type = "schedule";
+                notification.UserId = user.UserId;
+                notification.Message = "has open class registration please register before deadline";
+                notification.Sender = null;
+                notification.SubjectCode = null;
+                notification.Status = "Unread";
+                _context.Notifications.Add(notification);
+                await _context.SaveChangesAsync();
+            }
             return Ok("Create Success");
         }
         [HttpPost("out-of-flow")]
