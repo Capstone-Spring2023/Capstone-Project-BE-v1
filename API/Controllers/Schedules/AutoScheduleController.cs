@@ -42,7 +42,7 @@ namespace API.Controllers.Schedules
                 var notification = new Notification();
                 notification.Type = "schedule";
                 notification.UserId = user.UserId;
-                notification.Message = "has open class registration please register before deadline";
+                notification.Message = "Class registration has been open, please register before";
                 notification.Sender = null;
                 notification.SubjectCode = null;
                 notification.Status = "Unread";
