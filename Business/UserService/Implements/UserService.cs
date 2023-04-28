@@ -151,6 +151,7 @@ namespace Business.UserService.Implements
                             {
                                 response.status = "Approved";
                             }
+                            response.examLink = examPaper.ExamLink;
                         }
                         else
                         {
