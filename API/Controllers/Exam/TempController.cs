@@ -55,38 +55,47 @@ namespace API.Controllers.Exam
                 StatusCode = 200
             };
         }
-        [HttpGet("leader/{leaderId}/exam-submission")]
-        public async Task<ObjectResult> getExamPaperByLeaderId([FromRoute] int leaderId)
+        [HttpGet("approvalUser/{currentUserId}/exam-submission")]
+        public async Task<ObjectResult> getExamPaperByLeaderId([FromRoute] int currentUserId)
         {
             var ExamPapers = await _context.ExamPapers
-                .Where(x => x.Status == ExamPaperStatus.PENDING && x.ExamSchedule.LeaderId == leaderId)
+                .Include(x => x.ExamSchedule)
+                .Where(x => x.Status == ExamPaperStatus.PENDING && x.ExamSchedule.AppovalUserId == currentUserId)
                 .ToListAsync();
-            List<ExamResponseModel> datas = ExamPapers.Select(x => _mapper.Map<ExamResponseModel>(x)).ToList();
-            foreach (var data in datas)
+
+            if (ExamPapers != null)
             {
-                var examSchedule = _context.ExamSchedules.FirstOrDefault(x => x.ExamScheduleId == data.ExamScheduleId);
-                var ASubject = _context.AvailableSubjects.FirstOrDefault(x => x.AvailableSubjectId == examSchedule.AvailableSubjectId);
-                data.SubjectName = ASubject.SubjectName;
-                data.Tittle = examSchedule.Tittle;
-
-                int typeId = _context.Subjects.First(x => x.SubjectId == ASubject.SubjectId).TypeId;
-                data.Type = _context.Types.First(x => x.TypeId == typeId).TypeName;
-                var register = _context.RegisterSubjects.Find(examSchedule.RegisterSubjectId);
-                data.LecturerName = _context.Users.Find(register.UserId).FullName;
-
-                var comment = ExamPapers.FirstOrDefault(x => x.ExamPaperId == data.ExamPaperId).Comments.FirstOrDefault();
-                if (comment == null)
+                List<ExamResponseModel> datas = ExamPapers.Select(x => _mapper.Map<ExamResponseModel>(x)).ToList();
+                foreach (var data in datas)
                 {
-                    data.Comment = "";
+                    var examSchedule = _context.ExamSchedules.FirstOrDefault(x => x.ExamScheduleId == data.ExamScheduleId);
+                    var ASubject = _context.AvailableSubjects.FirstOrDefault(x => x.AvailableSubjectId == examSchedule.AvailableSubjectId);
+                    data.SubjectName = ASubject.SubjectName;
+                    data.Tittle = examSchedule.Tittle;
+
+                    int typeId = _context.Subjects.First(x => x.SubjectId == ASubject.SubjectId).TypeId;
+                    data.Type = _context.Types.First(x => x.TypeId == typeId).TypeName;
+                    var register = _context.RegisterSubjects.Find(examSchedule.RegisterSubjectId);
+                    data.LecturerName = _context.Users.Find(register.UserId).FullName;
+
+                    var comment = ExamPapers.FirstOrDefault(x => x.ExamPaperId == data.ExamPaperId).Comments.FirstOrDefault();
+                    if (comment == null)
+                    {
+                        data.Comment = "";
+                    }
+                    else
+                    {
+                        data.Comment = comment.CommentContent.Trim();
+                    }
                 }
-                else
+                return new ObjectResult(datas)
                 {
-                    data.Comment = comment.CommentContent.Trim();
-                }
+                    StatusCode = 200,
+                };
             }
-            return new ObjectResult(datas)
+            return new ObjectResult(new List<object>())
             {
-                StatusCode = 200,
+                StatusCode = 500
             };
         }
 
