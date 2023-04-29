@@ -17,5 +17,7 @@ namespace Data.Repositories.Interface
         Task CreateExam(ExamPaper exam);
         Task Update(ExamPaper exam);
         Task<List<ExamPaper>> GetAllByExamScheduleId(int examScheduleId);
+        Task<List<ExamPaper>> GetExamPaperWithExamScheduleByApprovalUserId(string status ,int userId);
+        Task<List<ExamPaper>> GetExamPaperWithExamScheduleByLeaderId(string status, int leaderId);
     }
 }

@@ -3,6 +3,7 @@ using Business.Constants;
 using Business.ExamSchedule.Models;
 using Business.UserService.Interfaces;
 using Business.UserService.Models;
+using Data;
 using Data.Models;
 using Data.Repositories.implement;
 using Data.Repositories.Interface;

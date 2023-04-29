@@ -259,5 +259,34 @@ namespace Business.ExamSchedule.Implements
                 Data = response
             };
         }
+
+        public async Task<ObjectResult> GetExamSchedulesByUserId(int userId)
+        {
+            var examSchedules = await _examScheduleRepository.getExamSchedulesByUserId(userId);
+
+            var examScheduleResponses = new List<ResponseExamSchedule>();
+            foreach (var examSchedule in examSchedules)
+            {
+                var register = await _registerSubjectRepository.GetRegisterSubjectById(examSchedule.RegisterSubjectId);
+                var availableSubject = await _availableSubjectRepository.GetAvailableSubjectById(register.AvailableSubjectId);
+                // Map
+                var a = _mapper.Map<ResponseExamSchedule>(examSchedule);
+                a.LeaderName = availableSubject.LeaderName;
+                a.SubjectName = availableSubject.SubjectName;
+                examScheduleResponses.Add(a);
+            }
+
+            if (examScheduleResponses == null || examScheduleResponses.Count() == 0)
+            {
+                return new ObjectResult(new List<object>())
+                {
+                    StatusCode = 404,
+                };
+            }
+            return new ObjectResult(examScheduleResponses)
+            {
+                StatusCode = 200
+            };
+        }
     }
 }

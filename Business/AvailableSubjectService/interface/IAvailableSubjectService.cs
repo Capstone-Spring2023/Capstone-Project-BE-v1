@@ -18,5 +18,6 @@ namespace Business.AvailableSubjectService.Interface
         Task<ResponseModel> GetAvailableSubjectById(int id);
         Task<ResponseModel> GetAvailableSubjectByDepartmentId(int departmentId);
         Task<ResponseModel> GetAllAvailableSubjectNotHaveRegister();
+        Task<ObjectResult> getAvailableSubjectWithExamScheduleByUserId(int userId);
     }
 }

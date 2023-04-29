@@ -39,8 +39,6 @@ namespace Data.Repositories.implement
             var exams = await _context.ExamPapers
                 .Include(x => x.Comments)
                 .Where(ex)
-                .Skip(pageRequest.PageSize * (pageRequest.PageIndex - 1))
-                .Take(pageRequest.PageSize)
                 .ToListAsync();
             return exams;
         }
@@ -63,6 +61,25 @@ namespace Data.Repositories.implement
             var track = _context.Attach(exam);
             track.State = EntityState.Modified;
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<ExamPaper>> GetExamPaperWithExamScheduleByApprovalUserId(string status,int userId)
+        {
+            var ExamPapers = await _context.ExamPapers
+                .Include(x => x.ExamSchedule)
+                .Include(x => x.Comments)
+                .Where(x => x.Status == status && x.ExamSchedule.AppovalUserId == userId)
+                .ToListAsync();
+            return ExamPapers;
+        }
+        public async Task<List<ExamPaper>> GetExamPaperWithExamScheduleByLeaderId(string status, int leaderId)
+        {
+            var ExamPapers = await _context.ExamPapers
+                .Include(x => x.ExamSchedule)
+                .Include(x => x.Comments)
+                .Where(x => x.Status == status && x.ExamSchedule.LeaderId == leaderId)
+                .ToListAsync();
+            return ExamPapers;
         }
     }
 }

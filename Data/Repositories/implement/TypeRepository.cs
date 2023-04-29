@@ -22,5 +22,10 @@ namespace Data.Repositories.implement
             var listType = await _context.Types.ToListAsync();
             return listType;
         }
+
+        public async Task<Models.Type> getTypeById(int id)
+        {
+            return await _context.Types.FindAsync(id);
+        }
     }
 }

@@ -13,7 +13,13 @@ namespace Data.Repositories.implement
         {
             _context = context;
         }
-
+        public async Task<User> GetUserWithSubjectsById(int userId)
+        {
+            var user = await _context.Users
+               .Include(x => x.Subjects)
+               .FirstAsync(x => x.UserId == userId);
+            return user;
+        }
         public async Task<List<User>> GetAllAsync()
         {
             var listUser = await _context.Users.ToListAsync();

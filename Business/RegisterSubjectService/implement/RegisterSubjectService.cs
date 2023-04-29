@@ -3,6 +3,8 @@ using Business.RegisterSubjectService.Interfaces;
 using Business.RegisterSubjectService.Models;
 using Data.Models;
 using Data.Repositories.Interface;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,6 +52,29 @@ namespace Business.RegisterSubjectService.implement
             {
                 StatusCode = 201,
                 Data = "Created"
+            };
+        }
+        public async Task<ObjectResult> getRegisterSubjects(int userId)
+        {
+            var registerSubjects = await _context.RegisterSubjects
+                .Include(x => x.AvailableSubject)
+                .Where(x => x.UserId == userId)
+                .Select(x => _mapper.Map<RegisterSubjectResponse>(x))
+                .ToListAsync();
+
+            var registerSlots = _context.RegisterSlots.Where(x => x.UserId == userId)
+                .Select(x => _mapper.Map<RegisterSlotResponse>(x)).ToList();
+
+            var res = new RegisterSubjectSlotResponse()
+            {
+                registerSlots = registerSlots.Select(x => x.Slot.Trim()).ToList(),
+                registerSubjects = registerSubjects
+            }
+            ;
+
+            return new ObjectResult(res)
+            {
+                StatusCode = 200
             };
         }
     }

@@ -11,10 +11,10 @@ using System.Threading.Tasks;
 
 namespace Data.Repositories.implement
 {
-    public class AvailableSucjectRepository : IAvailableSubjectRepository
+    public class AvailableSubjectRepository : IAvailableSubjectRepository
     {
         private readonly CFManagementContext _context;
-        public AvailableSucjectRepository(CFManagementContext context)
+        public AvailableSubjectRepository(CFManagementContext context)
         {
             _context = context;
         }
