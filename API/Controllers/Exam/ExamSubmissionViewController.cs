@@ -20,14 +20,6 @@ namespace API.Controllers.Exam
         {
             var response = await examService.ApproveExam(reviewExamModel.CommentModel, reviewExamModel.ExamUpdateApproveModel);
             return response;
-        }
-
-        [HttpGet("leader/{leaderId}")]
-        public async Task<ObjectResult> ViewExamSubmissionByLeaderId(int leaderId)
-        {
-            var response = await examService.ViewExamSubmissionByLeaderId(leaderId);
-            return response;
-        }
-        
+        }      
     }
 }
