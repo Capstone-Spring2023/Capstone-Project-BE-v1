@@ -27,6 +27,8 @@ using Business.NotificationService.Interfaces;
 using Business.NotificationService.implement;
 using Business.RegisterSubjectService.Interfaces;
 using Business.RegisterSubjectService.implement;
+using Business.AbleSubjectService.Interface;
+using Business.AbleSubjectService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -66,7 +68,7 @@ builder.Services.AddScoped<IExamScheduleRepository, ExamScheduleRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<IRegisterSubjectRepository, RegisterSubjectRepository>();
 builder.Services.AddScoped<ISubjectRepository, SubjectRepository>();
-builder.Services.AddScoped<IAvailableSubjectRepository, AvailableSucjectRepository>();
+builder.Services.AddScoped<IAvailableSubjectRepository, AvailableSubjectRepository>();
 builder.Services.AddScoped<ITypeRepository, TypeRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<IRegisterSubjectRepository, RegisterSubjectRepository>();
@@ -79,13 +81,21 @@ builder.Services.AddScoped<IRegisterSubjectService>(x => new RegisterSubjectServ
 //Add UserService
 builder.Services.AddScoped<IUserService>(x => new UserService(x.GetRequiredService<IUserRepository>(), x.GetRequiredService<CFManagementContext>(), x.GetRequiredService<IMapper>()));
 builder.Services.AddScoped<IExamPaperService>(x => new ExamPaperService(x.GetRequiredService<CFManagementContext>(),x.GetRequiredService<IExamPaperRepository>()
-    , x.GetRequiredService<ICommentRepository>(), x.GetRequiredService<IMapper>(), x.GetRequiredService<IExamScheduleRepository>(), x.GetRequiredService<INotificationRepository>()));
+    , x.GetRequiredService<ICommentRepository>(), x.GetRequiredService<IMapper>(), x.GetRequiredService<IExamScheduleRepository>(),
+    x.GetRequiredService<INotificationRepository>(), x.GetRequiredService<IUserRepository>(), x.GetRequiredService<ITypeRepository>()
+    ,x.GetRequiredService<ISubjectRepository>(), x.GetRequiredService<IRegisterSubjectRepository>(), x.GetRequiredService<IAvailableSubjectRepository>()));
 
 builder.Services.AddScoped<IAvailableSubjectService>(x => new AvailableSubjectService(
         x.GetRequiredService<IAvailableSubjectRepository>(),
         x.GetRequiredService<IRegisterSubjectRepository>(),
+        x.GetRequiredService<IExamScheduleRepository>(),
+        x.GetRequiredService<CFManagementContext>(),
         x.GetRequiredService<IMapper>()
     ));
+builder.Services.AddScoped<IAbleSubjectService>(x => new AbleSubjectService(
+        x.GetRequiredService<IUserRepository>(), x.GetRequiredService<ISubjectRepository>()
+    ));
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {

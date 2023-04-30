@@ -6,6 +6,7 @@ namespace Data.Repositories.Interface
 {
     public interface IUserRepository
     {
+        Task<User> GetUserWithSubjectsById(int userId);
         public Task<List<User>> GetAllAsync();
         public  Task<User> GetUserAsync(int id);
         public Task UpdateUserAsync(int id, User user);

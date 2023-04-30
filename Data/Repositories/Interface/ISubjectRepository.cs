@@ -10,6 +10,7 @@ namespace Data.Repositories.Interface
 {
     public interface ISubjectRepository
     {
+        Task<IEnumerable<Subject>> GetAll();
         public Task<Subject> getSubject(int id);
     }
 }

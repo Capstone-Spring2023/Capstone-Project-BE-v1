@@ -2,79 +2,45 @@
 using Microsoft.AspNetCore.Mvc;
 using Data.Models;
 using Microsoft.EntityFrameworkCore;
+using Business.AbleSubjectService;
+using Business.AbleSubjectService.Interface;
+using Business.AbleSubjectService.Models;
 
 namespace API.Controllers
 {
-    public class AbleSubjectResponse
-    {
-        public int subjectId { get; set; }  
-        public string subjectName { get; set; }
-    }
-    public class AbleSubjectRequest
-    {
-        public int subjectId { get; set; }
-        public int userId { get; set; }
-    }
     [Route("api/able-subject")]
     [ApiController]
     public class AbleSubjectController : ControllerBase
     {
-        private readonly CFManagementContext _context;
-        public AbleSubjectController(CFManagementContext cF)
+        //private readonly CFManagementContext _context;
+        private readonly IAbleSubjectService _ableSubjectService;
+        public AbleSubjectController(IAbleSubjectService ableSubjectService)
         {
-            _context = cF;
+            _ableSubjectService = ableSubjectService;
         }
         [HttpGet("/api/user/{userId}/able-subject")]
-        public ObjectResult getAbleSubject(int userId)
+        public async Task<ObjectResult> getAbleSubject(int userId)
         {
-            var a = _context.Users
-                .Include(x => x.Subjects)
-                .First(x => x.UserId == userId);
-            var res = a.Subjects.Select(x => new AbleSubjectResponse()
-            {
-                subjectId = x.SubjectId,
-                subjectName = x.SubjectName,
-            });
-            return new ObjectResult(res);
+            var res = await _ableSubjectService.getAbleSubjectsByUserId(userId);
+            return res;
         }
         [HttpGet]
-        public ObjectResult getAbleSubject()
+        public async Task<ObjectResult> getAbleSubject()
         {
-            var res = _context.Subjects.Select(_x => new AbleSubjectResponse()
-            {
-                subjectId = _x.SubjectId,
-                subjectName = _x.SubjectName,
-            });
-            return new ObjectResult(res);
+            var res = await _ableSubjectService.getAbleSubjects();
+            return res;
         }
         [HttpPost("api/user/able-subject")]
         public async Task<ObjectResult> createAbleSubject(AbleSubjectRequest request)
         {
-            var a = _context.Users
-                .Include(x => x.Subjects)
-                .First(x => x.UserId == request.userId);
-            if (!a.Subjects.Select(x=> x.SubjectId).Contains(request.subjectId))
-            {
-                var subject = _context.Subjects.First(x=> x.SubjectId == request.subjectId);    
-                a.Subjects.Add(subject);
-
-            }
-            await _context.SaveChangesAsync();
-            return new ObjectResult("Created");
+            var res = await _ableSubjectService.createAbleSubject(request);
+            return res;
         }
         [HttpDelete("api/user/able-subject")]
         public async Task<ObjectResult> deleteAbleSubject(AbleSubjectRequest request)
         {
-            var a = _context.Users
-                .Include(x => x.Subjects)
-                .First(x => x.UserId == request.userId);
-            if (a.Subjects.Select(x => x.SubjectId).Contains(request.subjectId))
-            {
-                var subject = a.Subjects.First(x=> x.SubjectId == request.subjectId);
-                a.Subjects.Remove(subject);
-            }
-            await _context.SaveChangesAsync();
-            return new ObjectResult("Deleted");
+            var res = await _ableSubjectService.deleteAbleSubject(request);
+            return res;
         }
 
     }

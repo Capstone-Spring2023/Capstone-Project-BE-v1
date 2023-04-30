@@ -1,5 +1,6 @@
 ﻿using Data.Models;
 using Data.Repositories.Interface;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,10 @@ namespace Data.Repositories.implement
         {
             _context = context;
         }
-
+        public async Task<IEnumerable<Subject>> GetAll()
+        {
+            return await _context.Subjects.ToListAsync();
+        }
         public async Task<Subject> getSubject(int id)
         {
             return await _context.Subjects.FindAsync(id);

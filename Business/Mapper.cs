@@ -24,7 +24,7 @@ namespace Business
             CreateMap<ExamUpdateRequestModel, ExamPaper>();
             CreateMap<ExamCreateRequestModel, Notification>().ReverseMap();
             CreateMap<ExamUpdateApproveModel, ExamPaper>().ReverseMap();
-            CreateMap<ExamPaper, ExamResponseModel>();
+            CreateMap<ExamPaper, ExamResponseModel>().ReverseMap();
             CreateMap<AvailableSubject, AvailableSubjectResponse>();
             CreateMap<User, TeacherResponse>();
             CreateMap<CreateExamScheduleModel, Data.Models.ExamSchedule>().ReverseMap();

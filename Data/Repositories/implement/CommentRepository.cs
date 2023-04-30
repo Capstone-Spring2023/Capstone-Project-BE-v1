@@ -1,5 +1,6 @@
 ﻿using Data.Models;
 using Data.Repositories.Interface;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,9 +23,9 @@ namespace Data.Repositories.implement
             await _context.SaveChangesAsync();
         }
 
-        public Task<Comment> GetById(int id)
+        public async Task<Comment> GetByExamPaperId(int id)
         {
-            throw new NotImplementedException();
+            return await _context.Comments.FirstOrDefaultAsync(x => x.ExamPaperId == id);
         }
     }
 }

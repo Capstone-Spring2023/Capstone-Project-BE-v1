@@ -1,12 +1,16 @@
 ﻿using AutoMapper;
+using Business.AvailableSubjectService.Interface;
 using Business.AvailableSubjectService.Models;
 using Business.Constants;
+using Business.ExamPaperService.Interfaces;
+using Business.ExamSchedule.interfaces;
 using Business.ExamSchedule.Models;
 using Business.ExamService.Models;
+using Business.RegisterSubjectService.Interfaces;
 using Business.RegisterSubjectService.Models;
+using Data;
 using Data.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+using Data.Repositories.Interface;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Annotations;
@@ -19,255 +23,55 @@ namespace API.Controllers.Exam
     {
         private readonly CFManagementContext _context;
         private readonly IMapper _mapper;
-        public TempController(CFManagementContext context, IMapper mapper)
+        private readonly IExamScheduleService _examScheduleService;
+        private readonly IExamPaperService _examPaperService;
+        private readonly IAvailableSubjectService _availableSubjectService;
+        private readonly IRegisterSubjectService _registerSubjectService;
+        public TempController(CFManagementContext context, IMapper mapper, IExamPaperService examPaperService,
+            IExamScheduleService examScheduleService,IAvailableSubjectService availableSubjectService, IRegisterSubjectService registerSubjectService)
         {
+            _examPaperService = examPaperService;
+            _examScheduleService = examScheduleService;
+            _availableSubjectService = availableSubjectService;
+            _registerSubjectService = registerSubjectService;
             _context = context;
             _mapper = mapper;
         }
         [HttpGet("user/{userId}/exam-schedule")]
         public async Task<ObjectResult> getExamScheduleByUserId([FromRoute] int userId)
         {
-            var examSchedules = await _context.ExamSchedules
-                .Where(x => x.RegisterSubject.UserId == userId && x.Status)
-                .ToListAsync();
-            var examScheduleResponses = new List<ResponseExamSchedule>();
-            foreach (var examSchedule in examSchedules)
-            {
-                var register = await _context.RegisterSubjects
-                    .FirstOrDefaultAsync(x => x.RegisterSubjectId == examSchedule.RegisterSubjectId);
-                var availableSubject = await _context.AvailableSubjects
-                    .FirstOrDefaultAsync(x => x.AvailableSubjectId == register.AvailableSubjectId);
-                // Map
-                var a = _mapper.Map<ResponseExamSchedule>(examSchedule);
-                a.LeaderName = availableSubject.LeaderName;
-                a.SubjectName = availableSubject.SubjectName;
-                examScheduleResponses.Add(a);
-            }
-            if (examScheduleResponses == null || examScheduleResponses.Count() == 0)
-            {
-                return new ObjectResult(new List<object>())
-                {
-                    StatusCode = 404,
-                };
-            }
-            return new ObjectResult(examScheduleResponses)
-            {
-                StatusCode = 200
-            };
+            var res = await _examScheduleService.GetExamSchedulesByUserId(userId);
+            return res;
         }
-        [HttpGet("approvalUser/{currentUserId}/exam-submission")]
+        [HttpGet("approval-user/{currentUserId}/exam-submission")]
+        [SwaggerOperation(Summary = "API lấy ra danh sách Pending của Approval User - main")]
         public async Task<ObjectResult> getExamPaperByLeaderId([FromRoute] int currentUserId)
         {
-            var ExamPapers = await _context.ExamPapers
-                .Include(x => x.ExamSchedule)
-                .Where(x => x.Status == ExamPaperStatus.PENDING && x.ExamSchedule.AppovalUserId == currentUserId)
-                .ToListAsync();
-
-            if (ExamPapers != null)
-            {
-                List<ExamResponseModel> datas = ExamPapers.Select(x => _mapper.Map<ExamResponseModel>(x)).ToList();
-                foreach (var data in datas)
-                {
-                    var examSchedule = _context.ExamSchedules.FirstOrDefault(x => x.ExamScheduleId == data.ExamScheduleId);
-                    var ASubject = _context.AvailableSubjects.FirstOrDefault(x => x.AvailableSubjectId == examSchedule.AvailableSubjectId);
-                    data.SubjectName = ASubject.SubjectName;
-                    data.Tittle = examSchedule.Tittle;
-
-                    int typeId = _context.Subjects.First(x => x.SubjectId == ASubject.SubjectId).TypeId;
-                    data.Type = _context.Types.First(x => x.TypeId == typeId).TypeName;
-                    var register = _context.RegisterSubjects.Find(examSchedule.RegisterSubjectId);
-                    data.LecturerName = _context.Users.Find(register.UserId).FullName;
-
-                    var comment = ExamPapers.FirstOrDefault(x => x.ExamPaperId == data.ExamPaperId).Comments.FirstOrDefault();
-                    if (comment == null)
-                    {
-                        data.Comment = "";
-                    }
-                    else
-                    {
-                        data.Comment = comment.CommentContent.Trim();
-                    }
-                }
-                return new ObjectResult(datas)
-                {
-                    StatusCode = 200,
-                };
-            }
-            return new ObjectResult(new List<object>())
-            {
-                StatusCode = 500
-            };
-        }
-
-        [HttpGet("AppovalUser/{appovalUserId}/exam-submission-pending")]
-        [SwaggerOperation(Summary = "API lấy ra danh sách Pending của Approval User")]
-        public async Task<ObjectResult> getExamPaperPendingByAppovalUserId([FromRoute] int appovalUserId)
-        {
-            var ExamPapers = await _context.ExamPapers
-                .Where(x => x.Status == ExamPaperStatus.PENDING && x.ExamSchedule.AppovalUserId == appovalUserId)
-                .ToListAsync();
-            List<ExamResponseModel> datas = ExamPapers.Select(x => _mapper.Map<ExamResponseModel>(x)).ToList();
-            foreach (var data in datas)
-            {
-                var examSchedule = _context.ExamSchedules.FirstOrDefault(x => x.ExamScheduleId == data.ExamScheduleId);
-                var ASubject = _context.AvailableSubjects.FirstOrDefault(x => x.AvailableSubjectId == examSchedule.AvailableSubjectId);
-                data.SubjectName = ASubject.SubjectName;
-                data.Tittle = examSchedule.Tittle;
-
-                int typeId = _context.Subjects.First(x => x.SubjectId == ASubject.SubjectId).TypeId;
-                data.Type = _context.Types.First(x => x.TypeId == typeId).TypeName;
-                var register = _context.RegisterSubjects.Find(examSchedule.RegisterSubjectId);
-                data.LecturerName = _context.Users.Find(register.UserId).FullName;
-
-                var comment = ExamPapers.FirstOrDefault(x => x.ExamPaperId == data.ExamPaperId).Comments.FirstOrDefault();
-                if (comment == null)
-                {
-                    data.Comment = "";
-                }
-                else
-                {
-                    data.Comment = comment.CommentContent.Trim();
-                }
-            }
-            return new ObjectResult(datas)
-            {
-                StatusCode = 200,
-            };
+            var ExamPapers = await _examPaperService.getExamPaperPendingOrWaitingByAppovalUserId(currentUserId);
+            return ExamPapers;
         }
 
         [HttpGet("user/{userId}/exam-schedule/available-subject")]
         [SwaggerOperation(Summary = "API lấy ra danh sách môn mà user đó có request")]
         public async Task<ObjectResult> getAvailableSubjectWithExamScheduleByUserId([FromRoute] int userId)
         {
-            var examSchedules = await _context.ExamSchedules
-                .Where(x => x.RegisterSubject.UserId == userId && x.Status)
-                .ToListAsync();
-            if (examSchedules == null || examSchedules.Count() == 0)
-            {
-                return new ObjectResult(new List<Object>())
-                {
-                    StatusCode = 404
-                };
-            }
-            var res = new List<AvailableSubjectResponse>();
-            foreach (var examSchedule in examSchedules)
-            {
-                var examPaper = await _context.ExamPapers.Where(x => x.ExamScheduleId == examSchedule.ExamScheduleId && x.Status != "Rejected").FirstOrDefaultAsync();
-                if (examPaper != null)
-                {
-                    continue;
-                }
-                var register = await _context.RegisterSubjects.FirstOrDefaultAsync(x => x.RegisterSubjectId == examSchedule.RegisterSubjectId);
-                var availableSubject = await _context.AvailableSubjects.FirstOrDefaultAsync(x => x.AvailableSubjectId == register.AvailableSubjectId);
-                var type = await _context.Types.FirstOrDefaultAsync(x => x.TypeId == examSchedule.TypeId);
-                var availableSubjectresponse = _mapper.Map<AvailableSubjectResponse>(availableSubject);
-                availableSubjectresponse.ExamScheduleId = examSchedule.ExamScheduleId;
-                availableSubjectresponse.TypeName = type.TypeName;
-                res.Add(availableSubjectresponse);
-
-            }
-            return new ObjectResult(res)
-            {
-                StatusCode = 200,
-            };
+            var res = await _availableSubjectService.getAvailableSubjectWithExamScheduleByUserId(userId);
+            return res;
         }
         [HttpGet("user/{userId}/register-subject-slot")]
         [SwaggerOperation(Summary = "API lấy ra danh sách register subject + slot của 1 user")]
         public async Task<ObjectResult> getRegisterSubjects([FromRoute] int userId)
         {
-            var registerSubjects = await _context.RegisterSubjects
-                .Include(x=> x.AvailableSubject)
-                .Where(x => x.UserId == userId)
-                .Select(x => _mapper.Map<RegisterSubjectResponse>(x))
-                .ToListAsync();
-            
-            var registerSlots = _context.RegisterSlots.Where(x => x.UserId == userId)
-                .Select(x => _mapper.Map<RegisterSlotResponse>(x)).ToList();
-
-            var res = new RegisterSubjectSlotResponse()
-            {
-                registerSlots = registerSlots.Select(x=> x.Slot.Trim()).ToList(),
-                registerSubjects = registerSubjects
-            }
-            ;
-
-            return new ObjectResult(res)
-            {
-                StatusCode = 200
-            };
-         
+            var res =await _registerSubjectService.getRegisterSubjects(userId);
+            return res;
         }
 
-        [HttpGet("leader/{leaderId}/exam-submission-approved")]
-        [SwaggerOperation(Summary = "API lấy ra danh sách approved của Leader")]
-        public async Task<ObjectResult> getExamPaperApprovedByLeaderId([FromRoute] int leaderId)
-        {
-            var ExamPapers = await _context.ExamPapers
-                .Where(x => x.Status == ExamPaperStatus.APPROVED && x.ExamSchedule.LeaderId == leaderId)
-                .ToListAsync();
-            List<ExamResponseModel> datas = ExamPapers.Select(x => _mapper.Map<ExamResponseModel>(x)).ToList();
-            foreach (var data in datas)
-            {
-                var examSchedule = _context.ExamSchedules.FirstOrDefault(x => x.ExamScheduleId == data.ExamScheduleId);
-                var ASubject = _context.AvailableSubjects.FirstOrDefault(x => x.AvailableSubjectId == examSchedule.AvailableSubjectId);
-                data.SubjectName = ASubject.SubjectName;
-                data.Tittle = examSchedule.Tittle;
-
-                int typeId = _context.Subjects.First(x => x.SubjectId == ASubject.SubjectId).TypeId;
-                data.Type = _context.Types.First(x => x.TypeId == typeId).TypeName;
-                var register = _context.RegisterSubjects.Find(examSchedule.RegisterSubjectId);
-                data.LecturerName = _context.Users.Find(register.UserId).FullName;
-
-                var comment = ExamPapers.FirstOrDefault(x => x.ExamPaperId == data.ExamPaperId).Comments.FirstOrDefault();
-                if (comment == null)
-                {
-                    data.Comment = "";
-                }
-                else
-                {
-                    data.Comment = comment.CommentContent.Trim();
-                }
-            }
-            return new ObjectResult(datas)
-            {
-                StatusCode = 200,
-            };
-        }
-
-        [HttpGet("AppovalUser/{appovalUserId}/exam-submission-approved")]
+        [HttpGet("approval-user/{appovalUserId}/exam-submission-approved")]
         [SwaggerOperation(Summary = "API lấy ra danh sách approved của Approval User")]
         public async Task<ObjectResult> getExamPaperApprovedByAppovalUserId([FromRoute] int appovalUserId)
         {
-            var ExamPapers = await _context.ExamPapers
-                .Where(x => x.Status == ExamPaperStatus.APPROVED && x.ExamSchedule.AppovalUserId == appovalUserId)
-                .ToListAsync();
-            List<ExamResponseModel> datas = ExamPapers.Select(x => _mapper.Map<ExamResponseModel>(x)).ToList();
-            foreach (var data in datas)
-            {
-                var examSchedule = _context.ExamSchedules.FirstOrDefault(x => x.ExamScheduleId == data.ExamScheduleId);
-                var ASubject = _context.AvailableSubjects.FirstOrDefault(x => x.AvailableSubjectId == examSchedule.AvailableSubjectId);
-                data.SubjectName = ASubject.SubjectName;
-                data.Tittle = examSchedule.Tittle;
-
-                int typeId = _context.Subjects.First(x => x.SubjectId == ASubject.SubjectId).TypeId;
-                data.Type = _context.Types.First(x => x.TypeId == typeId).TypeName;
-                var register = _context.RegisterSubjects.Find(examSchedule.RegisterSubjectId);
-                data.LecturerName = _context.Users.Find(register.UserId).FullName;
-
-                var comment = ExamPapers.FirstOrDefault(x => x.ExamPaperId == data.ExamPaperId).Comments.FirstOrDefault();
-                if (comment == null)
-                {
-                    data.Comment = "";
-                }
-                else
-                {
-                    data.Comment = comment.CommentContent.Trim();
-                }
-            }
-            return new ObjectResult(datas)
-            {
-                StatusCode = 200,
-            };
+            var res = await _examPaperService.getExamPaperApprovedByApprovalUserId(appovalUserId);
+            return res;
         }
     }
 }

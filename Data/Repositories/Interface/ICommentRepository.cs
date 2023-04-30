@@ -9,7 +9,7 @@ namespace Data.Repositories.Interface
 {
     public interface ICommentRepository
     {
-        public Task<Comment> GetById(int id);
+        public Task<Comment> GetByExamPaperId(int id);
         public Task Create(Comment comment);
 
     }

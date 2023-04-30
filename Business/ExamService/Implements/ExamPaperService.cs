@@ -14,6 +14,7 @@ using Business.ExamService.Models;
 using Data.Repositories.implement;
 using Business.Constants;
 using Business.ExamSchedule.Models;
+using Data;
 
 namespace Business.ExamPaperService.Implements
 {
@@ -22,10 +23,18 @@ namespace Business.ExamPaperService.Implements
         private readonly IExamPaperRepository ExamPaperRepository;
         private readonly ICommentRepository CommentRepository;
         private readonly IExamScheduleRepository ExamScheduleRepository;
+        private readonly IAvailableSubjectRepository _availableSubjectRepository;
+        private readonly IRegisterSubjectRepository _registerSubjectRepository;
+        private readonly ISubjectRepository _subjectRepository;
+        private readonly ITypeRepository _typeRepository;
+        private readonly IUserRepository _userRepository;
         private readonly CFManagementContext _context;
         private IMapper mapper;
         private readonly INotificationRepository NotificationRepository;
-        public ExamPaperService(CFManagementContext context, IExamPaperRepository ExamPaperRepository, ICommentRepository commentRepository, IMapper mapper, IExamScheduleRepository examScheduleRepository, INotificationRepository NotificationRepository)
+        public ExamPaperService(CFManagementContext context, IExamPaperRepository ExamPaperRepository, 
+            ICommentRepository commentRepository, IMapper mapper, IExamScheduleRepository examScheduleRepository,
+            INotificationRepository NotificationRepository, IUserRepository userRepository, ITypeRepository typeRepository,
+            ISubjectRepository subjectRepository, IRegisterSubjectRepository registerSubjectRepository, IAvailableSubjectRepository availableSubjectRepository)
         {
             this.ExamPaperRepository = ExamPaperRepository;
             this.mapper = mapper;
@@ -33,6 +42,11 @@ namespace Business.ExamPaperService.Implements
             _context = context;
             this.ExamScheduleRepository = examScheduleRepository;
             this.NotificationRepository = NotificationRepository;
+            _availableSubjectRepository = availableSubjectRepository;
+            _subjectRepository = subjectRepository;
+            _typeRepository = typeRepository;
+            _registerSubjectRepository = registerSubjectRepository;
+            _userRepository = userRepository;
         }
 
         public async Task<ObjectResult> CreateExam(int examScheduleId,ExamCreateRequestModel ExamPaperCreateRequest)
@@ -240,6 +254,15 @@ namespace Business.ExamPaperService.Implements
                         else if(examPaper.Status == ExamPaperStatus.APPROVED_MANUAL)
                         {
                             examPaper.Status = ExamPaperStatus.APPROVED;
+                            var notification = new Notification();
+                            notification.Type = "Appprove";
+                            notification.UserId = registerSubject.UserId;
+                            notification.Message = "Your exam has been approved";
+                            notification.Sender = senderName;
+                            notification.SubjectCode = _context.Subjects.Find(availableSubject.SubjectId).SubjectCode;
+                            notification.Status = "Unread";
+                            _context.Notifications.Add(notification);
+                            await _context.SaveChangesAsync();
                         }
                     }
                     
@@ -274,7 +297,6 @@ namespace Business.ExamPaperService.Implements
                         StatusCode = 500
                     };
                 }
-                examPaper.Status = ExamPaperStatus.APPROVED;
                 examPaper.ExamInstruction = exam.ExamInstruction;
                 await  ExamPaperRepository.Update(examPaper);
                 return new ObjectResult(examPaper)
@@ -290,81 +312,87 @@ namespace Business.ExamPaperService.Implements
                 };
             }
         }
-
-        public async Task<ObjectResult> ViewExamSubmissionByLeaderId(int leaderId)
+        
+        private async Task<List<ExamResponseModel>> mapToExamResponse(List<ExamPaper> ExamPapers)
         {
-            var listExamSchedule = await ExamScheduleRepository.GetAllExamScheduleByLeaderId(leaderId);
-            
-            var listExamSubmission = new List<ExamResponseModel>();
-            foreach(var examSchedule in listExamSchedule)
+            List<ExamResponseModel> datas = ExamPapers.Select(x => mapper.Map<ExamResponseModel>(x)).ToList();
+            foreach (var data in datas)
             {
-                var examSubmissions = await ExamPaperRepository.GetAllByExamScheduleId(examSchedule.ExamScheduleId);
-                if(examSubmissions == null)
+                var examSchedule = await ExamScheduleRepository.GetExamScheduleAsync(data.ExamScheduleId);
+                var ASubject = await _availableSubjectRepository.GetAvailableSubjectById(examSchedule.AvailableSubjectId);
+                data.SubjectName = ASubject.SubjectName;
+                data.Tittle = examSchedule.Tittle;
+
+                var subject = await _subjectRepository.getSubject(ASubject.SubjectId); ;
+                int typeId = subject.TypeId;
+
+                var type = await _typeRepository.getTypeById(typeId);
+                data.Type = type.TypeName;
+
+                var register = await _registerSubjectRepository.GetRegisterSubjectById(examSchedule.RegisterSubjectId);
+                var user = await _userRepository.GetUserAsync(register.UserId);
+                data.LecturerName = user.FullName;
+
+                if(data.Status == ExamPaperStatus.APPROVED_MANUAL)
                 {
-                    return new(examSubmissions)
+                    if(data.ExamInstruction == null)
                     {
-                        StatusCode = (int)Business.Constants.StatusCode.NOTFOUND
-                    };
+                        data.Status = "Not-Submitted-Introduction";
+                    }
+                    else
+                    {
+                        data.Status = "Submitted-Introduct";
+                    }
+                    
                 }
-                foreach(var exam in examSubmissions)
+
+                var comment = ExamPapers.FirstOrDefault(x => x.ExamPaperId == data.ExamPaperId).Comments.FirstOrDefault();
+                if (comment == null)
                 {
-                    if(exam.Status == ExamPaperStatus.PENDING)
-                    {
-                        var examResponse = mapper.Map<ExamResponseModel>(exam);
-                        if( examResponse == null)
-                        {
-                            return new(new List<object>())
-                            {
-                                StatusCode = 404,
-                            };
-                        }
-                        examResponse.SubjectName = _context.AvailableSubjects.Where(x => x.AvailableSubjectId == examSchedule.AvailableSubjectId && x.Status).FirstOrDefault().SubjectName;
-                        examResponse.Tittle = examSchedule.Tittle;
-                        var register = _context.RegisterSubjects.Where(x => x.RegisterSubjectId == examSchedule.RegisterSubjectId && x.Status).FirstOrDefault();
-                        if(register == null)
-                        {
-                            return new(new List<object>())
-                            {
-                                StatusCode = 404,
-                            };
-                        }
-                        examResponse.LecturerName = _context.Users.Find(register.UserId).FullName;
-                        examResponse.Type = _context.Types.Find(examSchedule.TypeId).TypeName;
-                        listExamSubmission.Add(examResponse);
-                        break;
-                    }
-                    if(exam.Status == ExamPaperStatus.APPROVED_MANUAL)
-                    {
-                        var examResponse = mapper.Map<ExamResponseModel>(exam);
-                        if (examResponse == null)
-                        {
-                            return new(new List<object>())
-                            {
-                                StatusCode = 404,
-                            };
-                        }
-                        examResponse.SubjectName = _context.AvailableSubjects.Where(x => x.AvailableSubjectId == examSchedule.AvailableSubjectId && x.Status).FirstOrDefault().SubjectName;
-                        examResponse.Tittle = examSchedule.Tittle;
-                        var register = _context.RegisterSubjects.Where(x => x.RegisterSubjectId == examSchedule.RegisterSubjectId && x.Status).FirstOrDefault();
-                        if (register == null)
-                        {
-                            return new(new List<object>())
-                            {
-                                StatusCode = 404,
-                            };
-                        }
-                        examResponse.ExamInstruction = exam.ExamInstruction;
-                        examResponse.LecturerName = _context.Users.Find(register.UserId).FullName;
-                        examResponse.Type = _context.Types.Find(examSchedule.TypeId).TypeName;
-                        listExamSubmission.Add(examResponse);
-                        break;
-                    }
+                    data.Comment = "";
+                }
+                else
+                {
+                    data.Comment = comment.CommentContent.Trim();
                 }
             }
-            return new ObjectResult(listExamSubmission) 
-            { 
-                StatusCode = 200 
+            return datas;
+        }
+
+        public async Task<ObjectResult> getExamPaperPendingOrWaitingByAppovalUserId(int appovalUserId)
+        {
+            var ExamPapers = await ExamPaperRepository.GetExamPaperPendingOrWaitingByApprovalUserId(appovalUserId);
+
+            if (ExamPapers != null)
+            {
+                List<ExamResponseModel> datas = await mapToExamResponse(ExamPapers);
+                return new ObjectResult(datas)
+                {
+                    StatusCode = 200,
+                };
+            }
+            return new ObjectResult(new List<object>())
+            {
+                StatusCode = 500
             };
         }
+        public async Task<ObjectResult> getExamPaperApprovedByApprovalUserId(int approvalUserId)
+        {
+            var ExamPapers = await ExamPaperRepository.GetExamPaperWithExamScheduleByApprovalUserId(ExamPaperStatus.APPROVED, approvalUserId);
+            if (ExamPapers != null)
+            {
+                List<ExamResponseModel> datas = await mapToExamResponse(ExamPapers);
+                return new ObjectResult(datas)
+                {
+                    StatusCode = 200,
+                };
+            }
+            return new ObjectResult(new List<object>())
+            {
+                StatusCode = 500
+            };
+        }
+
+        
     }
 }
