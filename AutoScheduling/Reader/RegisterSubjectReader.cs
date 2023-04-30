@@ -134,7 +134,7 @@ namespace AutoScheduling.Reader
             for (int i = 0; i< list.Count; i++)
             {
                 var a = list[i];
-                int userIndex = userDic.FirstOrDefault(x => x.Item2 == a.Item1).Item1;
+                    int userIndex = userDic.FirstOrDefault(x => x.Item2 == a.Item1).Item1;
                 foreach (var s in a.Item3)
                 {
                     var subjectIndex = subjectDic.First(x=> x.Item2.ToLower().Equals(s.ToLower().Trim())).Item1;

@@ -38,7 +38,7 @@ namespace AutoScheduling.Reader
                         string classCode = parts[3].ToUpper().Trim();
                         string subjectName = parts[2];
                         int asubjectId = _context.AvailableSubjects
-                            .First(x => x.SemesterId == 1 && x.SubjectName == subjectName).AvailableSubjectId;
+                            .First(x => x.SemesterId == semesterid && x.SubjectName == subjectName).AvailableSubjectId;
                         var registerSubject = _context.RegisterSubjects.FirstOrDefault(x => x.AvailableSubjectId == asubjectId && x.UserId == lecturerId);
                         int registerSubjectId;//= _context.RegisterSubjects.First(x => x.AvailableSubjectId == asubjectId && x.UserId == lecturerId).RegisterSubjectId;
                         if (registerSubject == null)
@@ -87,7 +87,7 @@ namespace AutoScheduling.Reader
             var getter = new RegisterSubjectGetter();
             var registerSubjectAndSlots = getter.readRegisterSubject(semesterid);
 
-            var subjectDic = UserGetter.getAllSubject(1);
+            var subjectDic = UserGetter.getAllSubject(semesterid);
 
             
             int[,] registerSubjects;//= new int[num_lecturers, num_subject];

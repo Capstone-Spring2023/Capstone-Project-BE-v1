@@ -139,7 +139,7 @@ namespace AutoScheduling
             CpSolver solver = new CpSolver();
             solver.StringParameters += "linearization_level:1 " + "enumerate_all_solutions:true ";
             var cb = new SolutionPrinter(f,num_lecturers, num_subjects, num_classes, class_day_slot, registerSubject
-                , teacher_day_slot, subject_class_className, subjectDic, userDic,d,alphaIndexs, 760,ableSubject, ref res,  best1);
+                , teacher_day_slot, subject_class_className, subjectDic, userDic,d,alphaIndexs, 500,ableSubject, ref res,  best1);
 
             
             CpSolverStatus status = solver.Solve(model, cb);
