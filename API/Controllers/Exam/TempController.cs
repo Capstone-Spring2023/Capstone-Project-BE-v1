@@ -47,7 +47,7 @@ namespace API.Controllers.Exam
         [SwaggerOperation(Summary = "API lấy ra danh sách Pending của Approval User - main")]
         public async Task<ObjectResult> getExamPaperByLeaderId([FromRoute] int currentUserId)
         {
-            var ExamPapers = await _examPaperService.getExamPaperPendingByAppovalUserId(currentUserId);
+            var ExamPapers = await _examPaperService.getExamPaperPendingOrWaitingByAppovalUserId(currentUserId);
             return ExamPapers;
         }
 
