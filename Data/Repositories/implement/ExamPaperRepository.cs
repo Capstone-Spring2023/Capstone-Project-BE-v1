@@ -78,7 +78,8 @@ namespace Data.Repositories.implement
             var ExamPapers = await _context.ExamPapers
                 .Include(x => x.ExamSchedule)
                 .Include(x => x.Comments)
-                .Where(x => x.Status == ExamPaperStatus.PENDING && x.Status == ExamPaperStatus.APPROVED_MANUAL && x.ExamSchedule.AppovalUserId == userId)
+                .Where(x => x.Status == ExamPaperStatus.PENDING || x.Status == ExamPaperStatus.APPROVED_MANUAL)
+                .Where(x => x.ExamSchedule.AppovalUserId == userId)
                 .ToListAsync();
             return ExamPapers;
         }
