@@ -47,15 +47,7 @@ namespace API.Controllers.Exam
         [SwaggerOperation(Summary = "API lấy ra danh sách Pending của Approval User - main")]
         public async Task<ObjectResult> getExamPaperByLeaderId([FromRoute] int currentUserId)
         {
-            var ExamPapers = await _examPaperService.getExamPaperByLeaderId(currentUserId);
-            return ExamPapers;
-        }
-
-        [HttpGet("approval-user/{appovalUserId}/exam-submission-pending")]
-        [SwaggerOperation(Summary = "API lấy ra danh sách Pending của Approval User - bỏ")]
-        public async Task<ObjectResult> getExamPaperPendingByAppovalUserId([FromRoute] int appovalUserId)
-        {
-            var ExamPapers = await _examPaperService.getExamPaperByLeaderId(appovalUserId);
+            var ExamPapers = await _examPaperService.getExamPaperPendingByAppovalUserId(currentUserId);
             return ExamPapers;
         }
 
@@ -71,14 +63,6 @@ namespace API.Controllers.Exam
         public async Task<ObjectResult> getRegisterSubjects([FromRoute] int userId)
         {
             var res =await _registerSubjectService.getRegisterSubjects(userId);
-            return res;
-        }
-
-        [HttpGet("leader/{leaderId}/exam-submission-approved")]
-        [SwaggerOperation(Summary = "API lấy ra danh sách approved của Leader")]
-        public async Task<ObjectResult> getExamPaperApprovedByLeaderId([FromRoute] int leaderId)
-        {
-            var res = await _examPaperService.getExamPaperApprovedByLeaderId(leaderId);
             return res;
         }
 

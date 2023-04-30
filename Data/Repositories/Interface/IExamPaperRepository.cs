@@ -18,6 +18,6 @@ namespace Data.Repositories.Interface
         Task Update(ExamPaper exam);
         Task<List<ExamPaper>> GetAllByExamScheduleId(int examScheduleId);
         Task<List<ExamPaper>> GetExamPaperWithExamScheduleByApprovalUserId(string status ,int userId);
-        Task<List<ExamPaper>> GetExamPaperWithExamScheduleByLeaderId(string status, int leaderId);
+        Task<List<ExamPaper>> GetExamPaperPendingOrWaitingByApprovalUserId(int userId);
     }
 }

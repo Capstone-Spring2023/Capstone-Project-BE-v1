@@ -21,10 +21,7 @@ namespace Business.ExamPaperService.Interfaces
         public Task<ObjectResult> DeleteExam(int id);
         public Task<ObjectResult> ApproveExam(CommentModel commentModel, ExamUpdateApproveModel examUpdateRequestModel);
         public Task<ObjectResult> SendInstructionLink(int id, ExamUpdateInstructionLinkModel exam);
-        public Task<ObjectResult> ViewExamSubmissionByLeaderId(int leaderId);
-        Task<ObjectResult> getExamPaperByLeaderId(int currentUserId);
-        Task<ObjectResult> getExamPaperPendingByAppovalUserId(int appovalUserId);
+        Task<ObjectResult> getExamPaperPendingOrWaitingByAppovalUserId(int appovalUserId);
         Task<ObjectResult> getExamPaperApprovedByApprovalUserId(int approvalUserId);
-        Task<ObjectResult> getExamPaperApprovedByLeaderId(int leaderId);
     }
 }

@@ -72,12 +72,13 @@ namespace Data.Repositories.implement
                 .ToListAsync();
             return ExamPapers;
         }
-        public async Task<List<ExamPaper>> GetExamPaperWithExamScheduleByLeaderId(string status, int leaderId)
+
+        public async Task<List<ExamPaper>> GetExamPaperPendingOrWaitingByApprovalUserId(int userId)
         {
             var ExamPapers = await _context.ExamPapers
                 .Include(x => x.ExamSchedule)
                 .Include(x => x.Comments)
-                .Where(x => x.Status == status && x.ExamSchedule.LeaderId == leaderId)
+                .Where(x => x.Status == ExamPaperStatus.PENDING && x.Status == ExamPaperStatus.APPROVED_MANUAL && x.ExamSchedule.AppovalUserId == userId)
                 .ToListAsync();
             return ExamPapers;
         }

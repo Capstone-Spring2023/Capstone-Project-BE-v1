@@ -64,6 +64,7 @@ namespace Business.ExamSchedule.Implements
                     groupExamSchedule.Deadline = examSchedule.Deadline;
                     groupExamSchedule.ExamLink = examSchedule.ExamLink;
                     groupExamSchedule.Tittle = examSchedule.Tittle;
+                    groupExamSchedule.ApprovalUserId = examSchedule.AppovalUserId;
                     listGroupExamSchedule.Add(groupExamSchedule);
                     }
                 
