@@ -53,12 +53,12 @@ namespace API.Controllers.Schedules
         }
         [HttpPost("out-of-flow")]
         [SwaggerOperation(Summary = "Import csv file register subject vào database (ngược với flow hiện tại)")]
-        public async Task<IActionResult> outOfFlow(IFormFile[] file)
+        public async Task<IActionResult> outOfFlow(IFormFile[] file, int semesterId)
         {
 
             OutOfFlow outOfFlow = new OutOfFlow();
-            
-            await outOfFlow.createRegisterSubjectDatabaseFromFile(file[0]);
+
+            await outOfFlow.createRegisterSubjectDatabaseFromFile(file[0], semesterId);
             return Ok("Kê");
         }
         [HttpPost("out-of-flow-1")]

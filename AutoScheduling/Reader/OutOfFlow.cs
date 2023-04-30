@@ -36,7 +36,7 @@ namespace AutoScheduling.Reader
                 await _context.SaveChangesAsync();  
             }
         }
-        public async Task createRegisterSubjectDatabaseFromFile(IFormFile file)
+        public async Task createRegisterSubjectDatabaseFromFile(IFormFile file, int semesterId)
         {
             RegisterSubjectReader reader = new RegisterSubjectReader(); 
             var list = reader.readRegisterSubjectFile(file);
@@ -57,7 +57,9 @@ namespace AutoScheduling.Reader
                     //Create subjects
                     foreach(var subject in subjects)
                     {
-                        var AsubjectId = _context.AvailableSubjects.FirstOrDefault(x => x.SubjectName.ToUpper() == subject.ToUpper()).AvailableSubjectId;
+                        var AsubjectId = _context.AvailableSubjects.FirstOrDefault(x => x.SubjectName.ToUpper() == subject.ToUpper()
+                        && x.SemesterId == semesterId
+                        ).AvailableSubjectId;
                         RegisterSubject registerSubject = new RegisterSubject()
                         {
                             UserId = lecturerId,
@@ -77,7 +79,7 @@ namespace AutoScheduling.Reader
                     {
                         RegisterSlot registerSlot = new RegisterSlot()
                         {
-                            SemesterId = 1,
+                            SemesterId = semesterId,
                             UserId = lecturerId,
                             Slot = slot,
                             Status = true,
