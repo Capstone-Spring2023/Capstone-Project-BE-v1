@@ -13,6 +13,7 @@ namespace API.Controllers.Statistic
         public int NumNotRegisteredSubject { get; set; }
         public int? NumClass { get; set; }
         public double? UPoint { get; set; }
+        public int satisfyPoint { get; set; }
         public int SemesterId { get; set; }
         public double? AlphaIndex { get; set; }
         public double? PercentPoint { get; set; }
@@ -36,6 +37,7 @@ namespace API.Controllers.Statistic
                 .Where( x=> x.SemesterId == semesterId & x.UserId != -1)
                 .ToList();
             var a = _context.PointIndices.First(x=> x.SemesterId == semesterId && x.UserId == -1);
+
             var res1 = res.Select(x => new StatisticResponse()
             {
                 fullName = x.User.FullName,
@@ -43,9 +45,10 @@ namespace API.Controllers.Statistic
                 NumClass = x.NumClass,
                 AlphaIndex = x.AlphaIndex,
                 SemesterId = x.SemesterId,
-                UserId  = x.UserId,
-                PercentPoint = ((double)x.UPoint/ (double)a.UPoint ) * 100,
-                percentAlphaIndex = ((double)x.AlphaIndex/(double)a.AlphaIndex) * 100
+                UserId = x.UserId,
+                PercentPoint = ((double)x.UPoint / (double)a.UPoint) * 100,
+                percentAlphaIndex = ((double)x.AlphaIndex / (double)a.AlphaIndex) * 100,
+                satisfyPoint = (int)((double)x.UPoint / (double)x.AlphaIndex)
             }).ToList();
             foreach(var item in res1)
             {
@@ -72,7 +75,8 @@ namespace API.Controllers.Statistic
                 NumClass = x.NumClass,
                 UPoint = x.UPoint,
                 PercentPoint = ((double)x.UPoint / (double)a.UPoint) * 100,
-                percentAlphaIndex = ((double)x.AlphaIndex / (double)a.AlphaIndex) * 100
+                percentAlphaIndex = ((double)x.AlphaIndex / (double)a.AlphaIndex) * 100,
+                satisfyPoint = (int)((double)x.UPoint / (double)x.AlphaIndex)
             };
             if (res== null)
             {
