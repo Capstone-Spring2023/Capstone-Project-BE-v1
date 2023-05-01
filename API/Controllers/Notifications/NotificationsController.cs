@@ -25,13 +25,6 @@ namespace API.Controllers.Notifications
             return Ok(response);
         }
 
-        [HttpGet("/aloSaoSai")]
-        public async Task<IActionResult> GetAllNotificationsByUser(int userId) 
-        {
-            var response = await _notificationService.GetAllNotificaionsByUserId(userId);
-            return Ok(response);
-        }
-
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteNotification(int id)
         {

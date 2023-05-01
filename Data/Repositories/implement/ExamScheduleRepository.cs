@@ -87,5 +87,11 @@ namespace Data.Repositories.implement
                 .ToListAsync();
             return examSchedules;
         }
+
+        public async Task<List<ExamSchedule>> getAllExamScheduleByApprovalUserId(int approvalUserId)
+        {
+            var listExamSchedule = await _context.ExamSchedules.Where(x => x.AppovalUserId == approvalUserId && x.Status).ToListAsync();
+            return listExamSchedule;
+        }
     }
 }

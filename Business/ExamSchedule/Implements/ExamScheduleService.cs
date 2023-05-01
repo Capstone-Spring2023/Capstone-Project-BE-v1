@@ -175,11 +175,16 @@ namespace Business.ExamSchedule.Implements
             try
             {
                 await _examScheduleRepository.UpdateExamSchedule(examSchedules);
-                var res = new ObjectResult(examSchedules.Select( x =>  _mapper.Map<ResponseExamSchedule>(x)))
+                var res = examSchedules.Select(x => _mapper.Map<ResponseExamSchedule>(x)).ToList();
+                foreach (var response in res)
                 {
-                    StatusCode = 200,
+                    response.TypeName = _context.Types.Find(response.TypeId).TypeName;
+                }
+                
+                return new ObjectResult(res)
+                {
+                    StatusCode = 200
                 };
-                return res;
             }catch (Exception ex)
             {
                 return new ObjectResult(ex)
@@ -274,6 +279,7 @@ namespace Business.ExamSchedule.Implements
                 var a = _mapper.Map<ResponseExamSchedule>(examSchedule);
                 a.LeaderName = availableSubject.LeaderName;
                 a.SubjectName = availableSubject.SubjectName;
+                a.TypeName = _context.Types.Find(a.TypeId).TypeName;
                 examScheduleResponses.Add(a);
             }
 
@@ -288,6 +294,13 @@ namespace Business.ExamSchedule.Implements
             {
                 StatusCode = 200
             };
+        }
+
+        public async Task<ResponseModel> StatisticalForLeaderOrLecturer(int currentUserId)
+        {
+            var examSchedules = await _examScheduleRepository.getAllExamScheduleByApprovalUserId(currentUserId);
+            var totalExamNeedApprove = examSchedules.Count();
+            throw new NotImplementedException();
         }
     }
 }

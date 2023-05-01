@@ -213,7 +213,7 @@ namespace Business.ExamPaperService.Implements
                     var notification = new Notification();
                     notification.Type = "Reject";                  
                     notification.UserId = registerSubject.UserId;
-                    notification.Message = "Your exam has been rejected";                  
+                    notification.Message = "Your " + _context.Subjects.Find(availableSubject.SubjectId).SubjectName + " exam has been rejected";                  
                     notification.Sender = senderName;
                     notification.SubjectCode = _context.Subjects.Find(availableSubject.SubjectId).SubjectCode;
                     notification.Status = "Unread";
@@ -229,7 +229,7 @@ namespace Business.ExamPaperService.Implements
                         var notification = new Notification();
                         notification.Type = "Appprove";
                         notification.UserId = registerSubject.UserId;
-                        notification.Message = "Your exam has been approved";
+                        notification.Message = "Your " + _context.Subjects.Find(availableSubject.SubjectId).SubjectName + " exam has been approved";
                         notification.Sender = senderName;
                         notification.SubjectCode = _context.Subjects.Find(availableSubject.SubjectId).SubjectCode;
                         notification.Status = "Unread";
@@ -244,7 +244,7 @@ namespace Business.ExamPaperService.Implements
                             var notification = new Notification();
                             notification.Type = "Instruction";
                             notification.UserId = registerSubject.UserId;
-                            notification.Message = "Your exam has been submitted instruction for " + _context.AvailableSubjects.Find(registerSubject.AvailableSubjectId).SubjectName;
+                            notification.Message = "Your " + _context.AvailableSubjects.Find(registerSubject.AvailableSubjectId).SubjectName + " exam has been approve please provide instruction";
                             notification.Sender = senderName;
                             notification.SubjectCode = _context.Subjects.Find(availableSubject.SubjectId).SubjectCode;
                             notification.Status = "Unread";
@@ -257,7 +257,7 @@ namespace Business.ExamPaperService.Implements
                             var notification = new Notification();
                             notification.Type = "Appprove";
                             notification.UserId = registerSubject.UserId;
-                            notification.Message = "Your exam has been approved";
+                            notification.Message = "Your " + _context.Subjects.Find(availableSubject.SubjectId).SubjectName + "exam has been approved";
                             notification.Sender = senderName;
                             notification.SubjectCode = _context.Subjects.Find(availableSubject.SubjectId).SubjectCode;
                             notification.Status = "Unread";
