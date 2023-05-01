@@ -289,5 +289,18 @@ namespace Business.ExamSchedule.Implements
                 StatusCode = 200
             };
         }
+
+        public async Task<ResponseModel> StatisticalForLecturerOrLeader(int currentUserId)
+        {
+            StatisticalModelForLecturerOrLeader statistical = new StatisticalModelForLecturerOrLeader();
+            var examSchedules = await _examScheduleRepository.GetAllExamScheduleByApprovalUserId(currentUserId);
+            var examPapers = examSchedules.Select(x => x.ExamPapers).ToList();
+            return new()
+            {
+                StatusCode = 200,
+                Data = examPapers
+            };
+            
+        }
     }
 }

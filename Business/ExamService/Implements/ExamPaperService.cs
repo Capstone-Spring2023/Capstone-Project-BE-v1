@@ -213,7 +213,7 @@ namespace Business.ExamPaperService.Implements
                     var notification = new Notification();
                     notification.Type = "Reject";                  
                     notification.UserId = registerSubject.UserId;
-                    notification.Message = "Your exam has been rejected";                  
+                    notification.Message = "Your " + _context.AvailableSubjects.Find(registerSubject.AvailableSubjectId).SubjectName + " exam has been rejected";                  
                     notification.Sender = senderName;
                     notification.SubjectCode = _context.Subjects.Find(availableSubject.SubjectId).SubjectCode;
                     notification.Status = "Unread";
@@ -229,7 +229,7 @@ namespace Business.ExamPaperService.Implements
                         var notification = new Notification();
                         notification.Type = "Appprove";
                         notification.UserId = registerSubject.UserId;
-                        notification.Message = "Your exam has been approved";
+                        notification.Message = "Your " + _context.AvailableSubjects.Find(registerSubject.AvailableSubjectId).SubjectName + " exam has been approved";
                         notification.Sender = senderName;
                         notification.SubjectCode = _context.Subjects.Find(availableSubject.SubjectId).SubjectCode;
                         notification.Status = "Unread";
@@ -240,24 +240,24 @@ namespace Business.ExamPaperService.Implements
                     {
                         if(examPaper.Status == ExamPaperStatus.PENDING)
                         {
-                            examPaper.Status = ExamPaperStatus.APPROVED_MANUAL;
+                            examPaper.Status = ExamPaperStatus.WAITING_INSTRUCTION;
                             var notification = new Notification();
                             notification.Type = "Instruction";
                             notification.UserId = registerSubject.UserId;
-                            notification.Message = "Your exam has been submitted instruction for " + _context.AvailableSubjects.Find(registerSubject.AvailableSubjectId).SubjectName;
+                            notification.Message = "Your " + _context.AvailableSubjects.Find(registerSubject.AvailableSubjectId).SubjectName + " exam has been approve please provide instruction";
                             notification.Sender = senderName;
                             notification.SubjectCode = _context.Subjects.Find(availableSubject.SubjectId).SubjectCode;
                             notification.Status = "Unread";
                             _context.Notifications.Add(notification);
                             await _context.SaveChangesAsync();
                         }
-                        else if(examPaper.Status == ExamPaperStatus.APPROVED_MANUAL)
+                        else if(examPaper.Status == ExamPaperStatus.SUBMITTED_INSTRUCTION)
                         {
                             examPaper.Status = ExamPaperStatus.APPROVED;
                             var notification = new Notification();
                             notification.Type = "Appprove";
                             notification.UserId = registerSubject.UserId;
-                            notification.Message = "Your exam has been approved";
+                            notification.Message = "Your " + _context.AvailableSubjects.Find(registerSubject.AvailableSubjectId).SubjectName + " instruction has been approved";
                             notification.Sender = senderName;
                             notification.SubjectCode = _context.Subjects.Find(availableSubject.SubjectId).SubjectCode;
                             notification.Status = "Unread";
@@ -290,7 +290,7 @@ namespace Business.ExamPaperService.Implements
             {
                 
                 var examPaper = await ExamPaperRepository.GetById(id);
-                if (examPaper.Status != ExamPaperStatus.APPROVED_MANUAL)
+                if (examPaper.Status != ExamPaperStatus.WAITING_INSTRUCTION)
                 {
                     return new ObjectResult("Not allowed")
                     {
@@ -298,6 +298,7 @@ namespace Business.ExamPaperService.Implements
                     };
                 }
                 examPaper.ExamInstruction = exam.ExamInstruction;
+                examPaper.Status = ExamPaperStatus.SUBMITTED_INSTRUCTION;
                 await  ExamPaperRepository.Update(examPaper);
                 return new ObjectResult(examPaper)
                 {
@@ -332,20 +333,6 @@ namespace Business.ExamPaperService.Implements
                 var register = await _registerSubjectRepository.GetRegisterSubjectById(examSchedule.RegisterSubjectId);
                 var user = await _userRepository.GetUserAsync(register.UserId);
                 data.LecturerName = user.FullName;
-
-                if(data.Status == ExamPaperStatus.APPROVED_MANUAL)
-                {
-                    if(data.ExamInstruction == null)
-                    {
-                        data.Status = "Not-Submitted-Introduction";
-                    }
-                    else
-                    {
-                        data.Status = "Submitted-Introduct";
-                    }
-                    
-                }
-
                 var comment = ExamPapers.FirstOrDefault(x => x.ExamPaperId == data.ExamPaperId).Comments.FirstOrDefault();
                 if (comment == null)
                 {

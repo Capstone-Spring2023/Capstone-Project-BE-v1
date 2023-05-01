@@ -148,14 +148,7 @@ namespace Business.UserService.Implements
                                 var examPaper = _context.ExamPapers.Where(x => x.ExamScheduleId == examSchedule.ExamScheduleId && x.Status != ExamPaperStatus.REJECTED).FirstOrDefault();
                                 if (examPaper != null)
                                 {
-                                    if (examPaper.Status == ExamPaperStatus.PENDING)
-                                    {
-                                        response.status = "Pending Review";
-                                    }
-                                    if (examPaper.Status == ExamPaperStatus.APPROVED || examPaper.Status == ExamPaperStatus.APPROVED_MANUAL)
-                                    {
-                                        response.status = "Approved";
-                                    }
+                                    response.status = examPaper.Status;
                                     response.examLink = examPaper.ExamLink;
                                 }
                                 else

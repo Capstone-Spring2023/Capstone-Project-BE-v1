@@ -102,5 +102,16 @@ namespace API.Controllers.Statistic
                 StatusCode = 200
             };
         }
+
+        [HttpGet("StatisticalForLecturerOrLeader/{currentUserId}")]
+        public async Task<ObjectResult> StatisticalForLecturerOrLeader(int currentUserId)
+        {
+            var examSchedules = await _context.ExamSchedules.Where(x => x.AppovalUserId == currentUserId && x.Status).ToListAsync();
+            var examPapers = examSchedules.Select(x => x.ExamPapers).ToList();
+            return new ObjectResult(examPapers)
+            {
+                StatusCode = 200
+            };
+        }
     }
 }

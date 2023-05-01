@@ -20,5 +20,6 @@ namespace Business.ExamSchedule.interfaces
         public Task<ResponseModel> GetDetailRequestExamSchedule(int availableSubjectId);
         public Task<ResponseModel> GetAllRequestByAvailableSubjectId(int availableSubjectId);
         Task<ObjectResult> GetExamSchedulesByUserId(int userId);
+        Task<ResponseModel> StatisticalForLecturerOrLeader(int currentUserId);
     }
 }
