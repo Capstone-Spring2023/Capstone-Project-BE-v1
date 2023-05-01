@@ -118,6 +118,7 @@ namespace Business.ExamSchedule.Implements
                         examScheduleModel.RegisterSubjectId = registerSubject.RegisterSubjectId;
                         var Subject = _context.Subjects.Where(x => x.SubjectId == availableSubject.SubjectId && x.Status).FirstOrDefault();
                         examScheduleModel.TypeId= Subject.TypeId;
+
                         examScheduleModel.AvailableSubjectId = availableSubject.AvailableSubjectId;
                         examScheduleModel.Status = true;
 

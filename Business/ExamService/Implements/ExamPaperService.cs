@@ -297,8 +297,8 @@ namespace Business.ExamPaperService.Implements
                         StatusCode = 500
                     };
                 }
-                examPaper.ExamInstruction = exam.ExamInstruction;
                 examPaper.Status = ExamPaperStatus.SUBMITTED_INSTRUCTION;
+                examPaper.ExamInstruction = exam.ExamInstruction;                
                 await  ExamPaperRepository.Update(examPaper);
                 return new ObjectResult(examPaper)
                 {

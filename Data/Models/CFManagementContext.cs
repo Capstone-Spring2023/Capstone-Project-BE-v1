@@ -194,7 +194,7 @@ namespace Data.Models
                     .HasColumnName("examLink");
 
                 entity.Property(e => e.Status)
-                    .HasMaxLength(20)
+                    .HasMaxLength(30)
                     .IsUnicode(false)
                     .HasColumnName("status");
 
