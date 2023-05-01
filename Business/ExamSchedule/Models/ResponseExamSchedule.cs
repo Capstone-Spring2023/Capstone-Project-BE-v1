@@ -17,6 +17,7 @@ namespace Business.ExamSchedule.Models
         public string SubjectName { get; set; }
         public string ExamLink { get; set; }
         public int TypeId { get; set; }
+        public string TypeName { get; set; }
         public bool Status { get; set; }
         
     }

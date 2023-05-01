@@ -275,6 +275,7 @@ namespace Business.ExamSchedule.Implements
                 var a = _mapper.Map<ResponseExamSchedule>(examSchedule);
                 a.LeaderName = availableSubject.LeaderName;
                 a.SubjectName = availableSubject.SubjectName;
+                a.TypeName = _context.Types.Find(a.TypeId).TypeName;
                 examScheduleResponses.Add(a);
             }
 
