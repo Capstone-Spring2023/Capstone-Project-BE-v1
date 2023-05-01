@@ -84,6 +84,8 @@ namespace AutoScheduling.Reader
             var d = userDic_andD.Item2;
             var userDic = userDic_andD.Item1;
 
+            var userAbleSubject = UserGetter.getUserAndAvailableSubject(semesterid);
+
             var getter = new RegisterSubjectGetter();
             var registerSubjectAndSlots = getter.readRegisterSubject(semesterid);
 
@@ -95,6 +97,9 @@ namespace AutoScheduling.Reader
 
             int[,,] teacher_day_slot;
             registerSubjectReader.createTeacher_Day_Slot(userDic, register_subject_list_raw, registerSubjects, out teacher_day_slot);
+
+            int[,] ableSubject;
+            registerSubjectReader.createAbleSubject(userDic, subjectDic, userAbleSubject, out ableSubject);
 
             var u = new Dictionary<int, double>();
 
@@ -121,12 +126,14 @@ namespace AutoScheduling.Reader
                         var ui = u[a.Item2];
                         var subject = subjectDic.First(x => x.Item2 == userId_subjectCode_Slot_item.Item2.Trim());
                         //Check Register Ssubject
-                        if (registerSubjects[a.Item1,subject.Item1] == 0)
+                        
+                        if (registerSubjects[a.Item1,subject.Item1] == 0 || ableSubject[a.Item1, subject.Item1] == 0)
                         {
                             if (!subjectCodeAlreadyMinus.Contains(userId_subjectCode_Slot_item.Item2.Trim()))
                             {
                                 subjectCodeAlreadyMinus.Add(userId_subjectCode_Slot_item.Item2.Trim());
-                                ui -= 2;
+                                if (ableSubject[a.Item1, subject.Item1] == 0) ui -= 3;
+                                else ui -= 3;
                                 Console.WriteLine($"Minus register Subject by subject: {userId_subjectCode_Slot_item.Item2} - new value: {ui}");
                             }
                             
