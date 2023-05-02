@@ -15,7 +15,6 @@ namespace Business.NotificationService.Model
         public string SubjectCode { get; set; }
         public string Sender { get; set; }
         public string? Status { get; set; }
-        public int countUnread { get; set; }
     }
     public class ResponseNofication
     {
