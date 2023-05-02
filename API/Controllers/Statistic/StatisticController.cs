@@ -106,53 +106,101 @@ namespace API.Controllers.Statistic
         }
 
         [HttpGet("StatisticalForLecturerOrLeader/{currentUserId}")]
-        public async Task<ObjectResult> StatisticalForLecturerOrLeader(int currentUserId)
+        public async Task<ObjectResult> StatisticalForLecturerOrLeader(int currentUserId, int semesterId)
         {
-            //tổng số môn cần phải duyệt
-            var response = new StatisticalModelForLecturerOrLeader();
-            var examSchedulesOfApprovalUser = await _context.ExamSchedules
-                .Where(x => x.AppovalUserId == currentUserId && x.Status)
-                .ToListAsync();
-            var listExamPaper = new List<ExamPaper>();
-            foreach (var examSchedule in examSchedulesOfApprovalUser)
+            if (_context.Users.Find(currentUserId).RoleId != 1)
             {
-                var examPaper = _context.ExamPapers
-                    .Where(x => x.ExamScheduleId == examSchedule.ExamScheduleId && x.Status == ExamPaperStatus.APPROVED)
-                    .FirstOrDefault();
-                if(examPaper != null)
+                //tổng số môn cần phải duyệt
+                var response = new StatisticalModelForLecturerOrLeader();
+                var examSchedulesOfApprovalUser = await _context.ExamSchedules
+                    .Where(x => x.AppovalUserId == currentUserId && x.Status && x.RegisterSubject.AvailableSubject.SemesterId == semesterId)
+                    .ToListAsync();
+                var listExamPaper = new List<ExamPaper>();
+                foreach (var examSchedule in examSchedulesOfApprovalUser)
                 {
-                    listExamPaper.Add(examPaper);
+                    var examPaper = _context.ExamPapers
+                        .Where(x => x.ExamScheduleId == examSchedule.ExamScheduleId && x.Status == ExamPaperStatus.APPROVED)
+                        .FirstOrDefault();
+                    if (examPaper != null)
+                    {
+                        listExamPaper.Add(examPaper);
+                    }
                 }
-            }
-            var totalExamNeedApprove = examSchedulesOfApprovalUser.Count() - listExamPaper.Count();
-            response.totalExamNeedApprove = totalExamNeedApprove;
-            // tổng số môn cần phải nộp
-            listExamPaper.Clear();
-            var examSchedulesOfUser = await _context.ExamSchedules
-                .Where(x => x.RegisterSubject.UserId == currentUserId && x.Status)
-                .ToListAsync();
-            foreach (var examSchedule in examSchedulesOfUser)
-            {
-                var examPaper = _context.ExamPapers
-                    .Where(x => x.ExamScheduleId == examSchedule.ExamScheduleId && x.Status == ExamPaperStatus.APPROVED)
-                    .FirstOrDefault();
-                if(examPaper != null)
+                var totalExamNeedApprove = examSchedulesOfApprovalUser.Count() - listExamPaper.Count();
+                response.totalExamNeedApprove = totalExamNeedApprove;
+                // tổng số môn cần phải nộp
+                listExamPaper.Clear();
+                var examSchedulesOfUser = await _context.ExamSchedules
+                    .Where(x => x.RegisterSubject.UserId == currentUserId && x.Status && x.RegisterSubject.AvailableSubject.SemesterId == semesterId)
+                    .ToListAsync();
+                foreach (var examSchedule in examSchedulesOfUser)
                 {
-                    listExamPaper.Add(examPaper);
+                    var examPaper = _context.ExamPapers
+                        .Where(x => x.ExamScheduleId == examSchedule.ExamScheduleId && x.Status == ExamPaperStatus.APPROVED)
+                        .FirstOrDefault();
+                    if (examPaper != null)
+                    {
+                        listExamPaper.Add(examPaper);
+                    }
                 }
-            }
-            var totalExamNeedSubmit = examSchedulesOfUser.Count() - listExamPaper.Count();
-            response.totalExamNeedSubmit = totalExamNeedSubmit;
-            // tổng số lớp học trong kì
-            var registerSubject = await _context.RegisterSubjects
-                .Where(x => x.UserId == currentUserId && x.Status)
-                .ToListAsync();
-            var totalClassTeaching = registerSubject.Count();
-            response.totalClassTeaching = totalClassTeaching;
-            return new ObjectResult(response)
+                var totalExamNeedSubmit = examSchedulesOfUser.Count() - listExamPaper.Count();
+                response.totalExamNeedSubmit = totalExamNeedSubmit;
+                // tổng số lớp học trong kì
+                var registerSubject = await _context.RegisterSubjects
+                    .Where(x => x.UserId == currentUserId && x.Status && x.AvailableSubject.SemesterId == semesterId)
+                    .ToListAsync();
+                var totalClassTeaching = registerSubject.Count();
+                response.totalClassTeaching = totalClassTeaching;
+                return new ObjectResult(response)
+                {
+                    StatusCode = 200
+                };
+            } else
             {
-                StatusCode = 200
-            };
+                var response = new StatisticalModelForHeader();
+                //tổng số đề cần nộp của header
+                var listExamPaper = new List<ExamPaper>();
+                var examSchedulesOfUser = await _context.ExamSchedules
+                    .Where(x => x.RegisterSubject.UserId == currentUserId && x.Status && x.RegisterSubject.AvailableSubject.SemesterId == semesterId)
+                    .ToListAsync();
+                foreach (var examSchedule in examSchedulesOfUser)
+                {
+                    var examPaper = _context.ExamPapers
+                        .Where(x => x.ExamScheduleId == examSchedule.ExamScheduleId && x.Status == ExamPaperStatus.APPROVED)
+                        .FirstOrDefault();
+                    if (examPaper != null)
+                    {
+                        listExamPaper.Add(examPaper);
+                    }
+                }
+                var totalExamNeedSubmitOfHeader = examSchedulesOfUser.Count() - listExamPaper.Count();
+                response.totalExamNeedSubmittedOfHeader = totalExamNeedSubmitOfHeader;
+                //tổng số đề phải nộp của gv              
+                var examSchedules = await _context.ExamSchedules
+                    .Where(x => x.Status && x.RegisterSubject.AvailableSubject.SemesterId == semesterId)
+                    .ToListAsync();
+                var totalExamNeedSubmitOfAllTeacher = examSchedules.Count();
+                response.totalExamNeedSubmittedOfTeacher = totalExamNeedSubmitOfAllTeacher;
+                //tổng số đề đã nộp của gv
+                listExamPaper.Clear();
+                foreach (var examSchedule in examSchedules)
+                {
+                    var examPaper = _context.ExamPapers
+                        .Where(x => x.ExamScheduleId == examSchedule.ExamScheduleId && x.Status == ExamPaperStatus.APPROVED)
+                        .FirstOrDefault();
+                    if (examPaper != null)
+                    {
+                        listExamPaper.Add(examPaper);
+                    }
+                }
+                //tổng số đề còn thiếu của gv
+                response.totalExamNotSubmitOfTeacher = response.totalExamNeedSubmittedOfTeacher - response.totalExamSubmittedOfTeacher;
+                return new ObjectResult(response)
+                {
+                    StatusCode = 200
+                };
+            }
         }
+        
     }
 }
