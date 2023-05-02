@@ -41,19 +41,28 @@ namespace Business.NotificationService.implement
             var listNotification = await _notificationRepository.GetAllNotificationsByUserId(userId);
             var listResponse = new List<ReponseNotificationModel>();
             var listResponseNotification = new List<ReponseNotificationModel>();
+            int count = 0;
             foreach (var notification in listNotification)
             {
                 var responseNotification = _mapper.Map<ReponseNotificationModel>(notification);
                 listResponse.Add(responseNotification);
+                if(responseNotification.Status == "Unread")
+                {
+                    count += 1;
+                }
             }
+            
             for(var i = listResponse.Count - 1; i >= 0; i--)
             {
                 listResponseNotification.Add(listResponse[i]);
             }
+            var response = new ResponseNofication();
+            response.reponseNotificationModels = listResponseNotification;
+            response.countUnread = count;
             return new()
             {
                 StatusCode = 200,
-                Data = listResponseNotification
+                Data = response
             };
         }
 
