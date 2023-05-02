@@ -14,7 +14,7 @@ namespace Business.AvailableSubjectService.Interface
     {
         public  Task<ObjectResult> GetAvailableSubjects(Expression<Func<Data.Models.AvailableSubject, bool>> ex, PagingRequest paging);
         Task<ObjectResult> GetTeachersBySubjectId(int subjectId, PagingRequest paging);
-        Task<ResponseModel> GetAllAvailableSubjectByLeaderId(int leaderId);
+        Task<ResponseModel> GetAllAvailableSubjectByLeaderId(int leaderId, int semesterId);
         Task<ResponseModel> GetAvailableSubjectById(int id);
         Task<ResponseModel> GetAvailableSubjectByDepartmentId(int departmentId);
         Task<ResponseModel> GetAllAvailableSubjectNotHaveRegister();

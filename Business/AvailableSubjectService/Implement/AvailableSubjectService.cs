@@ -71,9 +71,9 @@ namespace Business.AvailableSubjectService.Implement
                 };
             }
         }
-        public async Task<ResponseModel> GetAllAvailableSubjectByLeaderId(int leaderId)
+        public async Task<ResponseModel> GetAllAvailableSubjectByLeaderId(int leaderId, int semesterId)
         {
-            var listAvailableSubject = await availableSubjectRepository.GetAllAvailableSubjectsByLeaderId(leaderId);
+            var listAvailableSubject = await availableSubjectRepository.GetAllAvailableSubjectsByLeaderId(leaderId, semesterId);
             if (!listAvailableSubject.Any())
             {
                 return new()

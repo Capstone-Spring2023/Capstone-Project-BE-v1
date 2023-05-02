@@ -28,12 +28,12 @@ namespace Data.Repositories.implement
             listAvailableSubject = listAvailableSubject.Where(x => checkIfSubjectAlreadyHaveExamSchedule(x.AvailableSubjectId)).ToList();
             return listAvailableSubject;
         }
-        public async Task<List<AvailableSubject>> GetAllAvailableSubjectsByLeaderId(int leaderId)
+        public async Task<List<AvailableSubject>> GetAllAvailableSubjectsByLeaderId(int leaderId, int semesterId)
         {
             var listAvailableSubject = await _context
                 .AvailableSubjects
                 .Include(x => x.Subject)
-                .Where(x => x.LeaderId == leaderId)
+                .Where(x => x.LeaderId == leaderId && x.SemesterId == semesterId)
                 .ToListAsync();
             listAvailableSubject = listAvailableSubject.Where(x => !checkIfSubjectAlreadyHaveExamSchedule(x.AvailableSubjectId)).ToList();
             return listAvailableSubject;

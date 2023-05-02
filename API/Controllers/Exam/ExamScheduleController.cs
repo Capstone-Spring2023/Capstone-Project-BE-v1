@@ -40,9 +40,9 @@ namespace API.Controllers.Exam
         [HttpGet]
         [Route("api/leader/{leaderId}/available-subject")]
         [SwaggerOperation(Summary = "Get Available Subjects belong to a leader (and haven't have exam schedule yet)")]
-        public async Task<IActionResult> getAllAvailableSubjectByLeaderId([FromRoute] int leaderId)
+        public async Task<IActionResult> getAllAvailableSubjectByLeaderId([FromRoute] int leaderId, int semesterId)
         {
-            var response = await _avaibleSubjectService.GetAllAvailableSubjectByLeaderId(leaderId);
+            var response = await _avaibleSubjectService.GetAllAvailableSubjectByLeaderId(leaderId, semesterId);
             if (response.StatusCode == (int)Business.Constants.StatusCode.NOTFOUND)
             {
                 return NotFound(new List<Object>());
