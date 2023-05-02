@@ -205,7 +205,15 @@ namespace Business.ExamPaperService.Implements
                 var availableSubject = _context.AvailableSubjects.Find(examSchedule.AvailableSubjectId);
                 if (examUpdateModel.Status == "Reject")
                 { 
-                    examPaper.Status = ExamPaperStatus.REJECTED;
+                    if(examPaper.Status == ExamPaperStatus.SUBMITTED_INSTRUCTION)
+                    {
+                        examPaper.Status = ExamPaperStatus.WAITING_INSTRUCTION;
+                    }
+                    if(examPaper.Status == ExamPaperStatus.PENDING)
+                    {
+                        examPaper.Status = ExamPaperStatus.REJECTED;
+                    }
+                    
                     var comment = mapper.Map<Comment>(commentModel);
                     comment.ApprovalUserName = senderName;
                     await CommentRepository.Create(comment);

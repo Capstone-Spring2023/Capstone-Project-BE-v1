@@ -1,4 +1,6 @@
-﻿using Data.Models;
+﻿using Business.ExamSchedule.Models;
+using Data;
+using Data.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -106,9 +108,48 @@ namespace API.Controllers.Statistic
         [HttpGet("StatisticalForLecturerOrLeader/{currentUserId}")]
         public async Task<ObjectResult> StatisticalForLecturerOrLeader(int currentUserId)
         {
-            var examSchedules = await _context.ExamSchedules.Where(x => x.AppovalUserId == currentUserId && x.Status).ToListAsync();
-            var examPapers = examSchedules.Select(x => x.ExamPapers).ToList();
-            return new ObjectResult(examPapers)
+            //tổng số môn cần phải duyệt
+            var response = new StatisticalModelForLecturerOrLeader();
+            var examSchedulesOfApprovalUser = await _context.ExamSchedules
+                .Where(x => x.AppovalUserId == currentUserId && x.Status)
+                .ToListAsync();
+            var listExamPaper = new List<ExamPaper>();
+            foreach (var examSchedule in examSchedulesOfApprovalUser)
+            {
+                var examPaper = _context.ExamPapers
+                    .Where(x => x.ExamScheduleId == examSchedule.ExamScheduleId && x.Status == ExamPaperStatus.APPROVED)
+                    .FirstOrDefault();
+                if(examPaper != null)
+                {
+                    listExamPaper.Add(examPaper);
+                }
+            }
+            var totalExamNeedApprove = examSchedulesOfApprovalUser.Count() - listExamPaper.Count();
+            response.totalExamNeedApprove = totalExamNeedApprove;
+            // tổng số môn cần phải nộp
+            listExamPaper.Clear();
+            var examSchedulesOfUser = await _context.ExamSchedules
+                .Where(x => x.RegisterSubject.UserId == currentUserId && x.Status)
+                .ToListAsync();
+            foreach (var examSchedule in examSchedulesOfUser)
+            {
+                var examPaper = _context.ExamPapers
+                    .Where(x => x.ExamScheduleId == examSchedule.ExamScheduleId && x.Status == ExamPaperStatus.APPROVED)
+                    .FirstOrDefault();
+                if(examPaper != null)
+                {
+                    listExamPaper.Add(examPaper);
+                }
+            }
+            var totalExamNeedSubmit = examSchedulesOfUser.Count() - listExamPaper.Count();
+            response.totalExamNeedSubmit = totalExamNeedSubmit;
+            // tổng số lớp học trong kì
+            var registerSubject = await _context.RegisterSubjects
+                .Where(x => x.UserId == currentUserId && x.Status)
+                .ToListAsync();
+            var totalClassTeaching = registerSubject.Count();
+            response.totalClassTeaching = totalClassTeaching;
+            return new ObjectResult(response)
             {
                 StatusCode = 200
             };
