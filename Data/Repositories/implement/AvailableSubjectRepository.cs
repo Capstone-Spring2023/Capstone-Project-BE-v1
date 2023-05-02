@@ -33,7 +33,7 @@ namespace Data.Repositories.implement
             var listAvailableSubject = await _context
                 .AvailableSubjects
                 .Include(x => x.Subject)
-                .Where(x => x.LeaderId == leaderId && x.SemesterId == semesterId)
+                .Where(x => x.LeaderId == leaderId && x.SemesterId == semesterId && x.Subject.TypeId != 3)
                 .ToListAsync();
             listAvailableSubject = listAvailableSubject.Where(x => !checkIfSubjectAlreadyHaveExamSchedule(x.AvailableSubjectId)).ToList();
             return listAvailableSubject;

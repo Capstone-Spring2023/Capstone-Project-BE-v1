@@ -81,13 +81,7 @@ namespace Business.AvailableSubjectService.Implement
                     StatusCode = (int)Business.Constants.StatusCode.NOTFOUND,
                 };
             }
-            foreach(var item in listAvailableSubject)
-            {
-                if(item.Subject.TypeId == 3)
-                {
-                    listAvailableSubject.Remove(item);
-                }
-            }
+            
             return new()
             {
                 StatusCode = (int)Business.Constants.StatusCode.OK,
