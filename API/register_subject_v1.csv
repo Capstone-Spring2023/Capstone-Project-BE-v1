@@ -1,35 +1,35 @@
 ,,Please use a comma to separate 2 subjects
 ,,See courses list sheet to choose combo with (A & P) course to register
 No.,LecturerId,Lecturer,Subjects,"Morning 2,5","Afternoon 2,5","Morning 3,6","Afternoon 3,6","Morning 4,7","Afternoon 4,7",Is Collaborator, Min Num Class
-1,1,Đoàn Nguyễn Thanh Hòa,"",x,,x,,x,,x,0
-1,2,Kiều Trọng Khánh,"",,x,,x,,x,,5
-1,3,Nguyễn Tấn Danh,"",x,,x,,x,x,,5
-1,4,Vũ Thị Thùy Dương,"",x,x,,x,,x,,5
-1,6,Hồ Hoàn Kiếm,"LAB211",x,x,x,x,x,x,,5
-1,8,Nguyễn Trúc Mai Anh,"",,x,,x,,x,x,0
-1,9,Lê Võ Minh Thư,"",x,x,x,x,,,,5
-1,10,Lê Hồng Kỳ,"",x,x,x,x,x,x,,5
-1,11,Đặng Ngọc Minh Đức,"",x,x,x,x,x,x,,5
-1,12,Bùi Thị Thu Thủy,"",x,x,x,x,x,x,x,0
-1,13,HanPTN16,"DBI202,PFP191",x,x,x,x,x,x,,5
-1,14,HuynhTT,"OSG202,DBI202,PRJ301",x,,x,,,,,5
-1,16,VinhDP,"OSG202,DBI202",x,x,x,x,x,x,,5
-1,17,NgocNN7,"",x,x,x,x,x,x,x,0
-1,18,VinhDP,"PRO192,CSD201,DBI202,LAB211,CEA201",x,x,x,x,x,x,,5
-1,19,TruongLV23,"OSG202,LAB211,CEA201",x,x,x,x,x,x,,5
-1,20,PhutLV,"",x,x,x,x,x,x,,5
-1,21,DuongLA3,"CSD201",x,x,x,x,x,x,,5
-1,22,TienNV55,"OSG202,PRO192,CSD201",x,x,x,x,x,x,,5
-1,23,BinhNV,"",x,,x,,x,,,5
-1,24,LamTD8,"DBI202",x,x,x,,x,,x,0
-1,25,BinhVN12,"PRO192,DBI202",x,x,x,x,x,x,,5
-1,26,Bao Leader,"OSG202",x,x,,,,,,5
-1,27,Bao Lecturer,"CSD201,LAB211",x,x,x,x,x,x,,5
-1,29,Nguyen Tan Phat,"OSG202,PRO192",x,x,x,x,x,x,,5
-1,30,Nguyen Tan Phat Lead,"PRO192,DBI202",x,x,x,x,x,x,,5
-1,31,Tuan,"LAB211",x,x,,x,,,,5
-1,35,Nguyen Hoang Tan Phat,"PRO192,CSD201",x,x,x,x,x,x,,5
-1,36,Phat Lecturer,"",x,x,x,x,x,x,x,0
-1,38,Bao Header,"",x,x,,,,,x,0
-1,39,Dat trinh,"",x,x,,,x,x,x,0
+1,1,Đoàn Nguyễn Thanh Hòa,"CSD301",x,,,x,,,x,1
+1,2,Kiều Trọng Khánh,"DBI202,CSD201,ADY201M,CSD301",x,x,x,x,x,x,,5
+1,3,Nguyễn Tấn Danh,"PRO192,LAB211,CEA201,CSI104,PRF192",x,,x,x,x,x,,5
+1,4,Vũ Thị Thùy Dương,"PRO192,DBI202,LAB211,PRF192,CSD201",x,x,,x,,x,,5
+1,6,Hồ Hoàn Kiếm,"LAB211,PRO192,DBI202,CSD201,CEA201,CSI104,OSG202",x,x,x,x,x,x,,5
+1,8,Nguyễn Trúc Mai Anh,"CEA201",,x,,x,,x,x,1
+1,9,Lê Võ Minh Thư,"LAB211,DBI202,CSD201,IOT102",x,x,x,x,,,,5
+1,10,Lê Hồng Kỳ,"OSG202,LAB211,CSD201,DBI202,IOT102",x,x,x,x,x,x,,5
+1,11,Đặng Ngọc Minh Đức,"PRF192,OSG202,LAB211,CSD201,DBI202,PRJ301,IOT102",x,x,x,x,x,x,,5
+1,12,Bùi Thị Thu Thủy,"OSG202",x,x,x,x,x,x,x,1
+1,13,HanPTN16,"CSD201,DBI202,OSG202,LAB211,PRF192,PFP191,PRN292",x,x,x,x,x,x,,5
+1,14,HuynhTT,"OSG202,PRO192,CSD201,LAB211,LAB231",x,,x,,,,,5
+1,16,VinhDP,"PRO192,DBI202,CSD203,ADY201M,LAB211",x,x,x,x,x,x,,5
+1,17,NgocNN7,"CSI105",x,x,x,x,x,x,x,1
+1,18,VinhDP,"PRO192,DBI202,PRF192,OSG202,CSD201",x,x,x,x,x,x,,5
+1,19,TruongLV23,"OSG202,DBI202,LAB211,ADY201M,PRJ301",x,x,x,x,x,x,,5
+1,20,PhutLV,"OSG202,PRO192,CSD201,DBI202,PRJ301",x,x,x,x,x,x,,5
+1,21,DuongLA3,"OSG202,PRO192,LAB211,CSI104,IOT102,PRJ301",x,x,x,x,x,x,,5
+1,22,TienNV55,"OSG202,DBI202,CSD201,CEA201",x,x,x,x,x,x,,5
+1,23,BinhNV,"PRO192,CSD201,DBI202,LAB211,CEA201,CSI104,LAB221",x,,x,,x,,,5
+1,24,LamTD8,"DBI202",x,x,x,,x,,x,1
+1,25,BinhVN12,"PRO192,DBI202,LAB211,CSD201,PRF192,CEA201",x,x,x,x,x,x,,5
+1,26,Bao Leader,"OSG202,PRO192,CSD201,LAB211,CSI104",x,x,,,,,,5
+1,27,Bao Lecturer,"CSD201,CSI104,OSG202,CSD203",x,x,x,x,x,x,,5
+1,29,Nguyen Tan Phat,"PRO192,LAB211,DBI202,IOT102",x,x,x,x,x,x,,5
+1,30,Nguyen Tan Phat Lead,"PRO192,CSD201,OSG202,LAB211,ADY201M,PRJ301",x,x,x,x,x,x,,5
+1,31,Tuan,"LAB211,OSG202,DBI202,CSD201,CEA201",x,x,,x,,,,5
+1,35,Nguyen Hoang Tan Phat,"CSD201,DBI202,PRO192",x,x,x,x,x,x,,5
+1,36,Phat Lecturer,"CSI104,IOT102",x,x,x,x,x,x,x,1
+1,38,Bao Header,"PRJ301",x,x,,,,,x,1
+1,39,Dat trinh,"PRO192",x,x,,,x,x,x,1
 1,42,Nguyen Tan Phat Head,"",,,,,,,x,0

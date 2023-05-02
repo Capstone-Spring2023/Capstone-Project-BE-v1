@@ -14,6 +14,7 @@ using Data.Repositories.Interface;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Annotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace API.Controllers.Exam
 {
@@ -60,9 +61,9 @@ namespace API.Controllers.Exam
         }
         [HttpGet("user/{userId}/register-subject-slot")]
         [SwaggerOperation(Summary = "API lấy ra danh sách register subject + slot của 1 user")]
-        public async Task<ObjectResult> getRegisterSubjects([FromRoute] int userId)
+        public async Task<ObjectResult> getRegisterSubjects([FromRoute] int userId,[FromQuery][Required] int semesterId)
         {
-            var res =await _registerSubjectService.getRegisterSubjects(userId);
+            var res =await _registerSubjectService.getRegisterSubjects(userId,semesterId);
             return res;
         }
 

@@ -54,15 +54,15 @@ namespace Business.RegisterSubjectService.implement
                 Data = "Created"
             };
         }
-        public async Task<ObjectResult> getRegisterSubjects(int userId)
+        public async Task<ObjectResult> getRegisterSubjects(int userId,int semesterId)
         {
             var registerSubjects = await _context.RegisterSubjects
                 .Include(x => x.AvailableSubject)
-                .Where(x => x.UserId == userId)
+                .Where(x => x.UserId == userId && x.AvailableSubject.SemesterId == semesterId)
                 .Select(x => _mapper.Map<RegisterSubjectResponse>(x))
                 .ToListAsync();
 
-            var registerSlots = _context.RegisterSlots.Where(x => x.UserId == userId)
+            var registerSlots = _context.RegisterSlots.Where(x => x.UserId == userId && x.SemesterId == semesterId)
                 .Select(x => _mapper.Map<RegisterSlotResponse>(x)).ToList();
 
             var res = new RegisterSubjectSlotResponse()

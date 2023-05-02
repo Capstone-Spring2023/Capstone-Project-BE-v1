@@ -36,6 +36,7 @@ namespace API.Controllers.Schedules
                 return BadRequest();
             }
             await classDaySlotReader.readClassDaySlotCsvToDb(csvFile,semesterId);
+
             var listUserIdOfLecturerAndLeader = _context.Users.Where(x => x.RoleId == 2 || x.RoleId == 3).ToList();
             foreach (var user in listUserIdOfLecturerAndLeader)
             {

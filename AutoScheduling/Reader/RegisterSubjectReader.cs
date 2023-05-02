@@ -137,6 +137,7 @@ namespace AutoScheduling.Reader
                     int userIndex = userDic.FirstOrDefault(x => x.Item2 == a.Item1).Item1;
                 foreach (var s in a.Item3)
                 {
+                    if (String.IsNullOrEmpty(s)) continue;
                     var subjectIndex = subjectDic.First(x=> x.Item2.ToLower().Equals(s.ToLower().Trim())).Item1;
                     registerSubject[userIndex, subjectIndex] = 1;
                 }

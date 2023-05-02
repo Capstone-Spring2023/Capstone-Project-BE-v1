@@ -61,7 +61,8 @@ namespace AutoScheduling.Reader
                         }
                         await _context.SaveChangesAsync();
                         registerSubjectId = registerSubject.RegisterSubjectId;
-                        var class1 = _context.Classes.First(x => x.ClassCode == classCode);
+                        var class_ASubject = _context.ClassAsubjects.Where(x => x.AsubjectId == asubjectId).Select(x => x.ClassId).ToList();
+                        var class1 = _context.Classes.First(x => x.ClassCode == classCode && class_ASubject.Contains(x.ClassId));
                         class1.RegisterSubjectId = registerSubjectId;
                         await _context.SaveChangesAsync();
                         int day, slot;
