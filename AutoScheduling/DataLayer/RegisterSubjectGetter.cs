@@ -30,7 +30,7 @@ namespace AutoScheduling.DataLayer
                     var registerSubjects = context.RegisterSubjects
                         .Include(x => x.AvailableSubject)
                         .Where(x => x.UserId == user.UserId  && x.AvailableSubject.SemesterId ==semesterId).ToList();
-                    var registerSlots = context.RegisterSlots.Where(x => x.UserId == user.UserId).ToList();
+                    var registerSlots = context.RegisterSlots.Where(x => x.UserId == user.UserId && x.SemesterId == semesterId).ToList();
                     var a = new UserRegisterSubjectAndSlot()
                     {
                         userId = user.UserId,
