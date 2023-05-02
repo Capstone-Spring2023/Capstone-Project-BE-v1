@@ -15,7 +15,7 @@ namespace Business.ExamSchedule.Models
 
     public class StatisticalModelForHeader
     {
-        public int totalExamSubmittedOfHeader { get; set; }
+        public int totalExamNeedSubmittedOfHeader { get; set; }
         public int totalExamSubmittedOfTeacher { get; set; }
         public int totalClassInSemester { get; set; }
         public int totalExamNeedSubmittedOfTeacher { get; set; }
