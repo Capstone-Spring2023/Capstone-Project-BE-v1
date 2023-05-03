@@ -124,14 +124,11 @@ namespace AutoScheduling
                 }
                 // Check đô hài lòng với d[i]
 
-                if (count_num_teaching_class < d[i] || count_num_teaching_class > 10)
+                if (count_num_teaching_class > 10)
                 {
                     u[i] -= Math.Abs(count_num_teaching_class - d[i]);
                 }
-                else
-                {
-                    u[i] += Math.Abs(count_num_teaching_class - d[i]);
-                }
+                
                 //if (i == 0) Console.WriteLine($"num classes: {count_num_teaching_class} - d[i]: {d[i]}");
                 //if (i == 0)  Console.WriteLine($"u{i}: {u[i]}##{userDic.First(x => x.Item1 == i).Item3}  - alphaIndex: {alphaIndexs[i]} - value : {u[i] * alphaIndexs[i]}");
                 a += u[i] * alphaIndexs[i];

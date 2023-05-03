@@ -171,13 +171,9 @@ namespace AutoScheduling.Reader
                     var ui_tmp = u[a.Item2];
                     int count_num_teaching_class = userList.Count();
                     Console.WriteLine($"d[i]: {d[userIndex]} - numClass: {count_num_teaching_class} - value: {ui_tmp}");
-                    if (count_num_teaching_class < d[userIndex] || count_num_teaching_class > 10)
+                    if (count_num_teaching_class > 10)
                     {
                         ui_tmp -= Math.Abs(count_num_teaching_class - d[userIndex]);
-                    }
-                    else
-                    {
-                        ui_tmp += Math.Abs(count_num_teaching_class - d[userIndex]);
                     }
                     Console.WriteLine($"After Calculated - value: {ui_tmp}");
                     ui_tmp = ui_tmp * alphaIndex;
