@@ -134,7 +134,7 @@ namespace AutoScheduling.Reader
                             {
                                 subjectCodeAlreadyMinus.Add(userId_subjectCode_Slot_item.Item2.Trim());
                                 if (ableSubject[a.Item1, subject.Item1] == 0) ui -= 3;
-                                else ui -= 3;
+                                else ui -= 1;
                                 Console.WriteLine($"Minus register Subject by subject: {userId_subjectCode_Slot_item.Item2} - new value: {ui}");
                             }
                             
@@ -153,7 +153,6 @@ namespace AutoScheduling.Reader
                         
                         //check độ khít của slot
                         
-                        Console.WriteLine($"*************** - day: {day} - slot: {slot}");
                         if (previous_day != -1 && previous_day == day)
                         {
                             

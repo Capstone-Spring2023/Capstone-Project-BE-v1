@@ -65,8 +65,8 @@ namespace AutoScheduling
             for (int i = 0; i < num_lecturers; i++)
             {
                 u[i] = Constant.POINT;
-                //Console.WriteLine($"+++++++++++++++++++++++++++++++++++++++++++++");
-                // Console.WriteLine($"u{i} - {userDic.First(x => x.Item1 == i).Item3}");
+                Console.WriteLine($"+++++++++++++++++++++++++++++++++++++++++++++");
+                Console.WriteLine($"u{i} - {userDic.First(x => x.Item1 == i).Item3}");
                 int count_num_teaching_class = 0;
                 var subjectIndexAlreadyMinus = new List<int>();
 
@@ -88,7 +88,7 @@ namespace AutoScheduling
                                     {
 
                                         u[i] -= (l - previous_slot - 1);
-                                        //  if (i == 0) Console.WriteLine($"Minus in tight slot. day {k} previous slot: {previous_slot}, current slot: {l}, u[i] = {u[i]}");
+                                        Console.WriteLine($"Minus in tight slot. day {k} previous slot: {previous_slot}, current slot: {l}, u[i] = {u[i]}");
                                     }
                                     previous_slot = l;
                                     count_num_teaching_class++;
@@ -102,10 +102,10 @@ namespace AutoScheduling
                                             subjectIndexAlreadyMinus.Add(subjectIndex);
                                             if (ableSubject[i, subjectIndex] == 0) u[i] -= 3;
                                             else if (registerSubject[i, subjectIndex] == 0) u[i] -= 1;
-                                            if (i == 0)
+                                            
                                             {
-                                                //   Console.WriteLine($"Minus in register subject: {subjectDic.First(x => x.Item1 == subjectIndex)} " +
-                                                //   $"- class {subject_class_className.First(x => x.Item2 == j).Item3} - u[i] = {u[i]}");
+                                                 Console.WriteLine($"Minus in register subject: {subjectDic.First(x => x.Item1 == subjectIndex)} " +
+                                                   $"- class {subject_class_className.First(x => x.Item2 == j).Item3} - u[i] = {u[i]}");
                                             }
                                         }
                                     }
@@ -114,7 +114,8 @@ namespace AutoScheduling
                                     if (teacher_day_slot[i, k, l] == 0)
                                     {
                                         u[i] -= 1;
-                                        // if (i == 0)  Console.WriteLine($"Minus in teacher_day_slot: day{k} - slot {l} - u[i] = {u[i]}");
+                                        // if (i == 0)
+                                        Console.WriteLine($"Minus in teacher_day_slot: day{k} - slot {l} - u[i] = {u[i]}");
                                     }
 
 
@@ -129,8 +130,9 @@ namespace AutoScheduling
                     u[i] -= Math.Abs(count_num_teaching_class - d[i]);
                 }
                 
-                //if (i == 0) Console.WriteLine($"num classes: {count_num_teaching_class} - d[i]: {d[i]}");
-                //if (i == 0)  Console.WriteLine($"u{i}: {u[i]}##{userDic.First(x => x.Item1 == i).Item3}  - alphaIndex: {alphaIndexs[i]} - value : {u[i] * alphaIndexs[i]}");
+                //if (i == 0)
+                Console.WriteLine($"num classes: {count_num_teaching_class} - d[i]: {d[i]}");
+                Console.WriteLine($"Upoint: {u[i]}");
                 a += u[i] * alphaIndexs[i];
             }
 
@@ -159,7 +161,7 @@ namespace AutoScheduling
 
             //Console.Write($"Solution #{solutionCount_}: {a} - ");
             solutionCount_++;
-            if (solutionCount_ % 100 == 0)
+            if (solutionCount_ % 1 == 0)
             {
                 Console.WriteLine($"Solution #{solutionCount_}: {best.bestSol}");
             }
